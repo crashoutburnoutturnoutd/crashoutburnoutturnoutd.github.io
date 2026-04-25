@@ -2,746 +2,1605 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>Bertahan — Aku Masih Di Sini</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Bertahan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
+/* ══════════════════════════════════════════════
+   CSS VARIABLES
+══════════════════════════════════════════════ */
 :root {
-  --bg: #f0f6fc;
-  --surface: #ffffff;
-  --surface2: #e8f2fb;
-  --primary: #2a7ab8;
-  --primary-light: #4a9fd4;
-  --primary-soft: #d4eaf7;
-  --accent: #1a5a8a;
-  --text: #1a2e3d;
-  --text-muted: #6b8fa8;
-  --text-light: #a0bdd0;
-  --border: #c8dff0;
-  --danger: #e05a6b;
-  --success: #3aaa7c;
-  --card-shadow: 0 2px 20px rgba(42,122,184,0.08);
-  --radius: 16px;
-  --radius-sm: 10px;
+  --blue:       #b6e2f5;
+  --blue-mid:   #8dcde8;
+  --blue-deep:  #5aadd1;
+  --blue-soft:  #daf0fb;
+  --blue-pale:  #eef8fd;
+  --grey-100:   #f4f6f8;
+  --grey-200:   #e8ecf0;
+  --grey-300:   #cdd4db;
+  --grey-400:   #aab4be;
+  --grey-500:   #7e8d99;
+  --grey-600:   #5a6472;
+  --grey-700:   #3d4852;
+  --white:      #ffffff;
+  --surface:    #ffffff;
+  --bg:         #f0f7fc;
+  --shadow-sm:  0 1px 8px rgba(90,173,209,0.10);
+  --shadow-md:  0 4px 20px rgba(90,173,209,0.14);
+  --radius-sm:  10px;
+  --radius:     16px;
+  --radius-lg:  22px;
+  --font-display: 'Lora', Georgia, serif;
+  --font-body:    'Nunito', sans-serif;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6;}
 
-/* AUTH */
-#auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(145deg,#dceefa 0%,#eef6fd 50%,#f7fbff 100%);}
-.auth-card{background:var(--surface);border-radius:24px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(42,122,184,0.12);}
-.auth-logo{text-align:center;margin-bottom:28px;}
-.auth-logo h1{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--primary);letter-spacing:-0.5px;}
-.auth-logo p{font-size:13px;color:var(--text-muted);margin-top:4px;}
-.auth-tabs{display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:4px;margin-bottom:28px;}
-.auth-tab{flex:1;padding:9px;border:none;border-radius:8px;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all .2s;}
-.auth-tab.active{background:var(--surface);color:var(--primary);box-shadow:0 1px 6px rgba(42,122,184,0.1);}
-.form-group{margin-bottom:16px;}
-.form-group label{display:block;font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
-.form-group input,.form-group textarea{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--surface);outline:none;transition:border-color .2s;}
-.form-group input:focus,.form-group textarea:focus{border-color:var(--primary);}
-.form-group textarea{resize:none;min-height:90px;}
-.btn-primary{width:100%;padding:13px;background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background .2s,transform .1s;margin-top:4px;}
-.btn-primary:hover{background:var(--accent);}
-.btn-primary:active{transform:scale(0.98);}
-.auth-error{background:#fef0f2;border:1px solid #f5c6cc;color:var(--danger);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none;}
+/* ══════════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-/* APP SHELL */
-#app{display:none;min-height:100vh;}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;border:none;background:none;color:var(--text-light);font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:color .2s;}
-.nav-item.active{color:var(--primary);}
-.nav-item svg{width:22px;height:22px;}
-.page{display:none;padding:0 0 80px;min-height:100vh;animation:fadeIn .25s ease;}
-.page.active{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.page-header{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;}
-.page-title{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--text);}
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 
-/* DASHBOARD */
-.dash-hero{margin:14px 16px 0;background:linear-gradient(135deg,#2a7ab8,#1a5a8a);border-radius:20px;padding:24px;color:white;position:relative;overflow:hidden;}
-.dash-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06);}
-.hero-greeting{font-size:13px;opacity:0.8;margin-bottom:4px;}
-.hero-name{font-family:'DM Serif Display',serif;font-size:1.6rem;margin-bottom:16px;}
-.tick-box{background:rgba(255,255,255,0.12);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:background .2s;border:1.5px solid rgba(255,255,255,0.15);}
-.tick-box:hover{background:rgba(255,255,255,0.18);}
-.tick-checkbox{width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s;background:transparent;}
-.tick-checkbox.ticked{background:white;border-color:white;}
-.tick-checkbox svg{width:18px;height:18px;display:none;}
-.tick-checkbox.ticked svg{display:block;}
-.tick-label{flex:1;}
-.tick-label strong{display:block;font-size:14px;font-weight:500;}
-.tick-label span{font-size:12px;opacity:0.75;}
-.section{padding:0 16px;margin-top:20px;}
-.section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:12px;}
-.cards-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.stat-card{background:var(--surface);border-radius:var(--radius-sm);padding:16px;box-shadow:var(--card-shadow);}
-.stat-card .stat-icon{font-size:20px;margin-bottom:8px;}
-.stat-card .stat-val{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--primary);line-height:1;}
-.stat-card .stat-lbl{font-size:11px;color:var(--text-muted);margin-top:2px;}
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--grey-700);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* FEED */
-.feed-card{background:var(--surface);border-radius:var(--radius);padding:16px;box-shadow:var(--card-shadow);margin-bottom:10px;}
-.feed-author{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.feed-avatar{width:38px;height:38px;border-radius:50%;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--primary);font-size:15px;flex-shrink:0;overflow:hidden;}
-.feed-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-.feed-author-info{flex:1;}
-.feed-username{font-weight:600;font-size:14px;display:flex;align-items:center;gap:5px;}
-.feed-time{font-size:12px;color:var(--text-muted);}
-.feed-text{font-size:14px;color:var(--text);line-height:1.6;}
-.feed-mood{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--primary-soft);color:var(--primary);}
-.feed-actions{display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);}
-.feed-action-btn{display:flex;align-items:center;gap:5px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-muted);cursor:pointer;padding:0;transition:color .2s;}
-.feed-action-btn:hover{color:var(--primary);}
-.feed-action-btn svg{width:16px;height:16px;}
-.feed-action-btn.liked{color:#e05a6b;}
-.compose-box{background:var(--surface);border-radius:var(--radius);padding:14px;box-shadow:var(--card-shadow);margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;}
-.compose-input{flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);resize:none;background:transparent;min-height:40px;}
-.compose-input::placeholder{color:var(--text-light);}
-.compose-actions{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:10px;border-top:1px solid var(--border);}
-.mood-select{font-family:'DM Sans',sans-serif;font-size:13px;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;color:var(--text-muted);background:var(--surface);outline:none;cursor:pointer;}
-.btn-send{margin-left:auto;padding:7px 16px;background:var(--primary);color:white;border:none;border-radius:20px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .2s;}
-.btn-send:hover{background:var(--accent);}
-.anon-toggle{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);cursor:pointer;user-select:none;}
-.anon-toggle input{accent-color:var(--primary);}
+button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
+input, textarea, select { font-family: var(--font-body); }
+img { display: block; max-width: 100%; }
+a { text-decoration: none; color: inherit; }
 
-/* PROFILE */
-.profile-banner{height:100px;background:linear-gradient(135deg,#2a7ab8 0%,#1a5a8a 100%);position:relative;}
-.profile-info{padding:0 20px 20px;position:relative;}
-.profile-avatar-wrap{margin-top:-36px;margin-bottom:10px;display:flex;align-items:flex-end;justify-content:space-between;}
-.profile-avatar{width:72px;height:72px;border-radius:50%;border:3px solid white;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:28px;color:var(--primary);overflow:hidden;flex-shrink:0;}
-.profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-.profile-edit-btn{padding:8px 18px;border:1.5px solid var(--border);border-radius:20px;background:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;}
-.profile-name{font-family:'DM Serif Display',serif;font-size:1.3rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.profile-handle{font-size:14px;color:var(--text-muted);margin-top:2px;}
-.profile-bio{font-size:14px;margin-top:8px;color:var(--text);line-height:1.5;}
-.profile-stats{display:flex;gap:20px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
-.profile-stat{text-align:center;}
-.profile-stat-val{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--primary);display:block;}
-.profile-stat-lbl{font-size:11px;color:var(--text-muted);}
-.streak-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px;}
-.cal-day{aspect-ratio:1;border-radius:4px;background:var(--surface2);}
-.cal-day.ticked{background:var(--primary);}
+/* ══════════════════════════════════════════════
+   VERIFIED BADGE
+══════════════════════════════════════════════ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-left: 3px;
+  position: relative;
+  top: -1px;
+}
+.badge svg { width: 100%; height: 100%; }
+.badge-lg { width: 20px; height: 20px; }
 
-/* SETTINGS */
-.settings-section{margin-bottom:24px;}
-.settings-section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);font-weight:600;margin-bottom:8px;padding:0 20px;}
-.settings-group{background:var(--surface);border-radius:var(--radius);overflow:hidden;margin:0 16px;box-shadow:var(--card-shadow);}
-.settings-row{display:flex;align-items:center;padding:14px 18px;gap:12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
-.settings-row:last-child{border-bottom:none;}
-.settings-row:hover{background:var(--surface2);}
-.settings-row-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.settings-row-label{flex:1;font-size:14px;font-weight:500;}
-.settings-row-desc{font-size:12px;color:var(--text-muted);display:block;}
-.settings-chevron{color:var(--text-light);}
-.settings-chevron svg{width:16px;height:16px;}
-.toggle-switch{width:40px;height:22px;background:var(--border);border-radius:11px;position:relative;transition:background .2s;cursor:pointer;flex-shrink:0;}
-.toggle-switch.on{background:var(--primary);}
-.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:white;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
-.toggle-switch.on::after{transform:translateX(18px);}
+/* ══════════════════════════════════════════════
+   SCREENS — AUTH
+══════════════════════════════════════════════ */
+#screen-auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: linear-gradient(160deg, var(--blue-soft) 0%, var(--bg) 60%);
+}
 
-/* CARDS */
-.capsule-card{background:var(--surface);border-radius:var(--radius);padding:16px;box-shadow:var(--card-shadow);margin-bottom:10px;}
-.capsule-card.locked{background:linear-gradient(135deg,#f7fbff,#eef6fd);border:1.5px dashed var(--primary-light);}
-.mood-options{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px;}
-.mood-btn{padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:13px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
-.mood-btn:hover,.mood-btn.selected{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
+.auth-wrap {
+  width: 100%;
+  max-width: 400px;
+}
 
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:flex-end;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;animation:slideUp .25s ease;}
-@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
-.modal-title{font-family:'DM Serif Display',serif;font-size:1.2rem;margin-bottom:18px;}
-.modal-btn-row{display:flex;gap:10px;margin-top:6px;}
-.btn-cancel{flex:1;padding:13px;border:1.5px solid var(--border);border-radius:10px;background:white;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;}
+.auth-brand {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.auth-brand-name {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 2.6rem);
+  color: var(--grey-700);
+  letter-spacing: -0.5px;
+  font-weight: 500;
+}
+.auth-brand-tagline {
+  font-size: 0.85rem;
+  color: var(--grey-500);
+  margin-top: 4px;
+  font-weight: 300;
+  letter-spacing: 0.3px;
+}
+
+.auth-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-md);
+}
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 1.5px solid var(--grey-200);
+  margin-bottom: 28px;
+  gap: 0;
+}
+.auth-tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--grey-400);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1.5px;
+  transition: all .2s;
+  letter-spacing: 0.2px;
+}
+.auth-tab-btn.active { color: var(--grey-700); border-bottom-color: var(--blue-deep); }
+
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--grey-500);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+.field input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--grey-200);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--grey-700);
+  background: var(--grey-100);
+  outline: none;
+  transition: border-color .2s, background .2s;
+}
+.field input:focus {
+  border-color: var(--blue-mid);
+  background: var(--white);
+}
+.field input::placeholder { color: var(--grey-400); }
+
+.btn-main {
+  width: 100%;
+  padding: 12px;
+  background: var(--blue-deep);
+  color: var(--white);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: background .2s, transform .1s;
+  margin-top: 4px;
+}
+.btn-main:hover { background: var(--blue-mid); }
+.btn-main:active { transform: scale(0.98); }
+
+.auth-err {
+  background: #fff0f1;
+  border: 1px solid #f4c2c6;
+  color: #c0525e;
+  font-size: 0.82rem;
+  padding: 9px 13px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  display: none;
+}
+
+/* ══════════════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════════════ */
+#screen-app { display: none; min-height: 100vh; }
+
+/* BOTTOM NAV */
+.nav-bottom {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--grey-200);
+  display: flex;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 0 7px;
+  gap: 3px;
+  color: var(--grey-400);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  transition: color .2s;
+}
+.nav-btn svg { width: 21px; height: 21px; stroke-width: 1.7; }
+.nav-btn.active { color: var(--blue-deep); }
+.nav-btn.active svg { stroke-width: 2.2; }
+
+/* PAGES */
+.page {
+  display: none;
+  min-height: 100vh;
+  padding-bottom: 80px;
+  animation: pageFade .22s ease;
+}
+.page.active { display: block; }
+
+@keyframes pageFade { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+/* PAGE HEADER */
+.pg-head {
+  position: sticky;
+  top: 0;
+  background: rgba(240,247,252,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 16px 20px 12px;
+  z-index: 30;
+  border-bottom: 1px solid transparent;
+}
+.pg-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--grey-700);
+  font-weight: 500;
+}
+.pg-subtitle {
+  font-size: 0.78rem;
+  color: var(--grey-400);
+  margin-top: 1px;
+  font-weight: 400;
+}
+
+/* ══════════════════════════════════════════════
+   CARDS & SECTIONS
+══════════════════════════════════════════════ */
+.section { padding: 0 16px; margin-top: 18px; }
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--grey-400);
+  margin-bottom: 10px;
+}
+
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 10px;
+}
+
+/* ══════════════════════════════════════════════
+   HOME — TICK FEATURE
+══════════════════════════════════════════════ */
+.hero-tick {
+  margin: 16px 16px 0;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-soft) 100%);
+  border-radius: var(--radius-lg);
+  padding: 22px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-tick::after {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+}
+
+.tick-greeting { font-size: 0.8rem; color: var(--grey-600); margin-bottom: 3px; }
+.tick-username {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--grey-700);
+  font-weight: 500;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tick-action {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 15px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: box-shadow .2s;
+  box-shadow: 0 2px 10px rgba(90,173,209,0.12);
+}
+.tick-action:hover { box-shadow: 0 4px 16px rgba(90,173,209,0.2); }
+
+.tick-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--grey-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  background: var(--white);
+}
+.tick-circle.done {
+  background: var(--blue-deep);
+  border-color: var(--blue-deep);
+  transform: scale(1.08);
+}
+.tick-circle svg { width: 18px; height: 18px; opacity: 0; transition: opacity .2s; }
+.tick-circle.done svg { opacity: 1; }
+
+.tick-text { flex: 1; }
+.tick-text strong { display: block; font-size: 0.88rem; font-weight: 600; color: var(--grey-700); }
+.tick-text span { font-size: 0.78rem; color: var(--grey-500); }
+
+.tick-streak-val {
+  text-align: right;
+  flex-shrink: 0;
+}
+.tick-streak-val .num {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--blue-deep);
+  line-height: 1;
+}
+.tick-streak-val .lbl { font-size: 0.68rem; color: var(--grey-400); letter-spacing: 0.3px; }
+
+/* STATS ROW */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.stat-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.stat-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.stat-val {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  color: var(--blue-deep);
+  line-height: 1;
+  font-weight: 500;
+}
+.stat-lbl { font-size: 0.75rem; color: var(--grey-400); margin-top: 2px; }
+
+/* MOOD PICKER */
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+.mood-opt {
+  border: 1.5px solid var(--grey-200);
+  border-radius: var(--radius-sm);
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--grey-600);
+  cursor: pointer;
+  transition: all .18s;
+  background: var(--white);
+}
+.mood-opt .mood-em { font-size: 1.3rem; display: block; margin-bottom: 3px; }
+.mood-opt:hover { border-color: var(--blue-mid); background: var(--blue-pale); color: var(--blue-deep); }
+.mood-opt.picked { border-color: var(--blue-deep); background: var(--blue-soft); color: var(--blue-deep); font-weight: 600; }
+
+/* CAPSULE MASA */
+.capsule-card {
+  background: var(--white);
+  border: 1.5px dashed var(--blue-mid);
+  border-radius: var(--radius);
+  padding: 18px;
+  cursor: pointer;
+  transition: background .2s;
+  box-shadow: none;
+}
+.capsule-card:hover { background: var(--blue-pale); }
+.capsule-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.capsule-title { font-weight: 600; font-size: 0.9rem; color: var(--grey-700); margin-bottom: 3px; }
+.capsule-desc { font-size: 0.78rem; color: var(--grey-500); line-height: 1.4; }
+
+/* ══════════════════════════════════════════════
+   LUAH — COMPOSE & FEED
+══════════════════════════════════════════════ */
+.compose-wrap {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+}
+.compose-top { display: flex; gap: 10px; align-items: flex-start; }
+.compose-av {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--blue-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem; color: var(--blue-deep);
+  flex-shrink: 0; overflow: hidden;
+}
+.compose-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.compose-ta {
+  flex: 1;
+  border: none; outline: none;
+  font-size: 0.9rem; color: var(--grey-700);
+  resize: none; background: transparent;
+  min-height: 60px; line-height: 1.5;
+}
+.compose-ta::placeholder { color: var(--grey-300); }
+.compose-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--grey-200);
+}
+.compose-mood-sel {
+  font-size: 0.8rem;
+  border: 1.5px solid var(--grey-200);
+  border-radius: 20px;
+  padding: 5px 11px;
+  color: var(--grey-500);
+  background: var(--grey-100);
+  outline: none;
+}
+.compose-anon {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.78rem; color: var(--grey-500); cursor: pointer;
+}
+.compose-anon input { accent-color: var(--blue-deep); }
+.compose-send {
+  margin-left: auto;
+  padding: 6px 18px;
+  background: var(--blue-deep);
+  color: var(--white);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background .2s;
+}
+.compose-send:hover { background: var(--blue-mid); }
+
+/* POST CARD */
+.post-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 10px;
+}
+.post-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.post-av {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--blue-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem; color: var(--blue-deep);
+  flex-shrink: 0; overflow: hidden;
+}
+.post-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.post-meta { flex: 1; min-width: 0; }
+.post-uname {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--grey-700);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.post-time { font-size: 0.73rem; color: var(--grey-400); }
+.post-body { font-size: 0.88rem; color: var(--grey-700); line-height: 1.6; }
+.post-mood-tag {
+  display: inline-block;
+  margin-top: 9px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--blue-soft);
+  color: var(--blue-deep);
+}
+.post-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--grey-100);
+}
+.post-act-btn {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.78rem; color: var(--grey-400);
+  padding: 0;
+  transition: color .18s;
+}
+.post-act-btn svg { width: 15px; height: 15px; }
+.post-act-btn:hover { color: var(--blue-deep); }
+.post-act-btn.liked { color: #e07080; }
+.post-del-btn {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--grey-300);
+  transition: color .2s;
+}
+.post-del-btn:hover { color: #e07080; }
+
+/* EMPTY STATE */
+.empty {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--grey-400);
+}
+.empty-em { font-size: 2.4rem; margin-bottom: 10px; }
+.empty p { font-size: 0.85rem; line-height: 1.5; }
+
+/* SPINNER */
+.spinner-wrap { display: flex; justify-content: center; padding: 32px; }
+.spinner {
+  width: 28px; height: 28px;
+  border: 2px solid var(--grey-200);
+  border-top-color: var(--blue-deep);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ══════════════════════════════════════════════
+   PROFIL PAGE
+══════════════════════════════════════════════ */
+.profile-banner {
+  height: 90px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-soft) 100%);
+  position: relative;
+}
+.profile-body { padding: 0 18px 20px; }
+.profile-av-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: -32px;
+  margin-bottom: 12px;
+}
+.profile-av {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--white);
+  background: var(--blue-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--blue-deep);
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(90,173,209,0.15);
+}
+.profile-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.profile-edit-btn {
+  padding: 7px 16px;
+  border: 1.5px solid var(--grey-200);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--grey-600);
+  background: var(--white);
+  transition: border-color .2s, color .2s;
+}
+.profile-edit-btn:hover { border-color: var(--blue-mid); color: var(--blue-deep); }
+
+.profile-uname {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--grey-700);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.profile-handle { font-size: 0.82rem; color: var(--grey-400); margin-top: 1px; }
+.profile-bio { font-size: 0.85rem; color: var(--grey-600); margin-top: 8px; line-height: 1.5; }
+
+.profile-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--grey-100);
+}
+.pstat {
+  flex: 1;
+  text-align: center;
+}
+.pstat + .pstat { border-left: 1px solid var(--grey-100); }
+.pstat-val {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--blue-deep);
+  font-weight: 500;
+}
+.pstat-lbl { font-size: 0.7rem; color: var(--grey-400); margin-top: 1px; }
+
+/* CALENDAR */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-top: 10px;
+}
+.cal-cell {
+  aspect-ratio: 1;
+  border-radius: 5px;
+  background: var(--grey-100);
+}
+.cal-cell.hit { background: var(--blue-deep); }
+.cal-cell.today { outline: 2px solid var(--blue-mid); outline-offset: 1px; }
+.cal-legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 0.73rem;
+  color: var(--grey-400);
+}
+.cal-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* ══════════════════════════════════════════════
+   SETTINGS PAGE
+══════════════════════════════════════════════ */
+.set-section { margin-bottom: 22px; }
+.set-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--grey-400);
+  margin-bottom: 8px;
+  padding: 0 18px;
+}
+.set-group {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 0 16px;
+  box-shadow: var(--shadow-sm);
+}
+.set-row {
+  display: flex;
+  align-items: center;
+  padding: 13px 16px;
+  gap: 12px;
+  border-bottom: 1px solid var(--grey-100);
+  cursor: pointer;
+  transition: background .15s;
+}
+.set-row:last-child { border-bottom: none; }
+.set-row:hover { background: var(--grey-100); }
+.set-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.set-lbl { flex: 1; font-size: 0.88rem; font-weight: 500; color: var(--grey-700); }
+.set-desc { font-size: 0.75rem; color: var(--grey-400); display: block; margin-top: 1px; }
+.set-chev { color: var(--grey-300); }
+.set-chev svg { width: 14px; height: 14px; }
+
+.danger-lbl { color: #d05060; }
+
+/* TOGGLE */
+.tog {
+  width: 38px; height: 21px;
+  background: var(--grey-200);
+  border-radius: 11px;
+  position: relative;
+  transition: background .2s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tog.on { background: var(--blue-deep); }
+.tog::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 17px; height: 17px;
+  background: var(--white);
+  border-radius: 50%;
+  transition: transform .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+}
+.tog.on::after { transform: translateX(17px); }
+
+/* ══════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════ */
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(60,75,90,0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-bg.open { display: flex; }
+
+.modal {
+  background: var(--white);
+  border-radius: 22px 22px 0 0;
+  padding: 20px 22px 40px;
+  width: 100%;
+  max-width: 520px;
+  animation: modalUp .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes modalUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal-drag {
+  width: 36px; height: 4px;
+  background: var(--grey-200);
+  border-radius: 2px;
+  margin: 0 auto 18px;
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--grey-700);
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+.modal-btns { display: flex; gap: 10px; margin-top: 6px; }
+.btn-ghost {
+  flex: 1; padding: 11px;
+  border: 1.5px solid var(--grey-200);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--grey-600);
+  background: var(--white);
+  transition: border-color .2s;
+}
+.btn-ghost:hover { border-color: var(--blue-mid); }
+.btn-danger {
+  flex: 1; padding: 11px;
+  background: #e07080; color: var(--white);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem; font-weight: 600;
+}
 
 /* TOAST */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:white;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;z-index:300;white-space:nowrap;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast {
+  position: fixed;
+  bottom: 88px; left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--grey-700);
+  color: var(--white);
+  padding: 9px 20px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  opacity: 0;
+  transition: all .3s;
+  z-index: 200;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* UTILS */
-.hidden{display:none!important;}
-.loading-spinner{display:flex;justify-content:center;padding:30px;}
-.spinner{width:30px;height:30px;border:2.5px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);}
-.empty-state .empty-icon{font-size:40px;margin-bottom:12px;}
-.empty-state p{font-size:14px;}
-.badge-svg{display:inline-flex;align-items:center;vertical-align:middle;}
-.badge-svg svg{width:16px;height:16px;}
+/* ══════════════════════════════════════════════
+   RESPONSIVE HELPERS
+══════════════════════════════════════════════ */
+.hidden { display: none !important; }
 
-@media(min-width:600px){
-  .bottom-nav{max-width:500px;left:50%;transform:translateX(-50%);border-radius:16px 16px 0 0;}
-  #app{max-width:500px;margin:0 auto;}
+@media (min-width: 600px) {
+  .nav-bottom { max-width: 520px; left: 50%; transform: translateX(-50%); border-left: 1px solid var(--grey-200); border-right: 1px solid var(--grey-200); border-radius: 16px 16px 0 0; }
+  #screen-app { max-width: 520px; margin: 0 auto; }
+  .modal { border-radius: 22px; margin-bottom: 40px; }
+}
+
+@media (min-width: 900px) {
+  #screen-app { max-width: 480px; }
 }
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
-<div id="auth-screen">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <h1>Bertahan</h1>
-      <p>Aku masih di sini. Hari ini.</p>
+<!-- ══════════════════════════════════════════════
+     AUTH SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-auth">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="auth-brand-name">Bertahan</div>
+      <div class="auth-brand-tagline">Aku masih di sini. Hari ini.</div>
     </div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('login')">Log Masuk</button>
-      <button class="auth-tab" onclick="switchTab('register')">Daftar</button>
-    </div>
-    <div id="auth-error" class="auth-error"></div>
-    <div id="login-form">
-      <div class="form-group"><label>E-mel</label><input type="email" id="login-email" placeholder="nama@emel.com"/></div>
-      <div class="form-group"><label>Kata Laluan</label><input type="password" id="login-pass" placeholder="••••••••"/></div>
-      <button class="btn-primary" onclick="doLogin()">Log Masuk</button>
-    </div>
-    <div id="register-form" class="hidden">
-      <div class="form-group"><label>Nama Pengguna</label><input type="text" id="reg-username" placeholder="contoh: hidupku_berharga" maxlength="30"/></div>
-      <div class="form-group"><label>E-mel</label><input type="email" id="reg-email" placeholder="nama@emel.com"/></div>
-      <div class="form-group"><label>Kata Laluan</label><input type="password" id="reg-pass" placeholder="Sekurang-kurangnya 6 aksara"/></div>
-      <button class="btn-primary" onclick="doRegister()">Cipta Akaun</button>
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" onclick="authTab('masuk')">Log Masuk</button>
+        <button class="auth-tab-btn" onclick="authTab('daftar')">Daftar</button>
+      </div>
+      <div id="auth-err" class="auth-err"></div>
+
+      <!-- LOG MASUK -->
+      <div id="form-masuk">
+        <div class="field"><label>Nama Pengguna atau E-mel</label><input type="text" id="li-id" placeholder="nama_pengguna atau emel@..."/></div>
+        <div class="field"><label>Kata Laluan</label><input type="password" id="li-pw" placeholder="••••••••"/></div>
+        <button class="btn-main" onclick="doLogin()">Log Masuk</button>
+      </div>
+
+      <!-- DAFTAR -->
+      <div id="form-daftar" class="hidden">
+        <div class="field"><label>Nama Pengguna</label><input type="text" id="rg-un" placeholder="cth: hidupku_berharga" maxlength="30"/></div>
+        <div class="field"><label>E-mel</label><input type="email" id="rg-em" placeholder="emel@contoh.com"/></div>
+        <div class="field"><label>Kata Laluan</label><input type="password" id="rg-pw" placeholder="Min. 6 aksara"/></div>
+        <button class="btn-main" onclick="doRegister()">Cipta Akaun</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="app">
+<!-- ══════════════════════════════════════════════
+     APP SCREEN
+══════════════════════════════════════════════ -->
+<div id="screen-app">
 
-  <!-- HOME PAGE -->
-  <div id="page-home" class="page active">
-    <div style="padding:20px 16px 0;display:flex;align-items:center;justify-content:space-between;">
-      <h2 class="page-title">Laman Utama</h2>
-      <span style="font-size:12px;color:var(--text-muted);" id="today-date"></span>
+  <!-- PAGE: UTAMA -->
+  <div id="pg-utama" class="page active">
+    <div class="pg-head">
+      <div class="pg-title">Utama</div>
+      <div class="pg-subtitle" id="today-label"></div>
     </div>
-    <div class="dash-hero">
-      <div class="hero-greeting">Selamat datang kembali,</div>
-      <div class="hero-name" id="hero-name">—</div>
-      <div class="tick-box" id="tick-box" onclick="doTick()">
-        <div class="tick-checkbox" id="tick-check">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2a7ab8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+
+    <!-- TICK HERO -->
+    <div class="hero-tick">
+      <div class="tick-greeting">Selamat datang kembali,</div>
+      <div class="tick-username" id="hero-uname">—</div>
+      <div class="tick-action" id="tick-btn" onclick="doTick()">
+        <div class="tick-circle" id="tick-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
         </div>
-        <div class="tick-label">
+        <div class="tick-text">
           <strong>✨ Saya masih cuba bertahan hari ini</strong>
-          <span id="tick-sublabel">Belum tandakan hari ini</span>
+          <span id="tick-sub">Belum ditandakan hari ini</span>
         </div>
-        <div style="text-align:center;">
-          <div style="font-family:'DM Serif Display',serif;font-size:24px;line-height:1;" id="streak-count">0</div>
-          <small style="font-size:10px;opacity:0.75;">hari</small>
-        </div>
-      </div>
-    </div>
-    <div class="section">
-      <div class="section-title">Rekod Anda</div>
-      <div class="cards-row">
-        <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="stat-streak">0</div><div class="stat-lbl">Hari Berturut</div></div>
-        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Jumlah Hari Bertahan</div></div>
-      </div>
-    </div>
-    <div class="section">
-      <div class="section-title">Perasaan Hari Ini</div>
-      <div class="capsule-card">
-        <div style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:4px;">Bagaimana perasaan awak sekarang?</div>
-        <div class="mood-options" id="mood-options">
-          <button class="mood-btn" onclick="setMood(this,'Tenang 😌')">Tenang 😌</button>
-          <button class="mood-btn" onclick="setMood(this,'Penat 😮‍💨')">Penat 😮‍💨</button>
-          <button class="mood-btn" onclick="setMood(this,'Sedih 😔')">Sedih 😔</button>
-          <button class="mood-btn" onclick="setMood(this,'Marah 😤')">Marah 😤</button>
-          <button class="mood-btn" onclick="setMood(this,'Kosong 😶')">Kosong 😶</button>
-          <button class="mood-btn" onclick="setMood(this,'Harap 🌱')">Harap 🌱</button>
+        <div class="tick-streak-val">
+          <div class="num" id="streak-num">0</div>
+          <div class="lbl">hari</div>
         </div>
       </div>
     </div>
-    <div class="section">
-      <div class="section-title">Kapsul Masa</div>
-      <div class="capsule-card locked" onclick="openModal('capsule-modal')" style="cursor:pointer;">
-        <div style="font-size:28px;text-align:center;margin-bottom:8px;">🔒</div>
-        <div style="font-weight:600;font-size:14px;margin-bottom:4px;text-align:center;">Surat untuk diri sendiri</div>
-        <div style="font-size:12px;color:var(--primary);text-align:center;">Tulis mesej — buka selepas 30 hari bertahan</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- LUAH PAGE -->
-  <div id="page-luah" class="page">
-    <div class="page-header"><h2 class="page-title">Luah Perasaan</h2></div>
+    <!-- STATS -->
+    <div class="section">
+      <div class="section-label">Rekod Anda</div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="s-streak">0</div><div class="stat-lbl">Hari Berturut</div></div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Jumlah Hari Bertahan</div></div>
+      </div>
+    </div>
+
+    <!-- MOOD -->
+    <div class="section">
+      <div class="section-label">Perasaan Hari Ini</div>
+      <div class="card" style="padding:14px 16px 16px;">
+        <div style="font-size:0.82rem;color:var(--grey-500);margin-bottom:2px;">Bagaimana keadaan awak sekarang?</div>
+        <div class="mood-grid">
+          <button class="mood-opt" onclick="pickMood(this,'Tenang 😌')"><span class="mood-em">😌</span>Tenang</button>
+          <button class="mood-opt" onclick="pickMood(this,'Penat 😮‍💨')"><span class="mood-em">😮‍💨</span>Penat</button>
+          <button class="mood-opt" onclick="pickMood(this,'Sedih 😔')"><span class="mood-em">😔</span>Sedih</button>
+          <button class="mood-opt" onclick="pickMood(this,'Marah 😤')"><span class="mood-em">😤</span>Marah</button>
+          <button class="mood-opt" onclick="pickMood(this,'Kosong 😶')"><span class="mood-em">😶</span>Kosong</button>
+          <button class="mood-opt" onclick="pickMood(this,'Harap 🌱')"><span class="mood-em">🌱</span>Harap</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPSULE MASA -->
+    <div class="section" style="margin-bottom:8px;">
+      <div class="section-label">Kapsul Masa</div>
+      <div class="capsule-card" onclick="openModal('modal-capsule')">
+        <div class="capsule-icon">🔒</div>
+        <div class="capsule-title">Surat untuk diri sendiri</div>
+        <div class="capsule-desc">Tulis mesej rahsia — terbuka selepas 30 hari bertahan berturut-turut.</div>
+      </div>
+    </div>
+  </div><!-- end pg-utama -->
+
+  <!-- PAGE: LUAH -->
+  <div id="pg-luah" class="page">
+    <div class="pg-head">
+      <div class="pg-title">Luah Perasaan</div>
+      <div class="pg-subtitle">Kongsi, rasa, dan lepaskan</div>
+    </div>
     <div class="section" style="margin-top:14px;">
-      <div class="compose-box">
-        <div class="feed-avatar" id="compose-avatar"></div>
-        <div style="flex:1;">
-          <textarea class="compose-input" id="compose-text" placeholder="Apa yang awak rasa hari ini? Luahkan di sini..." rows="3" maxlength="500"></textarea>
-          <div class="compose-actions">
-            <select class="mood-select" id="compose-mood">
-              <option value="">🎭 Mood</option>
-              <option>Tenang 😌</option><option>Penat 😮‍💨</option><option>Sedih 😔</option>
-              <option>Marah 😤</option><option>Kosong 😶</option><option>Harap 🌱</option>
-            </select>
-            <label class="anon-toggle"><input type="checkbox" id="anon-check"/> Tanpa nama</label>
-            <button class="btn-send" onclick="submitPost()">Hantar</button>
-          </div>
+      <!-- COMPOSE -->
+      <div class="compose-wrap">
+        <div class="compose-top">
+          <div class="compose-av" id="compose-av"></div>
+          <textarea class="compose-ta" id="compose-ta" placeholder="Apa yang awak rasa hari ini…" maxlength="500"></textarea>
+        </div>
+        <div class="compose-foot">
+          <select class="compose-mood-sel" id="compose-mood">
+            <option value="">🎭 Mood</option>
+            <option>Tenang 😌</option><option>Penat 😮‍💨</option><option>Sedih 😔</option>
+            <option>Marah 😤</option><option>Kosong 😶</option><option>Harap 🌱</option>
+          </select>
+          <label class="compose-anon"><input type="checkbox" id="anon-chk"/> Tanpa nama</label>
+          <button class="compose-send" onclick="submitPost()">Hantar</button>
         </div>
       </div>
-      <div id="feed-list"><div class="loading-spinner"><div class="spinner"></div></div></div>
+      <!-- FEED -->
+      <div id="feed-list"><div class="spinner-wrap"><div class="spinner"></div></div></div>
     </div>
   </div>
 
-  <!-- PROFIL PAGE -->
-  <div id="page-profil" class="page">
+  <!-- PAGE: PROFIL -->
+  <div id="pg-profil" class="page">
     <div class="profile-banner"></div>
-    <div class="profile-info">
-      <div class="profile-avatar-wrap">
-        <div class="profile-avatar" id="profile-avatar"></div>
-        <button class="profile-edit-btn" onclick="openEditModal()">Sunting Profil</button>
+    <div class="profile-body">
+      <div class="profile-av-row">
+        <div class="profile-av" id="profil-av"></div>
+        <button class="profile-edit-btn" onclick="openModal('modal-edit')">Sunting Profil</button>
       </div>
-      <div class="profile-name" id="profile-display-name">—</div>
-      <div class="profile-handle" id="profile-handle">@—</div>
-      <div class="profile-bio" id="profile-bio-text">—</div>
+      <div class="profile-uname" id="profil-uname">—</div>
+      <div class="profile-handle" id="profil-handle">@—</div>
+      <div class="profile-bio" id="profil-bio">Tiada bio lagi.</div>
       <div class="profile-stats">
-        <div class="profile-stat"><span class="profile-stat-val" id="pstat-streak">0</span><span class="profile-stat-lbl">Hari Bertahan</span></div>
-        <div class="profile-stat"><span class="profile-stat-val" id="pstat-posts">0</span><span class="profile-stat-lbl">Luahan</span></div>
-        <div class="profile-stat"><span class="profile-stat-val" id="pstat-total">0</span><span class="profile-stat-lbl">Jumlah Hari</span></div>
+        <div class="pstat"><div class="pstat-val" id="ps-streak">0</div><div class="pstat-lbl">Hari Bertahan</div></div>
+        <div class="pstat"><div class="pstat-val" id="ps-posts">0</div><div class="pstat-lbl">Luahan</div></div>
+        <div class="pstat"><div class="pstat-val" id="ps-total">0</div><div class="pstat-lbl">Jumlah Hari</div></div>
       </div>
     </div>
+
+    <!-- CALENDAR -->
     <div class="section">
-      <div class="section-title">Rekod 28 Hari</div>
-      <div class="capsule-card">
-        <div class="streak-cal" id="streak-cal"></div>
-        <div style="display:flex;gap:12px;margin-top:12px;font-size:12px;color:var(--text-muted);">
-          <span><span style="display:inline-block;width:12px;height:12px;background:var(--primary);border-radius:2px;margin-right:4px;"></span>Bertahan</span>
-          <span><span style="display:inline-block;width:12px;height:12px;background:var(--surface2);border-radius:2px;margin-right:4px;"></span>Tiada rekod</span>
+      <div class="section-label">Rekod 28 Hari</div>
+      <div class="card">
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <span><span class="cal-dot" style="background:var(--blue-deep);"></span>Bertahan</span>
+          <span><span class="cal-dot" style="background:var(--grey-100);"></span>Tiada rekod</span>
         </div>
       </div>
     </div>
-    <div class="section">
-      <div class="section-title">Luahan Saya</div>
-      <div id="my-posts-list"><div class="loading-spinner"><div class="spinner"></div></div></div>
+
+    <!-- MY POSTS -->
+    <div class="section" style="margin-bottom:4px;">
+      <div class="section-label">Luahan Saya</div>
+      <div id="my-posts"></div>
     </div>
   </div>
 
-  <!-- SETTINGS PAGE -->
-  <div id="page-settings" class="page">
-    <div class="page-header" style="padding-bottom:16px;"><h2 class="page-title">Tetapan</h2></div>
-    <div class="settings-section">
-      <div class="settings-section-title">Akaun</div>
-      <div class="settings-group">
-        <div class="settings-row" onclick="openEditModal()">
-          <div class="settings-row-icon" style="background:#dceefa;">👤</div>
-          <div style="flex:1;"><div class="settings-row-label">Sunting Profil</div><span class="settings-row-desc">Nama, bio, gambar profil</span></div>
-          <div class="settings-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+  <!-- PAGE: TETAPAN -->
+  <div id="pg-tetapan" class="page">
+    <div class="pg-head" style="margin-bottom:4px;">
+      <div class="pg-title">Tetapan</div>
+    </div>
+
+    <div class="set-section" style="margin-top:14px;">
+      <div class="set-label">Akaun</div>
+      <div class="set-group">
+        <div class="set-row" onclick="openModal('modal-edit')">
+          <div class="set-icon" style="background:var(--blue-soft);">👤</div>
+          <div style="flex:1;"><div class="set-lbl">Sunting Profil</div><span class="set-desc">Ubah nama pengguna, bio, gambar profil</span></div>
+          <div class="set-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
         </div>
-        <div class="settings-row" onclick="openModal('pass-modal')">
-          <div class="settings-row-icon" style="background:#e8f5e9;">🔑</div>
-          <div style="flex:1;"><div class="settings-row-label">Tukar Kata Laluan</div></div>
-          <div class="settings-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+        <div class="set-row" onclick="openModal('modal-pw')">
+          <div class="set-icon" style="background:var(--grey-100);">🔑</div>
+          <div style="flex:1;"><div class="set-lbl">Tukar Kata Laluan</div></div>
+          <div class="set-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
         </div>
       </div>
     </div>
-    <div class="settings-section">
-      <div class="settings-section-title">Privasi</div>
-      <div class="settings-group">
-        <div class="settings-row">
-          <div class="settings-row-icon" style="background:#fff3e0;">🔔</div>
-          <div style="flex:1;"><div class="settings-row-label">Peringatan Harian</div><span class="settings-row-desc">Ingatkan untuk tandakan hari</span></div>
-          <div class="toggle-switch" onclick="this.classList.toggle('on')"></div>
+
+    <div class="set-section">
+      <div class="set-label">Privasi</div>
+      <div class="set-group">
+        <div class="set-row">
+          <div class="set-icon" style="background:#fff7e0;">🔔</div>
+          <div style="flex:1;"><div class="set-lbl">Peringatan Harian</div><span class="set-desc">Ingatkan untuk tandakan hari</span></div>
+          <div class="tog" onclick="this.classList.toggle('on')"></div>
         </div>
-        <div class="settings-row">
-          <div class="settings-row-icon" style="background:#fce4ec;">🕵️</div>
-          <div style="flex:1;"><div class="settings-row-label">Mod Tanpa Nama Global</div><span class="settings-row-desc">Semua luahan akan tersembunyi</span></div>
-          <div class="toggle-switch" onclick="this.classList.toggle('on')"></div>
-        </div>
-      </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-section-title">Bahaya</div>
-      <div class="settings-group">
-        <div class="settings-row" onclick="doLogout()">
-          <div class="settings-row-icon" style="background:#fce4ec;">🚪</div>
-          <div style="flex:1;"><div class="settings-row-label" style="color:var(--danger);">Log Keluar</div></div>
-        </div>
-        <div class="settings-row" onclick="openModal('delete-modal')">
-          <div class="settings-row-icon" style="background:#fce4ec;">🗑️</div>
-          <div style="flex:1;"><div class="settings-row-label" style="color:var(--danger);">Padam Akaun</div></div>
+        <div class="set-row">
+          <div class="set-icon" style="background:var(--grey-100);">🕵️</div>
+          <div style="flex:1;"><div class="set-lbl">Mod Tanpa Nama Global</div><span class="set-desc">Semua luahan akan disembunyikan</span></div>
+          <div class="tog" onclick="this.classList.toggle('on')"></div>
         </div>
       </div>
     </div>
-    <div style="text-align:center;padding:20px;font-size:12px;color:var(--text-light);">Bertahan v1.0 — Awak tidak berseorangan 🌊</div>
+
+    <div class="set-section">
+      <div class="set-label">Lain-lain</div>
+      <div class="set-group">
+        <div class="set-row" onclick="doLogout()">
+          <div class="set-icon" style="background:#fdf0f0;">🚪</div>
+          <div style="flex:1;"><div class="set-lbl danger-lbl">Log Keluar</div></div>
+        </div>
+        <div class="set-row" onclick="openModal('modal-del')">
+          <div class="set-icon" style="background:#fdf0f0;">🗑️</div>
+          <div style="flex:1;"><div class="set-lbl danger-lbl">Padam Akaun</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:18px 0 6px;font-size:0.75rem;color:var(--grey-300);">
+      Bertahan v2.0 — Awak tidak berseorangan 🌊
+    </div>
   </div>
 
   <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" onclick="showPage('home',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Utama
+  <nav class="nav-bottom">
+    <button class="nav-btn active" onclick="goPage('utama',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Utama
     </button>
-    <button class="nav-item" onclick="showPage('luah',this);loadFeed();">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Luah
+    <button class="nav-btn" onclick="goPage('luah',this);loadFeed();">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Luah
     </button>
-    <button class="nav-item" onclick="showPage('profil',this);loadProfile();">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil
+    <button class="nav-btn" onclick="goPage('profil',this);renderProfile();">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profil
     </button>
-    <button class="nav-item" onclick="showPage('settings',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Tetapan
+    <button class="nav-btn" onclick="goPage('tetapan',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Tetapan
     </button>
   </nav>
-</div>
 
-<!-- MODALS -->
-<div class="modal-overlay" id="edit-modal">
+</div><!-- end screen-app -->
+
+<!-- ══════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════ -->
+
+<!-- EDIT PROFIL -->
+<div class="modal-bg" id="modal-edit">
   <div class="modal">
-    <div class="modal-handle"></div>
+    <div class="modal-drag"></div>
     <div class="modal-title">Sunting Profil</div>
-    <div class="form-group"><label>Nama Pengguna</label><input type="text" id="edit-username" maxlength="30"/></div>
-    <div class="form-group"><label>Bio</label><input type="text" id="edit-bio" maxlength="100" placeholder="Cerita sedikit tentang diri awak..."/></div>
-    <div class="form-group"><label>URL Gambar Profil</label><input type="url" id="edit-photo" placeholder="https://..."/></div>
-    <div class="modal-btn-row">
-      <button class="btn-primary" onclick="saveProfile()" style="flex:1;">Simpan</button>
-      <button class="btn-cancel" onclick="closeModal('edit-modal')">Batal</button>
+    <div class="field"><label>Nama Pengguna</label><input type="text" id="e-un" maxlength="30"/></div>
+    <div class="field"><label>Bio</label><input type="text" id="e-bio" maxlength="120" placeholder="Cerita sedikit tentang diri awak…"/></div>
+    <div class="field"><label>URL Gambar Profil</label><input type="url" id="e-photo" placeholder="https://..."/></div>
+    <div class="modal-btns">
+      <button class="btn-main" style="flex:1;padding:11px;" onclick="saveProfile()">Simpan</button>
+      <button class="btn-ghost" onclick="closeModal('modal-edit')">Batal</button>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="pass-modal">
+<!-- TUKAR KATA LALUAN -->
+<div class="modal-bg" id="modal-pw">
   <div class="modal">
-    <div class="modal-handle"></div>
+    <div class="modal-drag"></div>
     <div class="modal-title">Tukar Kata Laluan</div>
-    <div class="form-group"><label>Kata Laluan Baharu</label><input type="password" id="new-pass" placeholder="Sekurang-kurangnya 6 aksara"/></div>
-    <div class="modal-btn-row">
-      <button class="btn-primary" onclick="changePassword()" style="flex:1;">Tukar</button>
-      <button class="btn-cancel" onclick="closeModal('pass-modal')">Batal</button>
+    <div class="field"><label>Kata Laluan Baharu</label><input type="password" id="new-pw" placeholder="Min. 6 aksara"/></div>
+    <div class="modal-btns">
+      <button class="btn-main" style="flex:1;padding:11px;" onclick="changePw()">Tukar</button>
+      <button class="btn-ghost" onclick="closeModal('modal-pw')">Batal</button>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="capsule-modal">
+<!-- KAPSUL MASA -->
+<div class="modal-bg" id="modal-capsule">
   <div class="modal">
-    <div class="modal-handle"></div>
+    <div class="modal-drag"></div>
     <div class="modal-title">🔒 Kapsul Masa</div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">Tulis mesej untuk diri awak pada masa hadapan. Ia akan terbuka selepas 30 hari berturut-turut.</p>
-    <div class="form-group"><label>Mesej Rahsia</label><textarea id="capsule-text" placeholder="Kepada diri sendiri yang lebih kuat..."></textarea></div>
-    <div class="modal-btn-row">
-      <button class="btn-primary" onclick="saveCapsule()" style="flex:1;">Simpan & Kunci</button>
-      <button class="btn-cancel" onclick="closeModal('capsule-modal')">Batal</button>
+    <p style="font-size:0.83rem;color:var(--grey-500);margin-bottom:14px;line-height:1.5;">Tulis mesej rahsia untuk diri awak pada masa hadapan. Ia akan tersimpan selamat dan terbuka selepas 30 hari berturut-turut.</p>
+    <div class="field"><label>Mesej Rahsia</label><textarea id="capsule-ta" style="width:100%;padding:11px 13px;border:1.5px solid var(--grey-200);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.88rem;color:var(--grey-700);resize:none;outline:none;min-height:100px;background:var(--grey-100);" placeholder="Kepada diri sendiri yang lebih kuat…"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-main" style="flex:1;padding:11px;" onclick="saveCapsule()">Simpan &amp; Kunci</button>
+      <button class="btn-ghost" onclick="closeModal('modal-capsule')">Batal</button>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="delete-modal">
+<!-- PADAM AKAUN -->
+<div class="modal-bg" id="modal-del">
   <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" style="color:var(--danger);">⚠️ Padam Akaun</div>
-    <p style="font-size:14px;color:var(--text-muted);margin-bottom:18px;line-height:1.6;">Semua data anda akan dipadam secara kekal. Ini tidak boleh dibatalkan.</p>
-    <div class="modal-btn-row">
-      <button onclick="doDeleteAccount()" style="flex:1;padding:13px;background:var(--danger);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;font-weight:500;">Ya, Padam</button>
-      <button class="btn-cancel" onclick="closeModal('delete-modal')">Batal</button>
+    <div class="modal-drag"></div>
+    <div class="modal-title" style="color:#d05060;">⚠️ Padam Akaun</div>
+    <p style="font-size:0.85rem;color:var(--grey-500);margin-bottom:18px;line-height:1.5;">Semua data anda — rekod, luahan, streak — akan dipadam secara kekal. Tindakan ini tidak boleh dibatalkan.</p>
+    <div class="modal-btns">
+      <button class="btn-danger" onclick="delAccount()">Ya, Padam Sekarang</button>
+      <button class="btn-ghost" onclick="closeModal('modal-del')">Tidak, Kembali</button>
     </div>
   </div>
 </div>
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- ══════════════════════════════════════════════
+     FIREBASE + APP LOGIC
+══════════════════════════════════════════════ -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit, where, deleteDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp }         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         onAuthStateChanged, signOut, updatePassword, deleteUser,
+         fetchSignInMethodsForEmail }
+                                  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
+         collection, addDoc, getDocs, query, orderBy, limit, where,
+         serverTimestamp, increment, arrayUnion }
+                                  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey:"AIzaSyB5Rzsr8YaGNb5E0I6hSQYbdOd1C2e54Gs",
-  authDomain:"crash-out-burn-out-turn-out-d.firebaseapp.com",
-  projectId:"crash-out-burn-out-turn-out-d",
-  storageBucket:"crash-out-burn-out-turn-out-d.firebasestorage.app",
-  messagingSenderId:"280103809790",
-  appId:"1:280103809790:web:514756e3aa0bf6a69cabaf",
-  measurementId:"G-FVFZJ1D6GK"
-};
+/* ─── INIT ─── */
+const FB = initializeApp({
+  apiKey:            "AIzaSyB5Rzsr8YaGNb5E0I6hSQYbdOd1C2e54Gs",
+  authDomain:        "crash-out-burn-out-turn-out-d.firebaseapp.com",
+  projectId:         "crash-out-burn-out-turn-out-d",
+  storageBucket:     "crash-out-burn-out-turn-out-d.firebasestorage.app",
+  messagingSenderId: "280103809780",
+  appId:             "1:280103809790:web:514756e3aa0bf6a69cabaf",
+  measurementId:     "G-FVFZJ1D6GK"
+});
+const AUTH = getAuth(FB);
+const DB   = getFirestore(FB);
 
-const fbApp = initializeApp(firebaseConfig);
-const auth = getAuth(fbApp);
-const db = getFirestore(fbApp);
+/* ─── STATE ─── */
+let CU   = null;   // current user (auth)
+let UD   = null;   // user data (firestore)
+let feedDone = false;
 
-let currentUser = null;
-let userData = null;
-let feedLoaded = false;
+/* ─── SVG BADGE ─── */
+const BADGE_SVG = `<span class="badge"><svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M12.096 1.673c-.593-.635-1.599-.635-2.192 0L8.452 3.227c-.296.316-.714.49-1.147.474L5.18 3.63c-.867-.03-1.579.682-1.55 1.55l.072 2.125c.015.433-.158.851-.474 1.147L1.673 9.904c-.635.593-.635 1.599 0 2.192l1.554 1.452c.316.296.49.714.474 1.147L3.63 16.82c-.03.867.682 1.579 1.55 1.55l2.125-.072c.433-.015.851.158 1.147.474l1.452 1.555c.593.634 1.599.634 2.192 0l1.452-1.555c.296-.316.714-.49 1.147-.474l2.126.071c.867.03 1.579-.682 1.55-1.55l-.072-2.125c-.015-.433.158-.851.474-1.147l1.555-1.452c.634-.593.634-1.599 0-2.192l-1.555-1.452c-.316-.296-.49-.714-.474-1.147l.071-2.126c.03-.867-.682-1.579-1.55-1.55l-2.125.072c-.433.015-.851-.158-1.147-.474l-1.452-1.554zM6 11.39l3.74 3.74 6.2-6.77L14.47 7l-4.8 5.23-2.26-2.26L6 11.39z" fill="#829AAB" fill-rule="evenodd"/></svg></span>`;
+const BADGE_LG  = `<span class="badge badge-lg"><svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M12.096 1.673c-.593-.635-1.599-.635-2.192 0L8.452 3.227c-.296.316-.714.49-1.147.474L5.18 3.63c-.867-.03-1.579.682-1.55 1.55l.072 2.125c.015.433-.158.851-.474 1.147L1.673 9.904c-.635.593-.635 1.599 0 2.192l1.554 1.452c.316.296.49.714.474 1.147L3.63 16.82c-.03.867.682 1.579 1.55 1.55l2.125-.072c.433-.015.851.158 1.147.474l1.452 1.555c.593.634 1.599.634 2.192 0l1.452-1.555c.296-.316.714-.49 1.147-.474l2.126.071c.867.03 1.579-.682 1.55-1.55l-.072-2.125c-.015-.433.158-.851.474-1.147l1.555-1.452c.634-.593.634-1.599 0-2.192l-1.555-1.452c-.316-.296-.49-.714-.474-1.147l.071-2.126c.03-.867-.682-1.579-1.55-1.55l-2.125.072c-.433.015-.851-.158-1.147-.474l-1.452-1.554zM6 11.39l3.74 3.74 6.2-6.77L14.47 7l-4.8 5.23-2.26-2.26L6 11.39z" fill="#829AAB" fill-rule="evenodd"/></svg></span>`;
 
-const VERIFIED_BADGE = `<span class="badge-svg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><defs><linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1C4E6E"/><stop offset="100%" stop-color="#0F2B3D"/></linearGradient><filter id="sh2"><feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="#000" flood-opacity="0.35"/></filter></defs><rect x="1.5" y="1.5" width="21" height="21" rx="4.5" ry="4.5" fill="url(#bg2)" stroke="#2C5A7A" stroke-width="1" filter="url(#sh2)"/><rect x="2.5" y="2.5" width="19" height="19" rx="3.5" ry="3.5" fill="none" stroke="#E0F2FE" stroke-width="0.4" stroke-opacity="0.3"/><polyline points="6.75 12 10.5 15.75 17.25 9" fill="none" stroke="#E0F2FE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+/* ─── HELPERS ─── */
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+function avHTML(photo, uname, sz = 36) {
+  if (photo) return `<img src="${photo}" onerror="this.style.display='none'" alt=""/>`;
+  const ch = (uname||'?')[0].toUpperCase();
+  return `<span style="font-size:${Math.round(sz*.4)}px;">${ch}</span>`;
+}
+function badgeFor(verified) { return verified ? BADGE_SVG : ''; }
+function badgeLgFor(verified) { return verified ? BADGE_LG : ''; }
+function fmtTime(ts) {
+  if (!ts) return '';
+  return new Date(ts.seconds * 1000).toLocaleDateString('ms-MY', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+}
 
-function todayStr(){ return new Date().toISOString().split('T')[0]; }
-function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
-function avatarHTML(photo,name,sz=38){ if(photo) return `<img src="${photo}" onerror="this.style.display='none'" alt=""/>`; return `<span style="font-size:${Math.round(sz*.38)}px;">${(name||'?')[0].toUpperCase()}</span>`; }
-
-onAuthStateChanged(auth, async user=>{
-  if(user){
-    currentUser=user;
-    await loadUserData();
-    document.getElementById('auth-screen').style.display='none';
-    document.getElementById('app').style.display='block';
-    initDashboard();
+/* ─── AUTH STATE ─── */
+onAuthStateChanged(AUTH, async user => {
+  if (user) {
+    CU = user;
+    await fetchUD();
+    show('screen-app');
+    hide('screen-auth');
+    bootDashboard();
   } else {
-    currentUser=null; userData=null;
-    document.getElementById('auth-screen').style.display='flex';
-    document.getElementById('app').style.display='none';
-    feedLoaded=false;
+    CU = null; UD = null; feedDone = false;
+    show('screen-auth');
+    hide('screen-app');
   }
 });
 
-async function loadUserData(){
-  const ref=doc(db,'users',currentUser.uid);
-  const snap=await getDoc(ref);
-  if(snap.exists()){ userData=snap.data(); }
-  else {
-    userData={username:'pengguna_baru',bio:'',photoURL:'',streak:0,totalDays:0,verified:false,tickDates:[],postCount:0};
-    await setDoc(ref,userData);
+async function fetchUD() {
+  const ref  = doc(DB, 'users', CU.uid);
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    UD = snap.data();
+  } else {
+    UD = { username:'pengguna_baru', bio:'', photoURL:'', verified:false,
+           streak:0, totalDays:0, tickDates:[], postCount:0 };
+    await setDoc(ref, UD);
   }
 }
 
-window.switchTab=function(tab){
-  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='register')));
-  document.getElementById('login-form').classList.toggle('hidden',tab!=='login');
-  document.getElementById('register-form').classList.toggle('hidden',tab!=='register');
-  document.getElementById('auth-error').style.display='none';
+/* ─── AUTH ACTIONS ─── */
+window.authTab = function(tab) {
+  document.querySelectorAll('.auth-tab-btn').forEach((b,i) => b.classList.toggle('active',(i===0&&tab==='masuk')||(i===1&&tab==='daftar')));
+  toggle('form-masuk',  tab === 'masuk');
+  toggle('form-daftar', tab === 'daftar');
+  document.getElementById('auth-err').style.display = 'none';
 };
 
-window.doLogin=async function(){
-  const email=document.getElementById('login-email').value.trim();
-  const pass=document.getElementById('login-pass').value;
-  const errEl=document.getElementById('auth-error');
-  errEl.style.display='none';
-  try{ await signInWithEmailAndPassword(auth,email,pass); }
-  catch(e){ errEl.style.display='block'; errEl.textContent='E-mel atau kata laluan tidak sah.'; }
+window.doLogin = async function() {
+  const raw  = document.getElementById('li-id').value.trim();
+  const pw   = document.getElementById('li-pw').value;
+  const eEl  = document.getElementById('auth-err');
+  eEl.style.display = 'none';
+  if (!raw || !pw) { showErr('Sila isi semua ruangan.'); return; }
+
+  // Support login by username: lookup email from username field if not email format
+  let email = raw;
+  if (!raw.includes('@')) {
+    // query firestore for this username
+    try {
+      const q = query(collection(DB,'users'), where('username','==',raw), limit(1));
+      const snap = await getDocs(q);
+      if (snap.empty) { showErr('Nama pengguna tidak dijumpai.'); return; }
+      email = snap.docs[0].data().email || '';
+      if (!email) { showErr('Akaun ini tidak mempunyai e-mel tersimpan.'); return; }
+    } catch(e) { showErr('Ralat semasa mencari akaun.'); return; }
+  }
+
+  try { await signInWithEmailAndPassword(AUTH, email, pw); }
+  catch(e) { showErr('E-mel/kata laluan tidak sah.'); }
 };
 
-window.doRegister=async function(){
-  const username=document.getElementById('reg-username').value.trim();
-  const email=document.getElementById('reg-email').value.trim();
-  const pass=document.getElementById('reg-pass').value;
-  const errEl=document.getElementById('auth-error');
-  errEl.style.display='none';
-  if(!username){ errEl.style.display='block'; errEl.textContent='Sila masukkan nama pengguna.'; return; }
-  try{
-    const cred=await createUserWithEmailAndPassword(auth,email,pass);
-    await setDoc(doc(db,'users',cred.user.uid),{username,bio:'',photoURL:'',streak:0,totalDays:0,verified:false,tickDates:[],postCount:0,createdAt:serverTimestamp()});
-  } catch(e){ errEl.style.display='block'; errEl.textContent=e.code==='auth/email-already-in-use'?'E-mel ini sudah digunakan.':'Ralat pendaftaran. Cuba lagi.'; }
+window.doRegister = async function() {
+  const un  = document.getElementById('rg-un').value.trim();
+  const em  = document.getElementById('rg-em').value.trim();
+  const pw  = document.getElementById('rg-pw').value;
+  if (!un || !em || !pw) { showErr('Sila isi semua ruangan.'); return; }
+  if (un.length < 3)     { showErr('Nama pengguna sekurang-kurangnya 3 aksara.'); return; }
+  if (pw.length < 6)     { showErr('Kata laluan sekurang-kurangnya 6 aksara.'); return; }
+
+  // Check username uniqueness
+  try {
+    const q = query(collection(DB,'users'), where('username','==',un), limit(1));
+    const snap = await getDocs(q);
+    if (!snap.empty) { showErr('Nama pengguna ini sudah digunakan.'); return; }
+  } catch(e) {}
+
+  try {
+    const cred = await createUserWithEmailAndPassword(AUTH, em, pw);
+    await setDoc(doc(DB,'users',cred.user.uid), {
+      username: un, bio:'', photoURL:'', email: em,
+      verified:false, streak:0, totalDays:0, tickDates:[], postCount:0,
+      createdAt: serverTimestamp()
+    });
+  } catch(e) {
+    showErr(e.code === 'auth/email-already-in-use' ? 'E-mel ini sudah berdaftar.' : 'Ralat pendaftaran. Cuba lagi.');
+  }
 };
 
-window.doLogout=async function(){ await signOut(auth); };
-
-function initDashboard(){
-  document.getElementById('today-date').textContent=new Date().toLocaleDateString('ms-MY',{weekday:'long',day:'numeric',month:'long'});
-  document.getElementById('hero-name').textContent=userData.username||'Rakan';
-  document.getElementById('stat-streak').textContent=userData.streak||0;
-  document.getElementById('stat-total').textContent=userData.totalDays||0;
-  document.getElementById('streak-count').textContent=userData.streak||0;
-  updateTickUI();
-  const ca=document.getElementById('compose-avatar');
-  ca.innerHTML=avatarHTML(userData.photoURL,userData.username,38);
+function showErr(msg) {
+  const el = document.getElementById('auth-err');
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 
-function updateTickUI(){
-  const dates=userData.tickDates||[];
-  const ticked=dates.includes(todayStr());
-  document.getElementById('tick-check').classList.toggle('ticked',ticked);
-  document.getElementById('tick-sublabel').textContent=ticked?'✅ Awak telah bertahan hari ini':'Belum tandakan hari ini';
+window.doLogout = async function() { await signOut(AUTH); };
+
+/* ─── DASHBOARD ─── */
+function bootDashboard() {
+  // Date
+  document.getElementById('today-label').textContent =
+    new Date().toLocaleDateString('ms-MY',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Hero name + badge
+  const heroUn = document.getElementById('hero-uname');
+  heroUn.innerHTML = `@${UD.username}` + (UD.verified ? badgeFor(true) : '');
+
+  // Stats
+  document.getElementById('s-streak').textContent  = UD.streak    || 0;
+  document.getElementById('s-total').textContent   = UD.totalDays || 0;
+  document.getElementById('streak-num').textContent= UD.streak    || 0;
+
+  // Tick state
+  refreshTickUI();
+
+  // Compose avatar
+  const ca = document.getElementById('compose-av');
+  ca.innerHTML = avHTML(UD.photoURL, UD.username);
 }
 
-window.doTick=async function(){
-  if(!currentUser||!userData) return;
-  const today=todayStr();
-  const dates=userData.tickDates||[];
-  if(dates.includes(today)){ showToast('Awak sudah tandakan hari ini! 💙'); return; }
-  const newDates=[...dates,today];
-  const yesterday=new Date(); yesterday.setDate(yesterday.getDate()-1);
-  const yStr=yesterday.toISOString().split('T')[0];
-  const streak=dates.includes(yStr)?(userData.streak||0)+1:1;
-  await updateDoc(doc(db,'users',currentUser.uid),{tickDates:newDates,streak,totalDays:increment(1)});
-  userData.tickDates=newDates; userData.streak=streak; userData.totalDays=(userData.totalDays||0)+1;
-  updateTickUI();
-  document.getElementById('stat-streak').textContent=streak;
-  document.getElementById('stat-total').textContent=userData.totalDays;
-  document.getElementById('streak-count').textContent=streak;
-  showToast('✨ Tahniah! Awak masih di sini. +1 hari!');
+function refreshTickUI() {
+  const ticked = (UD.tickDates||[]).includes(todayStr());
+  const circle = document.getElementById('tick-circle');
+  const sub    = document.getElementById('tick-sub');
+  circle.classList.toggle('done', ticked);
+  sub.textContent = ticked ? '✅ Awak telah bertahan hari ini' : 'Belum ditandakan hari ini';
+}
+
+window.doTick = async function() {
+  if (!CU || !UD) return;
+  const today = todayStr();
+  const dates = UD.tickDates || [];
+  if (dates.includes(today)) { toast('Awak sudah tandakan hari ini! 💙'); return; }
+
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yStr = yesterday.toISOString().split('T')[0];
+  const streak = dates.includes(yStr) ? (UD.streak||0)+1 : 1;
+
+  await updateDoc(doc(DB,'users',CU.uid), {
+    tickDates: arrayUnion(today),
+    streak:    streak,
+    totalDays: increment(1)
+  });
+  UD.tickDates  = [...dates, today];
+  UD.streak     = streak;
+  UD.totalDays  = (UD.totalDays||0) + 1;
+
+  refreshTickUI();
+  document.getElementById('s-streak').textContent   = streak;
+  document.getElementById('s-total').textContent    = UD.totalDays;
+  document.getElementById('streak-num').textContent = streak;
+  toast('✨ Tahniah! Awak masih di sini. +1 hari bertahan!');
 };
 
-window.setMood=async function(btn,mood){
-  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
-  btn.classList.add('selected');
-  if(currentUser){ await updateDoc(doc(db,'users',currentUser.uid),{todayMood:mood,moodDate:todayStr()}); userData.todayMood=mood; showToast('Mood dicatat: '+mood); }
+window.pickMood = async function(btn, mood) {
+  document.querySelectorAll('.mood-opt').forEach(b => b.classList.remove('picked'));
+  btn.classList.add('picked');
+  if (CU) {
+    await updateDoc(doc(DB,'users',CU.uid), { todayMood: mood, moodDate: todayStr() });
+    UD.todayMood = mood;
+    toast('Mood dicatat: ' + mood);
+  }
 };
 
-window.loadFeed=async function(){
-  if(feedLoaded) return; feedLoaded=true;
-  const list=document.getElementById('feed-list');
-  list.innerHTML='<div class="loading-spinner"><div class="spinner"></div></div>';
-  try{
-    const q=query(collection(db,'posts'),orderBy('createdAt','desc'),limit(30));
-    const snap=await getDocs(q);
-    list.innerHTML='';
-    if(snap.empty){ list.innerHTML='<div class="empty-state"><div class="empty-icon">💬</div><p>Jadilah yang pertama meluahkan perasaan.</p></div>'; return; }
-    snap.forEach(d=>list.innerHTML+=buildPostCard(d.id,d.data()));
-  } catch(e){ list.innerHTML='<div class="empty-state"><p>Gagal memuatkan. Cuba lagi.</p></div>'; }
+/* ─── FEED ─── */
+window.loadFeed = async function() {
+  if (feedDone) return;
+  feedDone = true;
+  const list = document.getElementById('feed-list');
+  list.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
+  try {
+    const q    = query(collection(DB,'posts'), orderBy('createdAt','desc'), limit(40));
+    const snap = await getDocs(q);
+    list.innerHTML = '';
+    if (snap.empty) { list.innerHTML = emptyState('💬','Belum ada luahan. Jadi yang pertama!'); return; }
+    snap.forEach(d => list.innerHTML += postCard(d.id, d.data()));
+  } catch(e) {
+    list.innerHTML = emptyState('⚠️','Gagal memuatkan. Semak sambungan anda.');
+  }
 };
 
-function buildPostCard(id,post){
-  const anon=post.anonymous;
-  const name=anon?'Tanpa Nama 🌫️':(post.username||'pengguna');
-  const photo=anon?'':(post.photoURL||'');
-  const verified=!anon&&post.verified;
-  const avatarInner=photo?`<img src="${photo}" onerror="this.style.display='none'" alt=""/>`:`<span>${name[0].toUpperCase()}</span>`;
-  const badgeHTML=verified?VERIFIED_BADGE:'';
-  const moodTag=post.mood?`<span class="feed-mood">${post.mood}</span>`:'';
-  const time=post.createdAt?new Date(post.createdAt.seconds*1000).toLocaleDateString('ms-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
-  const isOwner=currentUser&&post.uid===currentUser.uid;
-  const delBtn=isOwner?`<button class="feed-action-btn" onclick="deletePost('${id}')" style="margin-left:auto;color:var(--danger);">🗑️ Padam</button>`:'';
-  return `<div class="feed-card" id="post-${id}">
-    <div class="feed-author">
-      <div class="feed-avatar">${avatarInner}</div>
-      <div class="feed-author-info">
-        <div class="feed-username">${name}${badgeHTML}</div>
-        <div class="feed-time">${time}</div>
+function postCard(id, p) {
+  const anon    = p.anonymous;
+  const uname   = anon ? 'Tanpa Nama 🌫️' : (p.username || 'pengguna');
+  const photo   = anon ? '' : (p.photoURL||'');
+  const avInner = photo ? `<img src="${photo}" onerror="this.style.display='none'" alt=""/>` : `<span>${uname[0].toUpperCase()}</span>`;
+  const badge   = anon ? '' : badgeFor(p.verified);
+  const mood    = p.mood ? `<div class="post-mood-tag">${p.mood}</div>` : '';
+  const isOwn   = CU && p.uid === CU.uid;
+  const delBtn  = isOwn ? `<button class="post-del-btn" onclick="delPost('${id}')">Padam</button>` : '';
+
+  return `<div class="post-card" id="pc-${id}">
+    <div class="post-head">
+      <div class="post-av">${avInner}</div>
+      <div class="post-meta">
+        <div class="post-uname">${esc(uname)}${badge}</div>
+        <div class="post-time">${fmtTime(p.createdAt)}</div>
       </div>
     </div>
-    <div class="feed-text">${escHtml(post.text)}</div>
-    ${moodTag}
-    <div class="feed-actions">
-      <button class="feed-action-btn" id="like-btn-${id}" onclick="toggleLike('${id}')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        <span id="like-count-${id}">${post.likes||0}</span>
+    <div class="post-body">${esc(p.text)}</div>
+    ${mood}
+    <div class="post-foot">
+      <button class="post-act-btn${(p.likedBy||[]).includes(CU?.uid)?'liked':''}" id="lb-${id}" onclick="toggleLike('${id}')">
+        <svg viewBox="0 0 24 24" fill="${(p.likedBy||[]).includes(CU?.uid)?'#e07080':'none'}" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <span id="lc-${id}">${p.likes||0}</span>
       </button>
       ${delBtn}
     </div>
   </div>`;
 }
 
-window.toggleLike=async function(postId){
-  if(!currentUser) return;
-  const btn=document.getElementById(`like-btn-${postId}`);
-  const countEl=document.getElementById(`like-count-${postId}`);
-  const liked=btn.classList.contains('liked');
+window.toggleLike = async function(postId) {
+  if (!CU) return;
+  const btn   = document.getElementById(`lb-${postId}`);
+  const cEl   = document.getElementById(`lc-${postId}`);
+  const liked = btn.classList.contains('liked');
   btn.classList.toggle('liked');
-  const delta=liked?-1:1;
-  const cur=parseInt(countEl.textContent)||0;
-  countEl.textContent=Math.max(0,cur+delta);
-  await updateDoc(doc(db,'posts',postId),{likes:Math.max(0,cur+delta)});
+  const cur = parseInt(cEl.textContent)||0;
+  const nxt = Math.max(0, cur + (liked?-1:1));
+  cEl.textContent = nxt;
+  // Update SVG fill
+  btn.querySelector('svg').setAttribute('fill', liked?'none':'#e07080');
+  await updateDoc(doc(DB,'posts',postId), { likes: nxt });
 };
 
-window.deletePost=async function(postId){
-  await deleteDoc(doc(db,'posts',postId));
-  const el=document.getElementById(`post-${postId}`);
-  if(el) el.remove();
-  await updateDoc(doc(db,'users',currentUser.uid),{postCount:Math.max(0,(userData.postCount||1)-1)});
-  userData.postCount=Math.max(0,(userData.postCount||1)-1);
-  showToast('Luahan dipadam.');
+window.delPost = async function(postId) {
+  await deleteDoc(doc(DB,'posts',postId));
+  document.getElementById(`pc-${postId}`)?.remove();
+  if (UD.postCount > 0) {
+    await updateDoc(doc(DB,'users',CU.uid), { postCount: increment(-1) });
+    UD.postCount = Math.max(0,(UD.postCount||1)-1);
+  }
+  toast('Luahan dipadam.');
+  // refresh my posts if visible
+  const mp = document.getElementById('my-posts');
+  if (document.getElementById('pg-profil').classList.contains('active')) renderMyPosts(mp);
 };
 
-window.submitPost=async function(){
-  if(!currentUser) return;
-  const text=document.getElementById('compose-text').value.trim();
-  if(!text){ showToast('Tulis sesuatu dahulu...'); return; }
-  const mood=document.getElementById('compose-mood').value;
-  const anon=document.getElementById('anon-check').checked;
-  await addDoc(collection(db,'posts'),{
-    text,mood,anonymous:anon,uid:currentUser.uid,
-    username:anon?'':userData.username,photoURL:anon?'':userData.photoURL,
-    verified:anon?false:(userData.verified||false),likes:0,createdAt:serverTimestamp()
+window.submitPost = async function() {
+  if (!CU || !UD) return;
+  const text = document.getElementById('compose-ta').value.trim();
+  if (!text) { toast('Tulis sesuatu terlebih dahulu…'); return; }
+  const mood = document.getElementById('compose-mood').value;
+  const anon = document.getElementById('anon-chk').checked;
+
+  const ref = await addDoc(collection(DB,'posts'), {
+    text, mood, anonymous: anon, uid: CU.uid,
+    username: anon ? '' : UD.username,
+    photoURL:  anon ? '' : (UD.photoURL||''),
+    verified:  anon ? false : (UD.verified||false),
+    likes: 0, likedBy: [],
+    createdAt: serverTimestamp()
   });
-  await updateDoc(doc(db,'users',currentUser.uid),{postCount:increment(1)});
-  userData.postCount=(userData.postCount||0)+1;
-  document.getElementById('compose-text').value='';
-  document.getElementById('compose-mood').value='';
-  feedLoaded=false; loadFeed();
-  showToast('Luahan dihantar! 💙');
+  await updateDoc(doc(DB,'users',CU.uid), { postCount: increment(1) });
+  UD.postCount = (UD.postCount||0)+1;
+
+  document.getElementById('compose-ta').value   = '';
+  document.getElementById('compose-mood').value = '';
+  feedDone = false;
+  loadFeed();
+  toast('Luahan dihantar! 💙');
 };
 
-window.loadProfile=async function(){
-  if(!currentUser||!userData) return;
-  await loadUserData();
-  const pa=document.getElementById('profile-avatar');
-  pa.innerHTML=avatarHTML(userData.photoURL,userData.username,72);
-  document.getElementById('profile-display-name').innerHTML=(userData.username||'—')+(userData.verified?' '+VERIFIED_BADGE:'');
-  document.getElementById('profile-handle').textContent='@'+(userData.username||'—');
-  document.getElementById('profile-bio-text').textContent=userData.bio||'Tiada bio lagi.';
-  document.getElementById('pstat-streak').textContent=userData.streak||0;
-  document.getElementById('pstat-posts').textContent=userData.postCount||0;
-  document.getElementById('pstat-total').textContent=userData.totalDays||0;
-  buildCalendar(); loadMyPosts();
+/* ─── PROFILE ─── */
+window.renderProfile = async function() {
+  if (!CU) return;
+  await fetchUD();
+
+  const av = document.getElementById('profil-av');
+  av.innerHTML = avHTML(UD.photoURL, UD.username, 64);
+
+  // Name with badge (large)
+  document.getElementById('profil-uname').innerHTML = `@${esc(UD.username)}${UD.verified?badgeLgFor(true):''}`;
+  document.getElementById('profil-handle').textContent = '';
+  document.getElementById('profil-bio').textContent   = UD.bio || 'Tiada bio lagi.';
+
+  document.getElementById('ps-streak').textContent = UD.streak    || 0;
+  document.getElementById('ps-total').textContent  = UD.totalDays || 0;
+  document.getElementById('ps-posts').textContent  = UD.postCount || 0;
+
+  buildCal();
+  await renderMyPosts(document.getElementById('my-posts'));
 };
 
-function buildCalendar(){
-  const cal=document.getElementById('streak-cal'); cal.innerHTML='';
-  const dates=userData.tickDates||[];
-  const today=new Date();
-  for(let i=27;i>=0;i--){
-    const d=new Date(today); d.setDate(d.getDate()-i);
-    const str=d.toISOString().split('T')[0];
-    const div=document.createElement('div');
-    div.className='cal-day'+(dates.includes(str)?' ticked':'');
-    div.title=str; cal.appendChild(div);
+function buildCal() {
+  const grid  = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  const dates = UD.tickDates || [];
+  const today = new Date();
+  for (let i = 27; i >= 0; i--) {
+    const d   = new Date(today);
+    d.setDate(d.getDate()-i);
+    const str = d.toISOString().split('T')[0];
+    const div = document.createElement('div');
+    let cls = 'cal-cell';
+    if (dates.includes(str)) cls += ' hit';
+    if (i === 0) cls += ' today';
+    div.className = cls;
+    div.title     = str;
+    grid.appendChild(div);
   }
 }
 
-async function loadMyPosts(){
-  const list=document.getElementById('my-posts-list');
-  list.innerHTML='<div class="loading-spinner"><div class="spinner"></div></div>';
-  try{
-    const q=query(collection(db,'posts'),where('uid','==',currentUser.uid),orderBy('createdAt','desc'),limit(10));
-    const snap=await getDocs(q);
-    list.innerHTML='';
-    if(snap.empty){ list.innerHTML='<div class="empty-state"><div class="empty-icon">💭</div><p>Belum ada luahan.</p></div>'; return; }
-    snap.forEach(d=>list.innerHTML+=buildPostCard(d.id,d.data()));
-  } catch(e){ list.innerHTML=''; }
+async function renderMyPosts(container) {
+  container.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
+  try {
+    const q    = query(collection(DB,'posts'), where('uid','==',CU.uid), orderBy('createdAt','desc'), limit(20));
+    const snap = await getDocs(q);
+    container.innerHTML = '';
+    if (snap.empty) { container.innerHTML = emptyState('💭','Tiada luahan lagi.'); return; }
+    snap.forEach(d => container.innerHTML += postCard(d.id, d.data()));
+  } catch(e) { container.innerHTML = ''; }
 }
 
-window.openEditModal=function(){
-  document.getElementById('edit-username').value=userData.username||'';
-  document.getElementById('edit-bio').value=userData.bio||'';
-  document.getElementById('edit-photo').value=userData.photoURL||'';
-  openModal('edit-modal');
+/* ─── PROFILE EDIT ─── */
+window.openEditModal = function() {
+  // pre-fill
+  document.getElementById('e-un').value    = UD.username || '';
+  document.getElementById('e-bio').value   = UD.bio      || '';
+  document.getElementById('e-photo').value = UD.photoURL || '';
+  openModal('modal-edit');
 };
 
-window.saveProfile=async function(){
-  const username=document.getElementById('edit-username').value.trim();
-  const bio=document.getElementById('edit-bio').value.trim();
-  const photoURL=document.getElementById('edit-photo').value.trim();
-  if(!username){ showToast('Nama pengguna diperlukan.'); return; }
-  await updateDoc(doc(db,'users',currentUser.uid),{username,bio,photoURL});
-  userData.username=username; userData.bio=bio; userData.photoURL=photoURL;
-  closeModal('edit-modal'); showToast('Profil dikemaskini!'); initDashboard();
+window.saveProfile = async function() {
+  const un    = document.getElementById('e-un').value.trim();
+  const bio   = document.getElementById('e-bio').value.trim();
+  const photo = document.getElementById('e-photo').value.trim();
+  if (!un) { toast('Nama pengguna diperlukan.'); return; }
+
+  // Check username uniqueness (only if changed)
+  if (un !== UD.username) {
+    const q = query(collection(DB,'users'), where('username','==',un), limit(1));
+    const snap = await getDocs(q);
+    if (!snap.empty) { toast('Nama pengguna ini sudah digunakan.'); return; }
+  }
+
+  await updateDoc(doc(DB,'users',CU.uid), { username:un, bio, photoURL:photo });
+  UD.username = un; UD.bio = bio; UD.photoURL = photo;
+  closeModal('modal-edit');
+  toast('Profil dikemaskini!');
+  bootDashboard();
+  if (document.getElementById('pg-profil').classList.contains('active')) renderProfile();
 };
 
-window.changePassword=async function(){
-  const pass=document.getElementById('new-pass').value;
-  if(pass.length<6){ showToast('Kata laluan terlalu pendek.'); return; }
-  try{ await updatePassword(currentUser,pass); closeModal('pass-modal'); showToast('Kata laluan berjaya ditukar!'); }
-  catch(e){ showToast('Ralat. Cuba log masuk semula.'); }
+/* ─── PASSWORD ─── */
+window.changePw = async function() {
+  const pw = document.getElementById('new-pw').value;
+  if (pw.length < 6) { toast('Kata laluan sekurang-kurangnya 6 aksara.'); return; }
+  try {
+    await updatePassword(CU, pw);
+    closeModal('modal-pw');
+    toast('Kata laluan berjaya ditukar!');
+  } catch(e) { toast('Sesi tamat. Sila log masuk semula.'); }
 };
 
-window.saveCapsule=async function(){
-  const text=document.getElementById('capsule-text').value.trim();
-  if(!text){ showToast('Tulis mesej dahulu.'); return; }
-  await setDoc(doc(db,'capsules',currentUser.uid),{text,savedAt:serverTimestamp(),unlockStreak:30});
-  closeModal('capsule-modal'); showToast('Kapsul masa disimpan! 🔒');
+/* ─── CAPSULE ─── */
+window.saveCapsule = async function() {
+  const text = document.getElementById('capsule-ta').value.trim();
+  if (!text) { toast('Tulis mesej terlebih dahulu.'); return; }
+  await setDoc(doc(DB,'capsules',CU.uid), {
+    text, savedAt: serverTimestamp(), unlockStreak: 30, uid: CU.uid
+  });
+  closeModal('modal-capsule');
+  toast('Kapsul masa dikunci! Buka selepas 30 hari. 🔒');
 };
 
-window.doDeleteAccount=async function(){
-  try{
-    await deleteDoc(doc(db,'users',currentUser.uid));
-    await deleteUser(currentUser);
-    closeModal('delete-modal');
-  } catch(e){ showToast('Ralat padam akaun. Log masuk semula dahulu.'); }
+/* ─── DELETE ACCOUNT ─── */
+window.delAccount = async function() {
+  try {
+    // delete posts
+    try {
+      const q = query(collection(DB,'posts'), where('uid','==',CU.uid));
+      const snap = await getDocs(q);
+      await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+    } catch(e){}
+    await deleteDoc(doc(DB,'users',CU.uid));
+    await deleteUser(CU);
+    closeModal('modal-del');
+  } catch(e) { toast('Sesi tamat. Sila log masuk semula sebelum memadam.'); }
 };
 
-window.openModal=function(id){ document.getElementById(id).classList.add('open'); };
-window.closeModal=function(id){ document.getElementById(id).classList.remove('open'); };
-
-window.showPage=function(name,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
+/* ─── NAVIGATION ─── */
+window.goPage = function(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pg-'+name).classList.add('active');
   btn.classList.add('active');
 };
 
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+/* ─── MODAL HELPERS ─── */
+window.openModal  = function(id) { document.getElementById(id).classList.add('open'); };
+window.closeModal = function(id) { document.getElementById(id).classList.remove('open'); };
+
+document.querySelectorAll('.modal-bg').forEach(o =>
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
+);
+
+/* ─── DOM HELPERS ─── */
+function show(id) { document.getElementById(id).style.display=''; }
+function hide(id) { document.getElementById(id).style.display='none'; }
+function toggle(id, show) { document.getElementById(id).classList.toggle('hidden',!show); }
+function emptyState(em, txt) {
+  return `<div class="empty"><div class="empty-em">${em}</div><p>${txt}</p></div>`;
+}
+
+/* ─── INIT (hide app on load) ─── */
+hide('screen-app');
 </script>
 </body>
 </html>
