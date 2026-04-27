@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pentadbir. crash out, burn out, turn out d.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Open+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #b6e2f5;
+            --text: #3a6b85;
+            --radius: 14px;
+            --radius-sm: 8px;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Open Sans', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .hidden { display: none !important; }
+
+        /* toast */
+        #toast {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            background: var(--text); color: var(--bg);
+            padding: 10px 22px; border-radius: 20px;
+            font-size: 0.85rem; font-weight: 600;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; z-index: 9999;
+        }
+        #toast.show { opacity: 1; }
+
+        /* spinner */
+        .spinner {
+            width: 32px; height: 32px;
+            border: 3px solid var(--bg);
+            border-top-color: var(--text);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 40px auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* login page */
+        #page-login {
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 32px 20px;
+            background: var(--bg);
+        }
+        .login-card {
+            width: 100%; max-width: 400px;
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 36px 30px;
+            border: 1.5px solid var(--text);
+        }
+        .login-card .header-title {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .login-card .header-title .caveat-word {
+            font-family: 'Caveat', cursive;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .login-card h2 {
+            font-size: 1rem; font-weight: 600;
+            margin-bottom: 24px; text-align: center;
+            letter-spacing: 0.06em; opacity: 0.7;
+        }
+        .login-card .sub-info {
+            font-size: 0.7rem; opacity: 0.5; text-align: center;
+            margin-bottom: 20px;
+        }
+        .field { margin-bottom: 18px; }
+        .field label {
+            display: block;
+            font-size: 0.8rem; font-weight: 600;
+            margin-bottom: 5px; letter-spacing: 0.04em;
+            color: var(--text); opacity: 0.8;
+        }
+        .field .input-wrap { position: relative; }
+        .field input, .field textarea {
+            width: 100%; padding: 10px 14px;
+            background: var(--bg); border: 1.5px solid var(--text);
+            border-radius: var(--radius-sm); color: var(--text);
+            font-family: 'Open Sans', sans-serif; font-size: 0.85rem;
+            outline: none;
+        }
+        .field input:focus, .field textarea:focus { border-width: 2px; }
+        .field input::placeholder, .field textarea::placeholder {
+            color: var(--text); opacity: 0.4; font-size: 0.78rem;
+        }
+        .field textarea {
+            min-height: 100px; resize: vertical; line-height: 1.6;
+        }
+        .pw-toggle {
+            position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--text); font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.03em; opacity: 0.6;
+        }
+        .btn-primary {
+            width: 100%; padding: 12px;
+            background: var(--text); color: var(--bg);
+            border: none; border-radius: var(--radius-sm);
+            font-family: 'Open Sans', sans-serif; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; transition: opacity 0.2s;
+            letter-spacing: 0.04em;
+        }
+        .btn-primary:hover { opacity: 0.85; }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+        .login-error {
+            font-size: 0.8rem; color: var(--text);
+            background: var(--bg); border: 1px solid var(--text);
+            border-radius: var(--radius-sm); padding: 10px 14px;
+            margin-bottom: 16px; text-align: center;
+        }
+
+        /* admin panel */
+        #page-admin { display: none; min-height: 100vh; background: var(--bg); }
+        #page-admin.active { display: flex; }
+
+        .admin-layout { display: flex; width: 100%; min-height: 100vh; }
+
+        /* sidebar */
+        .admin-sidebar {
+            width: 250px; min-height: 100vh;
+            background: var(--bg); border-right: 1.5px solid var(--text);
+            display: flex; flex-direction: column;
+            padding: 28px 0; position: fixed; left: 0; top: 0; bottom: 0;
+            z-index: 100;
+        }
+        .admin-sidebar .sidebar-header {
+            padding: 0 22px 22px;
+            border-bottom: 1.5px solid var(--text);
+            margin-bottom: 18px;
+        }
+        .admin-sidebar .sidebar-header .admin-title {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem; font-weight: 700;
+        }
+        .admin-sidebar .sidebar-header .admin-subtitle {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.62rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            opacity: 0.5; margin-top: 2px;
+        }
+        .admin-sidebar nav { flex: 1; }
+        .admin-sidebar nav a {
+            display: block; padding: 11px 22px;
+            color: var(--text); font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; letter-spacing: 0.04em;
+            border-left: 3px solid transparent;
+            transition: all 0.15s; opacity: 0.6;
+        }
+        .admin-sidebar nav a:hover { opacity: 1; }
+        .admin-sidebar nav a.active {
+            opacity: 1; border-left-color: var(--text);
+        }
+        .admin-sidebar .sidebar-footer {
+            padding: 18px 22px; border-top: 1.5px solid var(--text);
+        }
+        .btn-logout {
+            width: 100%; padding: 10px;
+            background: none; border: 1.5px solid var(--text);
+            border-radius: var(--radius-sm); color: var(--text);
+            font-family: 'Open Sans', sans-serif; font-size: 0.82rem;
+            font-weight: 600; cursor: pointer;
+            transition: all 0.15s; letter-spacing: 0.04em;
+        }
+        .btn-logout:hover { background: var(--text); color: var(--bg); }
+
+        /* main */
+        .admin-main {
+            flex: 1; margin-left: 250px;
+            padding: 32px 30px 80px; max-width: 960px;
+        }
+        .admin-main .page-title {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.68rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            opacity: 0.5; margin-bottom: 24px;
+        }
+        .admin-main .section-title {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            opacity: 0.6; margin-bottom: 14px;
+        }
+
+        /* card */
+        .card {
+            background: var(--bg); border: 1.5px solid var(--text);
+            border-radius: var(--radius); padding: 22px; margin-bottom: 22px;
+        }
+
+        /* stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px; margin-bottom: 22px;
+        }
+        .stat-card {
+            background: var(--bg); border: 1.5px solid var(--text);
+            border-radius: var(--radius); padding: 20px; text-align: center;
+        }
+        .stat-card .stat-num {
+            font-family: 'Caveat', cursive;
+            font-size: 2.8rem; font-weight: 700; line-height: 1;
+        }
+        .stat-card .stat-lbl {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.65rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            opacity: 0.5; margin-top: 4px;
+        }
+
+        /* table */
+        .table-wrap { overflow-x: auto; }
+        table {
+            width: 100%; border-collapse: collapse; font-size: 0.82rem;
+        }
+        table th, table td {
+            padding: 10px 14px; text-align: left;
+            border-bottom: 1px solid var(--text);
+        }
+        table th {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.65rem; font-weight: 600;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            opacity: 0.5;
+        }
+        table td {
+            font-family: 'Open Sans', sans-serif;
+        }
+        table td.username-col {
+            font-family: 'Caveat', cursive;
+            font-size: 1.15rem; font-weight: 600;
+        }
+        table td.number-col {
+            font-family: 'Caveat', cursive;
+            font-size: 1.1rem;
+        }
+
+        .badge-verified {
+            display: inline-block; padding: 3px 10px;
+            border-radius: 10px; font-size: 0.62rem; font-weight: 700;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            border: 1px solid var(--text);
+        }
+        .badge-verified.yes { background: var(--text); color: var(--bg); }
+        .badge-verified.no { opacity: 0.4; }
+
+        .btn-sm {
+            display: inline-block; padding: 5px 12px;
+            border: 1.5px solid var(--text); border-radius: var(--radius-sm);
+            color: var(--text); font-family: 'Open Sans', sans-serif;
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+            cursor: pointer; background: none; transition: all 0.15s;
+            margin: 2px;
+        }
+        .btn-sm:hover { background: var(--text); color: var(--bg); }
+
+        /* luahan item */
+        .luahan-admin-item {
+            background: var(--bg); border: 1.5px solid var(--text);
+            border-radius: var(--radius); padding: 16px 18px;
+            margin-bottom: 10px; position: relative;
+        }
+        .luahan-admin-item .luahan-meta {
+            font-size: 0.7rem; opacity: 0.5; margin-bottom: 6px;
+        }
+        .luahan-admin-item .luahan-meta .author-name {
+            font-family: 'Caveat', cursive;
+            font-size: 1.05rem; font-weight: 600; opacity: 1;
+        }
+        .luahan-admin-item .luahan-text-preview {
+            font-size: 0.88rem; line-height: 1.65;
+        }
+
+        /* afirmasi */
+        .afirmasi-item-row {
+            display: flex; gap: 8px; align-items: center; margin-bottom: 10px;
+        }
+        .afirmasi-item-row input {
+            flex: 1; padding: 9px 12px;
+            background: var(--bg); border: 1.5px solid var(--text);
+            border-radius: var(--radius-sm); color: var(--text);
+            font-family: 'Open Sans', sans-serif; font-size: 0.85rem; outline: none;
+        }
+        .afirmasi-item-row .btn-remove {
+            padding: 9px 14px; border: 1.5px solid var(--text);
+            border-radius: var(--radius-sm); background: none;
+            color: var(--text); cursor: pointer;
+            font-family: 'Open Sans', sans-serif; font-size: 0.75rem; font-weight: 600;
+            transition: all 0.15s;
+        }
+        .afirmasi-item-row .btn-remove:hover { background: var(--text); color: var(--bg); }
+
+        .search-input {
+            width: 100%; padding: 10px 14px;
+            background: var(--bg); border: 1.5px solid var(--text);
+            border-radius: var(--radius-sm); color: var(--text);
+            font-family: 'Open Sans', sans-serif; font-size: 0.85rem;
+            outline: none; margin-bottom: 18px;
+        }
+        .search-input::placeholder { color: var(--text); opacity: 0.4; }
+
+        /* modal */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(182, 226, 245, 0.85);
+            display: none; align-items: center; justify-content: center;
+            z-index: 200; padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--bg); border: 1.5px solid var(--text);
+            border-radius: var(--radius); padding: 28px 24px;
+            width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto;
+        }
+        .modal h3 {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1rem; font-weight: 600; margin-bottom: 16px;
+        }
+        .modal p {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.85rem; opacity: 0.7; margin-bottom: 18px; line-height: 1.5;
+        }
+        .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+        .modal-actions button { flex: 1; }
+
+        .empty-state {
+            text-align: center; padding: 40px 0;
+            opacity: 0.45; font-style: italic; font-size: 0.88rem;
+        }
+
+        /* responsive */
+        @media (max-width: 768px) {
+            .admin-sidebar { display: none; }
+            .admin-main { margin-left: 0; padding: 20px 16px 80px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .mobile-nav {
+                display: flex; gap: 8px; overflow-x: auto;
+                padding: 12px 0; border-bottom: 1.5px solid var(--text);
+                margin-bottom: 20px;
+            }
+            .mobile-nav a {
+                flex-shrink: 0; padding: 7px 14px;
+                border: 1.5px solid var(--text); border-radius: var(--radius-sm);
+                color: var(--text); font-size: 0.75rem; font-weight: 600;
+                text-decoration: none; opacity: 0.6; transition: all 0.15s;
+            }
+            .mobile-nav a.active { opacity: 1; background: var(--text); color: var(--bg); }
+        }
+        @media (min-width: 769px) {
+            .mobile-nav { display: none; }
+        }
+
+        .page { animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="page-login">
+    <div class="login-card">
+        <div class="header-title">
+            <span>crash </span><span class="caveat-word">out</span><span>, burn </span><span class="caveat-word">out</span><span>, </span><span class="caveat-word">turn out d.</span>
+        </div>
+        <h2>pentadbir.</h2>
+        <div class="sub-info">log masuk menggunakan akaun pentadbir.</div>
+        <div id="login-error" class="login-error hidden"></div>
+        <div class="field">
+            <label>e-mel pentadbir.</label>
+            <input type="email" id="admin-email" placeholder="e-mel pentadbir" autocomplete="email" />
+        </div>
+        <div class="field">
+            <label>kata laluan.</label>
+            <div class="input-wrap">
+                <input type="password" id="admin-pw" placeholder="kata laluan" autocomplete="current-password" />
+                <button class="pw-toggle" onclick="togglePw('admin-pw',this)">papar</button>
+            </div>
+        </div>
+        <button class="btn-primary" id="btn-login" onclick="doAdminLogin()">log masuk.</button>
+    </div>
+</div>
+
+<!-- ═══════════════ ADMIN PANEL ═══════════════ -->
+<div id="page-admin">
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="admin-title">pentadbir.</div>
+                <div class="admin-subtitle">crash out, burn out, turn out d.</div>
+            </div>
+            <nav>
+                <a href="#" class="admin-nav-link active" data-panel="dashboard">papan muka.</a>
+                <a href="#" class="admin-nav-link" data-panel="users">pengguna.</a>
+                <a href="#" class="admin-nav-link" data-panel="luahan">luahan.</a>
+                <a href="#" class="admin-nav-link" data-panel="afirmasi">afirmasi.</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="btn-logout" onclick="doAdminLogout()">log keluar.</button>
+            </div>
+        </aside>
+
+        <main class="admin-main" id="admin-main">
+            <div class="mobile-nav" id="mobile-nav">
+                <a href="#" class="admin-nav-link active" data-panel="dashboard">papan muka.</a>
+                <a href="#" class="admin-nav-link" data-panel="users">pengguna.</a>
+                <a href="#" class="admin-nav-link" data-panel="luahan">luahan.</a>
+                <a href="#" class="admin-nav-link" data-panel="afirmasi">afirmasi.</a>
+            </div>
+
+            <!-- DASHBOARD -->
+            <div id="panel-dashboard" class="page">
+                <p class="page-title">papan muka pentadbir.</p>
+                <div class="stats-row" id="stats-row">
+                    <div class="stat-card"><div class="stat-num" id="stat-users">-</div><div class="stat-lbl">pengguna.</div></div>
+                    <div class="stat-card"><div class="stat-num" id="stat-luahan">-</div><div class="stat-lbl">luahan.</div></div>
+                    <div class="stat-card"><div class="stat-num" id="stat-bertahan">-</div><div class="stat-lbl">bertahan hari ini.</div></div>
+                    <div class="stat-card"><div class="stat-num" id="stat-streak">-</div><div class="stat-lbl">streak tertinggi.</div></div>
+                </div>
+                <div class="card">
+                    <div class="section-title">pengguna terbaru.</div>
+                    <div id="recent-users"><div class="spinner"></div></div>
+                </div>
+                <div class="card">
+                    <div class="section-title">luahan terbaru.</div>
+                    <div id="recent-luahan"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+            <!-- USERS -->
+            <div id="panel-users" class="page hidden">
+                <p class="page-title">senarai pengguna.</p>
+                <input type="text" class="search-input" id="user-search" placeholder="cari nama pengguna atau e-mel..." oninput="filterUsers()" />
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>nama pengguna.</th>
+                                <th>e-mel.</th>
+                                <th>luahan.</th>
+                                <th>bertahan.</th>
+                                <th>streak.</th>
+                                <th>verified.</th>
+                                <th>tindakan.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr><td colspan="7"><div class="spinner"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- LUAHAN -->
+            <div id="panel-luahan" class="page hidden">
+                <p class="page-title">semua luahan.</p>
+                <input type="text" class="search-input" id="luahan-search" placeholder="cari teks atau nama pengguna..." oninput="filterLuahan()" />
+                <div id="all-luahan-list"><div class="spinner"></div></div>
+            </div>
+
+            <!-- AFIRMASI -->
+            <div id="panel-afirmasi" class="page hidden">
+                <p class="page-title">urus afirmasi.</p>
+                <div class="card">
+                    <div class="section-title">senarai afirmasi semasa.</div>
+                    <div id="afirmasi-list-edit"><div class="spinner"></div></div>
+                    <button class="btn-primary" style="margin-top:14px;" onclick="addAfirmasiRow()">+ tambah afirmasi.</button>
+                    <button class="btn-primary" style="margin-top:8px;" onclick="saveAfirmasi()">simpan afirmasi.</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- confirm modal -->
+<div class="modal-overlay" id="confirm-modal">
+    <div class="modal">
+        <h3 id="confirm-title">pengesahan.</h3>
+        <p id="confirm-msg"></p>
+        <div class="modal-actions">
+            <button class="btn-sm" onclick="closeConfirmModal()">batal.</button>
+            <button class="btn-sm" id="confirm-btn" style="background:var(--text);color:var(--bg);border:none;">sahkan.</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+        getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+        getFirestore, doc, setDoc, getDoc, getDocs, deleteDoc,
+        collection, query, where, orderBy, limit, serverTimestamp,
+        updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // ═══════════════ GUNA SATU CONFIG SAHAJA ═══════════════
+    // Project pengguna — sebab data semua ada sini
+    // Admin login pakai email/kata laluan yang dah didaftarkan
+    // sebagai pengguna biasa dalam project ni
+    const firebaseConfig = {
+        apiKey: "AIzaSyB5Rzsr8YaGNb5E0I6hSQYbdOd1C2e54Gs",
+        authDomain: "crash-out-burn-out-turn-out-d.firebaseapp.com",
+        projectId: "crash-out-burn-out-turn-out-d",
+        storageBucket: "crash-out-burn-out-turn-out-d.firebasestorage.app",
+        messagingSenderId: "280103809790",
+        appId: "1:280103809790:web:514756e3aa0bf6a69cabaf",
+        measurementId: "G-FVFZJ1D6GK"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    console.log('✅ Project:', firebaseConfig.projectId);
+    console.log('✅ Auth + Firestore guna project yang sama — rules takyah tukar.');
+
+    // ═══════════════ STATE ═══════════════
+    let allUsers = [];
+    let allLuahan = [];
+    let currentPanel = 'dashboard';
+    let confirmCallback = null;
+
+    // ═══════════════ HELPERS ═══════════════
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function escapeHTML(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+    }
+
+    function formatDate(ts) {
+        if (!ts) return '-';
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        return d.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function todayKey() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    // ═══════════════ AUTH ═══════════════
+    window.togglePw = (id, btn) => {
+        const el = document.getElementById(id);
+        if (el.type === 'password') { el.type = 'text'; btn.textContent = 'sembunyi.'; }
+        else { el.type = 'password'; btn.textContent = 'papar'; }
+    };
+
+    window.doAdminLogin = async () => {
+        const email = document.getElementById('admin-email').value.trim();
+        const pw = document.getElementById('admin-pw').value;
+        if (!email || !pw) {
+            document.getElementById('login-error').textContent = 'sila isi semua medan.';
+            document.getElementById('login-error').classList.remove('hidden');
+            return;
+        }
+        document.getElementById('btn-login').disabled = true;
+        document.getElementById('login-error').classList.add('hidden');
+        try {
+            await signInWithEmailAndPassword(auth, email, pw);
+        } catch (e) {
+            document.getElementById('login-error').textContent = 'e-mel atau kata laluan salah.';
+            document.getElementById('login-error').classList.remove('hidden');
+            document.getElementById('btn-login').disabled = false;
+        }
+    };
+
+    window.doAdminLogout = async () => {
+        await signOut(auth);
+    };
+
+    onAuthStateChanged(auth, async user => {
+        if (user) {
+            document.getElementById('page-login').style.display = 'none';
+            document.getElementById('page-admin').classList.add('active');
+            switchPanel('dashboard');
+        } else {
+            document.getElementById('page-login').style.display = 'flex';
+            document.getElementById('page-admin').classList.remove('active');
+        }
+    });
+
+    // ═══════════════ NAVIGATION ═══════════════
+    function switchPanel(panel) {
+        currentPanel = panel;
+        ['dashboard', 'users', 'luahan', 'afirmasi'].forEach(p => {
+            const el = document.getElementById(`panel-${p}`);
+            if (el) el.classList.toggle('hidden', p !== panel);
+        });
+        document.querySelectorAll('.admin-nav-link').forEach(a => {
+            a.classList.toggle('active', a.dataset.panel === panel);
+        });
+
+        if (panel === 'dashboard') loadDashboard();
+        if (panel === 'users') loadUsers();
+        if (panel === 'luahan') loadAllLuahan();
+        if (panel === 'afirmasi') loadAfirmasiEditor();
+    }
+
+    document.querySelectorAll('.admin-nav-link').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            switchPanel(a.dataset.panel);
+        });
+    });
+
+    // ═══════════════ CONFIRM MODAL ═══════════════
+    window.showConfirm = (title, msg, callback) => {
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-msg').textContent = msg;
+        confirmCallback = callback;
+        document.getElementById('confirm-modal').classList.add('open');
+        document.getElementById('confirm-btn').onclick = () => {
+            closeConfirmModal();
+            if (confirmCallback) confirmCallback();
+        };
+    };
+
+    window.closeConfirmModal = () => {
+        document.getElementById('confirm-modal').classList.remove('open');
+        confirmCallback = null;
+    };
+
+    // ═══════════════ DASHBOARD ═══════════════
+    async function loadDashboard() {
+        try {
+            const usersSnap = await getDocs(collection(db, 'users'));
+            const totalUsers = usersSnap.size;
+
+            const luahanSnap = await getDocs(collection(db, 'luahan'));
+            const totalLuahan = luahanSnap.size;
+
+            let bertahanToday = 0;
+            let highestStreak = 0;
+            const today = todayKey();
+
+            for (const uDoc of usersSnap.docs) {
+                try {
+                    const bRef = doc(db, 'users', uDoc.id, 'bertahan', 'data');
+                    const bSnap = await getDoc(bRef);
+                    if (bSnap.exists()) {
+                        const bData = bSnap.data();
+                        if (bData.days && bData.days[today]) bertahanToday++;
+                        if (bData.currentstreak > highestStreak) highestStreak = bData.currentstreak;
+                    }
+                } catch (e) {
+                    // skip
+                }
+            }
+
+            document.getElementById('stat-users').textContent = totalUsers;
+            document.getElementById('stat-luahan').textContent = totalLuahan;
+            document.getElementById('stat-bertahan').textContent = bertahanToday;
+            document.getElementById('stat-streak').textContent = highestStreak;
+
+            // Recent users
+            const userDocs = usersSnap.docs;
+            const recentUsers = userDocs
+                .sort((a, b) => (b.data().createdat?.seconds || 0) - (a.data().createdat?.seconds || 0))
+                .slice(0, 5);
+
+            document.getElementById('recent-users').innerHTML = recentUsers.length === 0
+                ? '<div class="empty-state">tiada pengguna.</div>'
+                : `<div class="table-wrap"><table>
+                    <thead><tr><th>nama pengguna.</th><th>e-mel.</th><th>tarikh daftar.</th></tr></thead>
+                    <tbody>${recentUsers.map(u => {
+                        const d = u.data();
+                        return `<tr>
+                            <td class="username-col">${escapeHTML(d.namapengguna || '-')}</td>
+                            <td>${escapeHTML(d.emel || '-')}</td>
+                            <td>${formatDate(d.createdat)}</td>
+                        </tr>`;
+                    }).join('')}</tbody></table></div>`;
+
+            // Recent luahan
+            const recentLuahan = luahanSnap.docs
+                .sort((a, b) => (b.data().createdat?.seconds || 0) - (a.data().createdat?.seconds || 0))
+                .slice(0, 5);
+
+            const userMap = {};
+            for (const u of userDocs) userMap[u.id] = u.data();
+
+            document.getElementById('recent-luahan').innerHTML = recentLuahan.length === 0
+                ? '<div class="empty-state">tiada luahan.</div>'
+                : recentLuahan.map(l => {
+                    const data = l.data();
+                    const author = userMap[data.authorid] || {};
+                    return `<div class="luahan-admin-item">
+                        <div class="luahan-meta">
+                            <span class="author-name">@${escapeHTML(author.namapengguna || '?')}</span>
+                            ${data.anon ? ' · <em>tanpa nama.</em>' : ''}
+                            · ${formatDate(data.createdat)}
+                        </div>
+                        <div class="luahan-text-preview">${escapeHTML(data.text.substring(0, 200))}${data.text.length > 200 ? '...' : ''}</div>
+                    </div>`;
+                }).join('');
+        } catch (e) {
+            console.error('Dashboard error:', e);
+            showToast('ralat memuat data.');
+        }
+    }
+
+    // ═══════════════ USERS ═══════════════
+    async function loadUsers() {
+        try {
+            const usersSnap = await getDocs(collection(db, 'users'));
+            allUsers = [];
+
+            for (const uDoc of usersSnap.docs) {
+                const uData = uDoc.data();
+                let totalBertahan = 0;
+                let streak = 0;
+
+                try {
+                    const bRef = doc(db, 'users', uDoc.id, 'bertahan', 'data');
+                    const bSnap = await getDoc(bRef);
+                    if (bSnap.exists()) {
+                        const bData = bSnap.data();
+                        totalBertahan = Object.keys(bData.days || {}).length;
+                        streak = bData.currentstreak || 0;
+                    }
+                } catch (e) {
+                    // skip
+                }
+
+                const luahanSnap = await getDocs(query(collection(db, 'luahan'), where('authorid', '==', uDoc.id)));
+
+                allUsers.push({
+                    id: uDoc.id,
+                    namapengguna: uData.namapengguna || '',
+                    emel: uData.emel || '',
+                    verified: uData.verified || false,
+                    luahanCount: luahanSnap.size,
+                    totalBertahan,
+                    streak,
+                    createdat: uData.createdat
+                });
+            }
+
+            allUsers.sort((a, b) => a.namapengguna.localeCompare(b.namapengguna));
+            renderUsersTable(allUsers);
+        } catch (e) {
+            console.error('Load users error:', e);
+            showToast('ralat memuat senarai pengguna.');
+        }
+    }
+
+    function renderUsersTable(users) {
+        const tbody = document.getElementById('users-table-body');
+        if (users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">tiada pengguna dijumpai.</div></td></tr>';
+            return;
+        }
+        tbody.innerHTML = users.map(u => `
+            <tr>
+                <td class="username-col">${escapeHTML(u.namapengguna)}</td>
+                <td>${escapeHTML(u.emel)}</td>
+                <td class="number-col">${u.luahanCount}</td>
+                <td class="number-col">${u.totalBertahan}</td>
+                <td class="number-col">${u.streak}</td>
+                <td>
+                    <span class="badge-verified ${u.verified ? 'yes' : 'no'}">${u.verified ? 'ya' : 'tidak'}</span>
+                    <button class="btn-sm" style="margin-left:6px;" onclick="event.stopPropagation();toggleVerify('${u.id}', ${u.verified})">tukar</button>
+                </td>
+                <td>
+                    <button class="btn-sm" onclick="event.stopPropagation();deleteUserConfirm('${u.id}', '${escapeHTML(u.namapengguna).replace(/'/g, "\\'")}')" style="border-color:var(--text);">padam</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    window.filterUsers = () => {
+        const search = document.getElementById('user-search').value.toLowerCase();
+        const filtered = allUsers.filter(u =>
+            u.namapengguna.toLowerCase().includes(search) ||
+            u.emel.toLowerCase().includes(search)
+        );
+        renderUsersTable(filtered);
+    };
+
+    window.toggleVerify = async (uid, currentVerified) => {
+        try {
+            await updateDoc(doc(db, 'users', uid), { verified: !currentVerified });
+            showToast(currentVerified ? 'lencana dinyahaktifkan.' : 'lencana diaktifkan.');
+            loadUsers();
+        } catch (e) {
+            console.error(e);
+            showToast('gagal mengemaskini.');
+        }
+    };
+
+    window.deleteUserConfirm = (uid, uname) => {
+        showConfirm(
+            'padam pengguna.',
+            `padam pengguna @${uname} dan semua data mereka? tindakan ini tidak boleh dibatalkan.`,
+            async () => {
+                try {
+                    const luahanSnap = await getDocs(query(collection(db, 'luahan'), where('authorid', '==', uid)));
+                    for (const lDoc of luahanSnap.docs) await deleteDoc(lDoc.ref);
+                    await deleteDoc(doc(db, 'users', uid));
+                    showToast('pengguna dipadam.');
+                    loadUsers();
+                } catch (e) {
+                    console.error(e);
+                    showToast('gagal memadam pengguna.');
+                }
+            }
+        );
+    };
+
+    // ═══════════════ LUAHAN ═══════════════
+    async function loadAllLuahan() {
+        try {
+            const luahanSnap = await getDocs(query(collection(db, 'luahan'), orderBy('createdat', 'desc'), limit(100)));
+            const userMap = {};
+            const usersSnap = await getDocs(collection(db, 'users'));
+            for (const u of usersSnap.docs) userMap[u.id] = u.data();
+
+            allLuahan = luahanSnap.docs.map(d => ({
+                id: d.id,
+                ...d.data(),
+                authorName: (userMap[d.data().authorid] || {}).namapengguna || '?'
+            }));
+
+            renderLuahanList(allLuahan);
+        } catch (e) {
+            console.error(e);
+            showToast('ralat memuat luahan.');
+        }
+    }
+
+    function renderLuahanList(luahanList) {
+        const el = document.getElementById('all-luahan-list');
+        if (luahanList.length === 0) {
+            el.innerHTML = '<div class="empty-state">tiada luahan dijumpai.</div>';
+            return;
+        }
+        el.innerHTML = luahanList.map(l => `
+            <div class="luahan-admin-item">
+                <div class="luahan-meta">
+                    <span class="author-name">@${escapeHTML(l.authorName)}</span>
+                    ${l.anon ? ' · <em>tanpa nama.</em>' : ''}
+                    · ${formatDate(l.createdat)}
+                </div>
+                <div class="luahan-text-preview">${escapeHTML(l.text.substring(0, 300))}${l.text.length > 300 ? '...' : ''}</div>
+                <button class="btn-sm" style="margin-top:10px;border-color:var(--text);" onclick="deleteLuahanConfirm('${l.id}')">padam luahan.</button>
+            </div>
+        `).join('');
+    }
+
+    window.filterLuahan = () => {
+        const search = document.getElementById('luahan-search').value.toLowerCase();
+        const filtered = allLuahan.filter(l =>
+            l.text.toLowerCase().includes(search) ||
+            l.authorName.toLowerCase().includes(search)
+        );
+        renderLuahanList(filtered);
+    };
+
+    window.deleteLuahanConfirm = (docId) => {
+        showConfirm(
+            'padam luahan.',
+            'padam luahan ini? tindakan ini tidak boleh dibatalkan.',
+            async () => {
+                try {
+                    await deleteDoc(doc(db, 'luahan', docId));
+                    showToast('luahan dipadam.');
+                    loadAllLuahan();
+                } catch (e) {
+                    console.error(e);
+                    showToast('gagal memadam luahan.');
+                }
+            }
+        );
+    };
+
+    // ═══════════════ AFIRMASI ═══════════════
+    let afirmasiItems = [];
+
+    async function loadAfirmasiEditor() {
+        try {
+            const ref = doc(db, 'settings', 'afirmasi');
+            const snap = await getDoc(ref);
+            if (snap.exists() && snap.data().items) {
+                afirmasiItems = [...snap.data().items];
+            } else {
+                afirmasiItems = [
+                    'saya layak untuk gembira.',
+                    'saya sedang mencuba dengan sepenuh daya.',
+                    'perasaan saya adalah sah.',
+                    'saya tidak perlu sempurna untuk dicintai.',
+                    'saya pilih untuk terus mencuba hari ini.',
+                    'hari ini, saya cukup.',
+                    'saya kuat walaupun tidak selalu nampak begitu.'
+                ];
+            }
+            renderAfirmasiEditor();
+        } catch (e) {
+            console.error(e);
+            showToast('ralat memuat afirmasi.');
+        }
+    }
+
+    function renderAfirmasiEditor() {
+        const el = document.getElementById('afirmasi-list-edit');
+        if (afirmasiItems.length === 0) {
+            el.innerHTML = '<div class="empty-state">tiada afirmasi. tambah satu.</div>';
+            return;
+        }
+        el.innerHTML = afirmasiItems.map((item, idx) => `
+            <div class="afirmasi-item-row">
+                <input type="text" value="${escapeHTML(item)}" data-index="${idx}" oninput="updateAfirmasiItem(${idx}, this.value)" placeholder="tulis afirmasi..." />
+                <button class="btn-remove" onclick="removeAfirmasiRow(${idx})">padam</button>
+            </div>
+        `).join('');
+    }
+
+    window.updateAfirmasiItem = (idx, value) => {
+        afirmasiItems[idx] = value;
+    };
+
+    window.addAfirmasiRow = () => {
+        afirmasiItems.push('');
+        renderAfirmasiEditor();
+    };
+
+    window.removeAfirmasiRow = (idx) => {
+        afirmasiItems.splice(idx, 1);
+        renderAfirmasiEditor();
+    };
+
+    window.saveAfirmasi = async () => {
+        const items = afirmasiItems.filter(item => item.trim() !== '');
+        if (items.length === 0) return showToast('sekurang-kurangnya satu afirmasi diperlukan.');
+        try {
+            await setDoc(doc(db, 'settings', 'afirmasi'), { items, updatedat: serverTimestamp() });
+            showToast('afirmasi disimpan.');
+        } catch (e) {
+            console.error(e);
+            showToast('gagal menyimpan afirmasi.');
+        }
+    };
+</script>
+</body>
+</html>
