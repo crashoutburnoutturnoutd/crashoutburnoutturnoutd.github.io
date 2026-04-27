@@ -1,1704 +1,1045 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>crash out, burn out, turn out d</title>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, orderBy, getDocs, addDoc, where, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyB5Rzsr8YaGNb5E0I6hSQYbdOd1C2e54Gs",
-    authDomain: "crash-out-burn-out-turn-out-d.firebaseapp.com",
-    projectId: "crash-out-burn-out-turn-out-d",
-    storageBucket: "crash-out-burn-out-turn-out-d.firebasestorage.app",
-    messagingSenderId: "280103809790",
-    appId: "1:280103809790:web:514756e3aa0bf6a69cabaf",
-    measurementId: "G-FVFZJ1D6GK"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  window._fb = { auth, db, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, orderBy, getDocs, addDoc, where, serverTimestamp, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser, updatePassword, EmailAuthProvider, reauthenticateWithCredential, limit };
-</script>
-
-<style>
-:root {
-  --c1: #b6e2f5;
-  --c2: #d7eaf6;
-  --c1-dark: #8ecde8;
-  --c1-darker: #6bbad9;
-  --c2-dark: #b8d4e8;
-  --text: #3a6b85;
-  --text-light: #5a8ba8;
-  --text-soft: #7aadc8;
-  --border: #a0cfe8;
-  --shadow: rgba(58, 107, 133, 0.12);
-  --shadow-md: rgba(58, 107, 133, 0.18);
-  --radius: 16px;
-  --radius-sm: 10px;
-  --font-main: 'Open Sans', sans-serif;
-  --font-accent: 'Caveat', cursive;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: var(--font-main);
-  background: var(--c2);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ─── SCROLLBAR ─── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--c2); }
-::-webkit-scrollbar-thumb { background: var(--c1-dark); border-radius: 3px; }
-
-/* ─── PAGES ─── */
-.page { display: none; min-height: 100vh; }
-.page.active { display: flex; flex-direction: column; }
-
-/* ════════════════════════════════════════
-   AUTH PAGES (Login / Register)
-════════════════════════════════════════ */
-#page-login, #page-register {
-  align-items: center;
-  justify-content: center;
-  background: var(--c2);
-  padding: 24px;
-  min-height: 100vh;
-}
-
-.auth-card {
-  background: var(--c1);
-  border-radius: 24px;
-  padding: 48px 40px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 8px 40px var(--shadow-md);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 28px;
-}
-
-.auth-logo {
-  width: 140px;
-  height: 140px;
-  object-fit: contain;
-}
-
-.auth-title {
-  font-family: var(--font-accent);
-  font-size: 22px;
-  color: var(--text);
-  text-align: center;
-  letter-spacing: 0.3px;
-  line-height: 1.4;
-}
-
-.auth-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.input-group label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-light);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.input-group input {
-  background: var(--c2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  font-family: var(--font-main);
-  font-size: 14px;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.input-group input:focus {
-  border-color: var(--c1-darker);
-  box-shadow: 0 0 0 3px rgba(182, 226, 245, 0.4);
-}
-
-.input-group input::placeholder { color: var(--text-soft); }
-
-.btn-primary {
-  background: var(--c1-dark);
-  color: var(--text);
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  font-family: var(--font-main);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  width: 100%;
-  letter-spacing: 0.3px;
-}
-
-.btn-primary:hover { background: var(--c1-darker); transform: translateY(-1px); }
-.btn-primary:active { transform: translateY(0); }
-
-.btn-ghost {
-  background: transparent;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  font-family: var(--font-main);
-  font-size: 13px;
-  color: var(--text-light);
-  cursor: pointer;
-  transition: all 0.2s;
-  width: 100%;
-}
-
-.btn-ghost:hover { background: var(--c2); border-color: var(--c1-darker); }
-
-.auth-switch {
-  font-size: 13px;
-  color: var(--text-soft);
-  text-align: center;
-}
-
-.auth-switch a {
-  color: var(--text);
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.msg-error {
-  background: rgba(58,107,133,0.08);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  font-size: 13px;
-  color: var(--text);
-  text-align: center;
-  display: none;
-}
-
-.msg-error.show { display: block; }
-
-/* ════════════════════════════════════════
-   MAIN APP LAYOUT
-════════════════════════════════════════ */
-#page-app {
-  flex-direction: column;
-  background: var(--c2);
-  min-height: 100vh;
-}
-
-/* ─── TOP NAV ─── */
-.topnav {
-  background: var(--c1);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 12px var(--shadow);
-}
-
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-}
-
-.nav-logo img {
-  height: 36px;
-  width: 36px;
-  object-fit: contain;
-}
-
-.nav-logo span {
-  font-family: var(--font-accent);
-  font-size: 18px;
-  color: var(--text);
-  white-space: nowrap;
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.nav-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 10px;
-  color: var(--text-light);
-  font-size: 20px;
-  transition: background 0.2s, color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-btn:hover { background: var(--c2); color: var(--text); }
-.nav-btn.active { color: var(--text); background: var(--c2); }
-
-.nav-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--border);
-  cursor: pointer;
-}
-
-/* ─── BOTTOM NAV (mobile) ─── */
-.bottomnav {
-  display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0; right: 0;
-  background: var(--c1);
-  border-top: 1px solid var(--border);
-  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
-  z-index: 100;
-  box-shadow: 0 -2px 12px var(--shadow);
-}
-
-.bottomnav-inner {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.bnav-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 10px;
-  color: var(--text-soft);
-  font-size: 11px;
-  font-family: var(--font-main);
-  transition: color 0.2s;
-}
-
-.bnav-btn .icon { font-size: 22px; }
-.bnav-btn.active { color: var(--text); font-weight: 600; }
-
-/* ─── APP BODY ─── */
-.app-body {
-  display: flex;
-  flex: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 0;
-  gap: 0;
-}
-
-/* ─── LEFT SIDEBAR ─── */
-.sidebar-left {
-  width: 240px;
-  flex-shrink: 0;
-  padding: 24px 16px;
-  border-right: 1px solid var(--border);
-  min-height: calc(100vh - 60px);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--text-light);
-  font-weight: 500;
-  transition: all 0.15s;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  font-family: var(--font-main);
-}
-
-.sidebar-item:hover { background: var(--c1); color: var(--text); }
-.sidebar-item.active { background: var(--c1); color: var(--text); font-weight: 600; }
-.sidebar-item .icon { font-size: 18px; }
-
-/* ─── MAIN CONTENT ─── */
-.main-content {
-  flex: 1;
-  padding: 28px 24px;
-  min-height: calc(100vh - 60px);
-  overflow-y: auto;
-}
-
-/* ─── RIGHT SIDEBAR ─── */
-.sidebar-right {
-  width: 280px;
-  flex-shrink: 0;
-  padding: 24px 16px;
-  border-left: 1px solid var(--border);
-  min-height: calc(100vh - 60px);
-}
-
-/* ════════════════════════════════════════
-   SECTIONS (tabs)
-════════════════════════════════════════ */
-.section { display: none; }
-.section.active { display: block; }
-
-/* ─── CARDS ─── */
-.card {
-  background: var(--c1);
-  border-radius: var(--radius);
-  padding: 24px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 12px var(--shadow);
-}
-
-.card-title {
-  font-family: var(--font-accent);
-  font-size: 20px;
-  color: var(--text);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ─── BERTAHAN FEATURE ─── */
-.bertahan-card {
-  background: var(--c1);
-  border-radius: var(--radius);
-  padding: 32px;
-  text-align: center;
-  box-shadow: 0 4px 20px var(--shadow-md);
-  margin-bottom: 16px;
-}
-
-.bertahan-title {
-  font-family: var(--font-accent);
-  font-size: 26px;
-  color: var(--text);
-  margin-bottom: 8px;
-}
-
-.bertahan-subtitle {
-  font-size: 13px;
-  color: var(--text-soft);
-  margin-bottom: 28px;
-}
-
-.bertahan-tick-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.bertahan-checkbox-wrap {
-  position: relative;
-}
-
-.bertahan-checkbox {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  border: 3px solid var(--c1-dark);
-  background: var(--c2);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 34px;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 4px 16px var(--shadow);
-}
-
-.bertahan-checkbox:hover { transform: scale(1.05); }
-.bertahan-checkbox.checked {
-  background: var(--c1-dark);
-  border-color: var(--c1-darker);
-  box-shadow: 0 4px 20px rgba(110, 186, 217, 0.4);
-}
-
-.bertahan-streak {
-  font-family: var(--font-accent);
-  font-size: 18px;
-  color: var(--text-light);
-}
-
-.bertahan-streak span {
-  font-size: 28px;
-  color: var(--text);
-  font-weight: 700;
-}
-
-.bertahan-history {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 8px;
-}
-
-.day-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--c2);
-  border: 1.5px solid var(--border);
-}
-
-.day-dot.done { background: var(--c1-darker); border-color: var(--c1-darker); }
-.day-dot.today { border-color: var(--text-light); }
-
-/* ─── LUAHAN (expression) ─── */
-.luahan-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.luahan-textarea {
-  background: var(--c2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  font-family: var(--font-main);
-  font-size: 14px;
-  color: var(--text);
-  resize: none;
-  outline: none;
-  min-height: 100px;
-  transition: border-color 0.2s;
-  line-height: 1.6;
-}
-
-.luahan-textarea:focus { border-color: var(--c1-darker); }
-.luahan-textarea::placeholder { color: var(--text-soft); }
-
-.luahan-mood-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.mood-btn {
-  background: var(--c2);
-  border: 1.5px solid var(--border);
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: var(--font-main);
-  color: var(--text-light);
-}
-
-.mood-btn:hover, .mood-btn.selected {
-  background: var(--c1-dark);
-  border-color: var(--c1-darker);
-  color: var(--text);
-}
-
-.luahan-options {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.toggle-anon {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-light);
-  cursor: pointer;
-  user-select: none;
-}
-
-.toggle-switch {
-  width: 38px;
-  height: 20px;
-  background: var(--c2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  position: relative;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-
-.toggle-switch::after {
-  content: '';
-  width: 14px;
-  height: 14px;
-  background: var(--border);
-  border-radius: 50%;
-  position: absolute;
-  top: 2px; left: 2px;
-  transition: left 0.2s, background 0.2s;
-}
-
-.toggle-switch.on { background: var(--c1-dark); border-color: var(--c1-darker); }
-.toggle-switch.on::after { left: 20px; background: var(--text); }
-
-/* ─── POST FEED ─── */
-.post-item {
-  background: var(--c1);
-  border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px var(--shadow);
-  transition: box-shadow 0.2s;
-}
-
-.post-item:hover { box-shadow: 0 4px 16px var(--shadow-md); }
-
-.post-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.post-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--border);
-  flex-shrink: 0;
-}
-
-.post-meta { flex: 1; }
-
-.post-username {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.verified-badge {
-  width: 16px;
-  height: 16px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.post-time {
-  font-size: 12px;
-  color: var(--text-soft);
-}
-
-.post-mood-tag {
-  font-size: 11px;
-  background: var(--c2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 3px 10px;
-  color: var(--text-light);
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
-.post-content {
-  font-size: 14px;
-  color: var(--text);
-  line-height: 1.7;
-  margin-bottom: 12px;
-}
-
-.post-actions {
-  display: flex;
-  gap: 4px;
-}
-
-.post-action-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 13px;
-  color: var(--text-light);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--font-main);
-  transition: background 0.15s, color 0.15s;
-}
-
-.post-action-btn:hover { background: var(--c2); color: var(--text); }
-.post-action-btn.liked { color: var(--c1-darker); font-weight: 600; }
-
-/* ─── PROFILE PAGE ─── */
-.profile-header-card {
-  background: var(--c1);
-  border-radius: var(--radius);
-  padding: 32px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 12px var(--shadow);
-  flex-wrap: wrap;
-}
-
-.profile-avatar-wrap {
-  position: relative;
-}
-
-.profile-avatar {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--border);
-  display: block;
-}
-
-.profile-info { flex: 1; }
-
-.profile-username {
-  font-family: var(--font-accent);
-  font-size: 26px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.profile-username .verified-badge {
-  width: 22px;
-  height: 22px;
-}
-
-.profile-stats {
-  display: flex;
-  gap: 24px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.stat-num {
-  font-family: var(--font-accent);
-  font-size: 22px;
-  color: var(--text);
-  font-weight: 700;
-}
-
-.stat-label {
-  font-size: 11px;
-  color: var(--text-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.profile-bio {
-  font-size: 13px;
-  color: var(--text-light);
-  margin-top: 8px;
-  line-height: 1.5;
-}
-
-/* ─── SETTINGS ─── */
-.settings-section-title {
-  font-family: var(--font-accent);
-  font-size: 18px;
-  color: var(--text);
-  margin-bottom: 12px;
-  margin-top: 8px;
-}
-
-.settings-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  background: var(--c2);
-  margin-bottom: 8px;
-  gap: 12px;
-}
-
-.settings-item-label {
-  font-size: 14px;
-  color: var(--text);
-  font-weight: 500;
-}
-
-.settings-item-sub {
-  font-size: 12px;
-  color: var(--text-soft);
-  margin-top: 2px;
-}
-
-.btn-danger {
-  background: rgba(58, 107, 133, 0.1);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 20px;
-  font-family: var(--font-main);
-  font-size: 13px;
-  color: var(--text);
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.btn-danger:hover { background: rgba(58, 107, 133, 0.18); }
-
-.btn-sm {
-  padding: 8px 16px;
-  font-size: 13px;
-  border-radius: 8px;
-}
-
-/* ─── EXPLORE / LAMAN UTAMA ─── */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.section-heading {
-  font-family: var(--font-accent);
-  font-size: 24px;
-  color: var(--text);
-}
-
-/* ─── MOOD TRACKER ─── */
-.mood-calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.mood-day {
-  aspect-ratio: 1;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  color: var(--text-light);
-  background: var(--c2);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  font-family: var(--font-main);
-  transition: all 0.15s;
-  font-weight: 500;
-}
-
-.mood-day.filled { background: var(--c1-dark); border-color: var(--c1-darker); color: var(--text); }
-.mood-day.today { border-color: var(--text-light); border-width: 2px; }
-
-/* ─── RUANG TENANG (calm space) ─── */
-.tenang-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.tenang-card {
-  background: var(--c2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 20px 14px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.tenang-card:hover { background: var(--c1-dark); border-color: var(--c1-darker); transform: translateY(-2px); }
-.tenang-card .icon { font-size: 28px; display: block; margin-bottom: 8px; }
-.tenang-card .label { font-size: 12px; color: var(--text-light); font-weight: 600; }
-
-/* ─── MODAL ─── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(110, 170, 200, 0.35);
-  backdrop-filter: blur(4px);
-  z-index: 200;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: var(--c1);
-  border-radius: 20px;
-  padding: 32px;
-  width: 100%;
-  max-width: 440px;
-  box-shadow: 0 16px 60px var(--shadow-md);
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-title {
-  font-family: var(--font-accent);
-  font-size: 22px;
-  color: var(--text);
-  margin-bottom: 20px;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.modal-actions button { flex: 1; }
-
-/* ─── TOAST ─── */
-.toast {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--c1);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 20px;
-  font-size: 13px;
-  color: var(--text);
-  box-shadow: 0 4px 20px var(--shadow-md);
-  opacity: 0;
-  transition: all 0.3s;
-  z-index: 300;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ─── LOADER ─── */
-.loader {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  font-size: 13px;
-  color: var(--text-soft);
-  gap: 8px;
-}
-
-.loader::before {
-  content: '';
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--border);
-  border-top-color: var(--c1-darker);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ─── EMPTY STATE ─── */
-.empty-state {
-  text-align: center;
-  padding: 48px 24px;
-  color: var(--text-soft);
-}
-
-.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
-.empty-state p { font-size: 14px; line-height: 1.6; }
-
-/* ─── COMMENT SECTION ─── */
-.comment-box {
-  background: var(--c2);
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 8px;
-}
-
-.comment-input {
-  width: 100%;
-  background: var(--c1);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-family: var(--font-main);
-  font-size: 13px;
-  color: var(--text);
-  outline: none;
-  resize: none;
-  min-height: 50px;
-}
-
-.comment-item {
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.5;
-}
-
-.comment-item:last-child { border-bottom: none; }
-.comment-author { font-weight: 600; margin-right: 6px; display: inline-flex; align-items: center; gap: 3px; }
-
-/* ─── AURA POINTS ─── */
-.aura-display {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--c2);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 16px;
-}
-
-.aura-pts {
-  font-family: var(--font-accent);
-  font-size: 22px;
-  color: var(--text);
-  font-weight: 700;
-}
-
-/* ─── NOTIFICATIONS BADGE ─── */
-.notif-badge {
-  position: absolute;
-  top: -2px; right: -2px;
-  width: 16px;
-  height: 16px;
-  background: var(--c1-darker);
-  border-radius: 50%;
-  font-size: 10px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  border: 2px solid var(--c1);
-}
-
-/* ─── HARTA KARUN (random encouraging msg) ─── */
-.harta-card {
-  background: var(--c2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  font-family: var(--font-accent);
-  font-size: 16px;
-  color: var(--text);
-  line-height: 1.5;
-  text-align: center;
-  margin-top: 12px;
-}
-
-/* ─── RIGHT SIDEBAR CONTENT ─── */
-.sidebar-widget {
-  margin-bottom: 20px;
-}
-
-.widget-title {
-  font-family: var(--font-accent);
-  font-size: 16px;
-  color: var(--text);
-  margin-bottom: 10px;
-}
-
-.user-suggestion {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.user-suggestion:last-child { border-bottom: none; }
-
-.user-sug-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--border);
-}
-
-.user-sug-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.user-sug-name .verified-badge { width: 13px; height: 13px; }
-
-/* ─── TABS ─── */
-.tabs {
-  display: flex;
-  gap: 4px;
-  background: var(--c2);
-  border-radius: 10px;
-  padding: 4px;
-  margin-bottom: 20px;
-}
-
-.tab-btn {
-  flex: 1;
-  padding: 9px;
-  border: none;
-  background: none;
-  border-radius: 8px;
-  font-family: var(--font-main);
-  font-size: 13px;
-  color: var(--text-light);
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.15s;
-}
-
-.tab-btn.active {
-  background: var(--c1);
-  color: var(--text);
-  font-weight: 600;
-  box-shadow: 0 1px 6px var(--shadow);
-}
-
-/* ════════════════════════════════════════
-   RESPONSIVE
-════════════════════════════════════════ */
-@media (max-width: 1100px) {
-  .sidebar-right { display: none; }
-}
-
-@media (max-width: 768px) {
-  .sidebar-left { display: none; }
-  .bottomnav { display: block; }
-  .main-content { padding: 20px 14px 80px; }
-  .topnav { padding: 0 14px; }
-  .nav-logo span { display: none; }
-  .profile-header-card { padding: 20px; gap: 16px; }
-  .profile-avatar { width: 70px; height: 70px; }
-  .profile-username { font-size: 22px; }
-}
-
-@media (max-width: 480px) {
-  .auth-card { padding: 32px 22px; }
-  .auth-logo { width: 120px; height: 120px; }
-  .bertahan-card { padding: 24px 16px; }
-  .bertahan-title { font-size: 22px; }
-  .card { padding: 18px; }
-  .modal { padding: 24px 18px; }
-  .tenang-grid { grid-template-columns: repeat(2, 1fr); }
-  .mood-calendar { gap: 4px; }
-}
-
-/* ─── ANIM ─── */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.fade-in { animation: fadeIn 0.3s ease forwards; }
-
-@keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-.pop { animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>crash out, burn out, turn out d.</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Open+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #d7eaf6;
+      --text: #3a6b85;
+      --text-light: #6a9ab5;
+      --border: #8fc8e0;
+      --surface: #c8ebf7;
+      --surface2: #d8f0fa;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 260px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ─── LOGO ─── */
+    .logo-img {
+      display: block;
+      object-fit: contain;
+      border-radius: 50%;
+      background: var(--bg);
+    }
+
+    /* ─── TOAST ─── */
+    #toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      background: var(--text); color: var(--bg);
+      padding: 10px 22px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s; z-index: 9999;
+    }
+    #toast.show { opacity: 1; }
+
+    /* ─── SPINNER ─── */
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--text);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 40px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ══════════════════════════════
+       AUTH PAGE
+    ══════════════════════════════ */
+    #page-auth {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px 20px;
+      background: var(--bg);
+    }
+    #page-auth .logo-wrap { margin-bottom: 28px; }
+    #page-auth .logo-img { 
+      width: 140px; 
+      height: 140px; 
+      margin: 0 auto;
+      border-radius: 50%;
+    }
+    .auth-card {
+      width: 100%; max-width: 380px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      border: 1.5px solid var(--border);
+    }
+    .auth-card h2 {
+      font-size: 1.1rem; font-weight: 600;
+      margin-bottom: 24px; text-align: center;
+      letter-spacing: 0.01em;
+    }
+    .field { margin-bottom: 16px; }
+    .field label { 
+      display: block; 
+      font-size: 0.85rem; 
+      font-weight: 600; 
+      margin-bottom: 5px; 
+      letter-spacing: 0.04em; 
+      color: var(--text);
+    }
+    .field .input-wrap { position: relative; }
+    .field input {
+      width: 100%; padding: 10px 14px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text);
+      font-family: 'Open Sans', sans-serif; font-size: 0.82rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .field input:focus { border-color: var(--text); }
+    .field input::placeholder { 
+      color: var(--text-light); 
+      font-size: 0.75rem;
+    }
+    .pw-toggle {
+      position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-light); font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .btn-primary {
+      width: 100%; padding: 11px;
+      background: var(--text); color: var(--bg);
+      border: none; border-radius: var(--radius-sm);
+      font-family: 'Open Sans', sans-serif; font-size: 0.92rem; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s;
+      margin-top: 6px;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .auth-switch {
+      text-align: center; margin-top: 18px;
+      font-size: 0.82rem; color: var(--text-light);
+    }
+    .auth-switch button {
+      background: none; border: none; cursor: pointer;
+      color: var(--text); font-weight: 600; font-size: 0.82rem;
+      text-decoration: underline; text-underline-offset: 2px;
+    }
+    .auth-error {
+      font-size: 0.8rem; color: var(--text);
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 9px 13px;
+      margin-bottom: 14px; text-align: center;
+    }
+
+    /* ══════════════════════════════
+       APP SHELL
+    ══════════════════════════════ */
+    #app { display: none; min-height: 100vh; }
+    #app.active { display: flex; }
+
+    /* Sidebar */
+    #sidebar {
+      width: var(--sidebar-w); min-height: 100vh;
+      background: var(--surface); border-right: 1.5px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 28px 0; position: fixed; left: 0; top: 0; bottom: 0;
+      z-index: 100;
+    }
+    #sidebar .logo-wrap {
+      padding: 0 30px; margin-bottom: 32px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #sidebar .logo-wrap img { 
+      width: 90px; 
+      height: 90px; 
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--border);
+    }
+    #sidebar nav { flex: 1; }
+    #sidebar nav a {
+      display: block; padding: 11px 20px;
+      color: var(--text-light); font-size: 0.9rem; font-weight: 600;
+      text-decoration: none; letter-spacing: 0.04em;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+    #sidebar nav a:hover { color: var(--text); }
+    #sidebar nav a.active { color: var(--text); border-left-color: var(--text); background: var(--bg); }
+
+    /* Sidebar user with avatar */
+    #sidebar .sidebar-user {
+      padding: 16px 20px;
+      border-top: 1.5px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #sidebar .sidebar-user:hover { background: var(--bg); }
+    .sidebar-user-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--border); overflow: hidden; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 1.2rem; font-weight: 600;
+      color: var(--text); border: 2px solid var(--border);
+    }
+    .sidebar-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .sidebar-user-info { 
+      font-size: 0.78rem; 
+      color: var(--text-light);
+      line-height: 1.4;
+    }
+    .sidebar-user-info .uname {
+      font-family: 'Caveat', cursive; font-size: 1.3rem;
+      color: var(--text); font-weight: 600; display: block;
+    }
+
+    /* Notification badge on nav */
+    .nav-notif-wrap { position: relative; display: inline-block; }
+    .notif-dot {
+      position: absolute; top: 4px; right: 16px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--text); border: 2px solid var(--surface);
+      display: none;
+    }
+    .notif-dot.show { display: block; }
+
+    /* Main content */
+    #main {
+      flex: 1;
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    /* Bottom navbar (mobile) */
+    #bottom-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--surface); border-top: 1.5px solid var(--border);
+      height: 64px; z-index: 100;
+      justify-content: space-around; align-items: center;
+    }
+    #bottom-nav a {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: var(--text-light); font-size: 0.6rem; font-weight: 600;
+      text-decoration: none; letter-spacing: 0.04em; gap: 3px;
+      transition: color 0.15s; padding: 4px 0;
+    }
+    #bottom-nav a.active { color: var(--text); }
+    #bottom-nav a svg { width: 20px; height: 20px; flex-shrink: 0; }
+    #bottom-nav a .bnav-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 2px solid var(--border); overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 0.8rem; font-weight: 600;
+      color: var(--text); background: var(--border);
+      flex-shrink: 0;
+    }
+    #bottom-nav a .bnav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    #bottom-nav a.active .bnav-avatar { border-color: var(--text); }
+
+    /* Mobile logo */
+    .mobile-logo {
+      display: none;
+      text-align: center;
+      padding: 16px 0 8px;
+      background: var(--bg);
+    }
+    .mobile-logo img {
+      width: 65px;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--border);
+      background: var(--bg);
+    }
+
+    /* Content area */
+    .content-area {
+      max-width: 640px; width: 100%;
+      margin: 0 auto; padding: 36px 20px 100px;
+    }
+
+    /* Page headings */
+    .page-title {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-light); margin-bottom: 24px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    /* ══════════════════════════════
+       DASHBOARD
+    ══════════════════════════════ */
+    .bertahan-card { text-align: center; padding: 28px 20px; }
+    .bertahan-label {
+      font-size: 1.05rem; font-weight: 400;
+      margin-bottom: 22px; color: var(--text);
+      font-style: italic;
+    }
+    .tick-btn {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      border: 2.5px solid var(--text);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .tick-btn:hover:not(:disabled) { transform: scale(1.05); }
+    .tick-btn.ticked { background: var(--text); }
+    .tick-btn svg { width: 28px; height: 28px; }
+    .tick-btn:disabled { cursor: default; opacity: 0.8; }
+    .streak-info {
+      display: flex; gap: 28px; justify-content: center; margin-top: 14px;
+    }
+    .streak-item { text-align: center; }
+    .streak-num {
+      font-family: 'Caveat', cursive; font-size: 2rem;
+      font-weight: 700; line-height: 1;
+    }
+    .streak-lbl { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: var(--text-light); text-transform: uppercase; }
+
+    /* Calendar */
+    .calendar-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light); margin-bottom: 12px; }
+    .mini-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+    .cal-day {
+      aspect-ratio: 1; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 0.85rem;
+      color: var(--text-light); position: relative;
+    }
+    .cal-day.ticked { background: var(--text); color: var(--bg); }
+    .cal-day.today { border: 1.5px solid var(--text); color: var(--text); }
+    .cal-day.future { opacity: 0.35; }
+
+    /* Bertahan achievements */
+    .achievement-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .achievement-badge {
+      display: flex; flex-direction: column; align-items: center;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 12px;
+      font-size: 0.65rem; color: var(--text-light); text-align: center; gap: 4px;
+      min-width: 60px; transition: opacity 0.2s;
+    }
+    .achievement-badge .badge-icon { font-size: 1.4rem; }
+    .achievement-badge.earned { border-color: var(--text); color: var(--text); background: var(--surface2); }
+    .achievement-badge.locked { opacity: 0.4; }
+
+    /* Achievement badge next to username */
+    .achievement-badge-icon {
+      display: inline-block; width: 18px; height: 18px; 
+      vertical-align: middle; margin-left: 4px;
+      fill: #c9a63e; flex-shrink: 0;
+    }
+    .achievement-badge-icon.small { width: 14px; height: 14px; }
+
+    /* 30-day dots */
+    .dots-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
+    .day-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--surface2); border: 1.5px solid var(--border);
+    }
+    .day-dot.done { background: var(--text); border-color: var(--text); }
+    .day-dot.today-dot { border-color: var(--text-light); border-width: 2px; }
+
+    /* Feed */
+    .feed-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light); margin-bottom: 14px; margin-top: 28px; }
+    .luahan-item {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .luahan-item:hover { background: var(--surface2); }
+    .luahan-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .luahan-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--border); overflow: hidden; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 600;
+    }
+    .luahan-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .luahan-user { 
+      font-family: 'Caveat', cursive; 
+      font-size: 1.2rem; 
+      font-weight: 600; 
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .luahan-user:hover { color: var(--text-light); }
+    .luahan-badge {
+      width: 16px; height: 16px; fill: var(--text);
+      display: inline-block; vertical-align: middle;
+    }
+    .luahan-anon { font-size: 0.82rem; color: var(--text-light); font-style: italic; }
+    .luahan-text { font-size: 0.9rem; line-height: 1.65; color: var(--text); }
+    .luahan-time { font-size: 0.72rem; color: var(--text-light); margin-top: 8px; }
+    .empty-feed { text-align: center; color: var(--text-light); font-size: 0.88rem; padding: 32px 0; font-style: italic; }
+
+    /* ══════════════════════════════
+       POST PAGE
+    ══════════════════════════════ */
+    .post-card { padding: 24px; }
+    .post-card textarea {
+      width: 100%; min-height: 160px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text);
+      font-family: 'Open Sans', sans-serif; font-size: 0.92rem;
+      line-height: 1.7; padding: 14px;
+      resize: vertical; outline: none;
+      transition: border-color 0.2s;
+    }
+    .post-card textarea:focus { border-color: var(--text); }
+    .post-card textarea::placeholder { color: var(--text-light); }
+    .post-options {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 14px; flex-wrap: wrap; gap: 12px;
+    }
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; }
+    .toggle {
+      width: 40px; height: 22px; border-radius: 11px;
+      background: var(--border); border: none; cursor: pointer;
+      position: relative; transition: background 0.2s;
+    }
+    .toggle::after {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--bg); top: 3px; left: 3px;
+      transition: left 0.2s;
+    }
+    .toggle.on { background: var(--text); }
+    .toggle.on::after { left: 21px; }
+    .char-count { font-size: 0.75rem; color: var(--text-light); }
+
+    /* ══════════════════════════════
+       RUANG TENANG
+    ══════════════════════════════ */
+    .tenang-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px;
+    }
+    .tenang-tile {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 18px 10px;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+    }
+    .tenang-tile:hover { background: var(--text); border-color: var(--text); }
+    .tenang-tile:hover .tt-label { color: var(--bg); }
+    .tt-label { font-size: 0.72rem; font-weight: 600; color: var(--text-light); letter-spacing: 0.03em; }
+
+    /* Tenang sub-content */
+    .tenang-sub { margin-top: 0; }
+    .tenang-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+    .tenang-step {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 13px 16px;
+      font-size: 0.88rem; color: var(--text);
+    }
+    .affirmation-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .affirmation-item {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--text);
+      text-align: center;
+    }
+    
+    /* SOS wide layout */
+    .sos-list { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+      gap: 10px; 
+      margin-top: 8px; 
+    }
+    .sos-item {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+    }
+    .sos-item strong { display: block; font-size: 0.9rem; margin-bottom: 3px; }
+    .sos-item .sos-num { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .sos-item .sos-desc { font-size: 0.72rem; color: var(--text-light); margin-top: 3px; }
+
+    /* Jurnal/gratitud slides */
+    .slide-container {
+      display: flex; gap: 10px; overflow-x: auto; padding: 10px 0;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    }
+    .slide-card {
+      flex: 0 0 200px; height: 200px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px;
+      scroll-snap-align: start; cursor: pointer;
+      transition: all 0.2s; display: flex; flex-direction: column;
+      font-size: 0.82rem; color: var(--text); overflow: hidden;
+      position: relative;
+    }
+    .slide-card:hover { border-color: var(--text); }
+    .slide-card .slide-date {
+      font-size: 0.65rem; color: var(--text-light); 
+      font-weight: 600; letter-spacing: 0.04em; margin-bottom: 6px;
+    }
+    .slide-card .slide-text {
+      flex: 1; overflow: hidden; line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical;
+    }
+    .slide-card.today-slide { border-color: var(--text); border-width: 2px; }
+    .slide-card.empty-slide {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-light); font-style: italic;
+    }
+
+    /* Jurnal/gratitud textarea */
+    .tenang-textarea {
+      width: 100%; min-height: 120px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text);
+      font-family: 'Open Sans', sans-serif; font-size: 0.88rem;
+      line-height: 1.7; padding: 12px 14px;
+      resize: vertical; outline: none; margin-top: 10px;
+      transition: border-color 0.2s;
+    }
+    .tenang-textarea:focus { border-color: var(--text); }
+    .tenang-textarea::placeholder { color: var(--text-light); }
+
+    /* ══════════════════════════════
+       PROFILE PAGE
+    ══════════════════════════════ */
+    .profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
+    .profile-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--border); overflow: hidden; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 2.2rem; font-weight: 700;
+      border: 3px solid var(--border);
+    }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-info .username {
+      font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .profile-info .bio { font-size: 0.85rem; color: var(--text-light); margin-top: 3px; }
+    .profile-stats { display: flex; gap: 24px; margin-top: 8px; }
+    .stat-item { text-align: center; }
+    .stat-num { font-family: 'Caveat', cursive; font-size: 1.5rem; font-weight: 700; }
+    .stat-lbl { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-light); }
+
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 1.5px solid var(--border); margin-bottom: 20px; }
+    .tab-btn {
+      padding: 10px 18px; font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-light); background: none; border: none;
+      border-bottom: 2.5px solid transparent; cursor: pointer;
+      transition: all 0.15s; margin-bottom: -1.5px;
+    }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Full calendar */
+    .full-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .full-cal-header .month-name { font-family: 'Caveat', cursive; font-size: 1.3rem; font-weight: 600; }
+    .cal-nav { background: none; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 4px 10px; cursor: pointer; color: var(--text); font-size: 0.8rem; }
+    .full-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .full-cal .day-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; color: var(--text-light); padding-bottom: 4px; }
+    .full-cal .cal-day { font-size: 0.88rem; }
+
+    .btn-edit {
+      display: inline-block; padding: 8px 18px;
+      border: 1.5px solid var(--text); border-radius: var(--radius-sm);
+      color: var(--text); font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.04em; cursor: pointer; background: none;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .btn-edit:hover { background: var(--text); color: var(--bg); }
+
+    /* Back button */
+    .back-btn {
+      display: inline-block; padding: 6px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text-light); font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; background: none; margin-bottom: 16px;
+      transition: all 0.15s;
+    }
+    .back-btn:hover { border-color: var(--text); color: var(--text); }
+
+    /* ══════════════════════════════
+       NOTIFIKASI PAGE
+    ══════════════════════════════ */
+    .notif-item {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .notif-item.unread { border-color: var(--text); background: var(--surface2); }
+    .notif-body { flex: 1; }
+    .notif-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
+    .notif-msg { font-size: 0.85rem; color: var(--text-light); line-height: 1.55; }
+    .notif-time { font-size: 0.72rem; color: var(--text-light); margin-top: 6px; }
+    .notif-empty { text-align: center; color: var(--text-light); font-size: 0.88rem; padding: 40px 0; font-style: italic; }
+
+    /* ══════════════════════════════
+       SETTINGS PAGE
+    ══════════════════════════════ */
+    .settings-section { margin-bottom: 28px; }
+    .settings-section h3 { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 14px; }
+    .btn-danger {
+      width: 100%; padding: 11px;
+      background: none; border: 1.5px solid var(--text);
+      border-radius: var(--radius-sm); color: var(--text);
+      font-family: 'Open Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em;
+    }
+    .btn-danger:hover { background: var(--text); color: var(--bg); }
+    .btn-logout {
+      width: 100%; padding: 11px;
+      background: var(--text); border: none;
+      border-radius: var(--radius-sm); color: var(--bg);
+      font-family: 'Open Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .btn-logout:hover { opacity: 0.8; }
+
+    /* ══════════════════════════════
+       MODAL
+    ══════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(58, 107, 133, 0.3);
+      display: none; align-items: center; justify-content: center;
+      z-index: 200; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 28px 24px;
+      width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+    }
+    .modal h3 { font-size: 1rem; font-weight: 600; margin-bottom: 18px; }
+    .modal p { font-size: 0.85rem; color: var(--text-light); margin-bottom: 18px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .modal-actions button { flex: 1; }
+
+    /* Wide modal for SOS */
+    .modal.wide { max-width: 700px; }
+
+    /* ══════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════ */
+    @media (max-width: 700px) {
+      #sidebar { display: none; }
+      #bottom-nav { display: flex; }
+      #main { margin-left: 0; padding-bottom: 64px; }
+      .content-area { padding: 22px 16px 90px; }
+      .profile-header { flex-direction: column; align-items: flex-start; }
+      .tenang-grid { grid-template-columns: repeat(2, 1fr); }
+      .mobile-logo { display: block; }
+      .sos-list { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 701px) {
+      #bottom-nav { display: none; }
+      .mobile-logo { display: none; }
+    }
+    @media (min-width: 1100px) {
+      .content-area { max-width: 700px; }
+    }
+
+    .page { animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     PAGE: LOGIN
-══════════════════════════════════════ -->
-<div id="page-login" class="page active">
-  <div class="auth-card fade-in">
-    <img src="logo.png" alt="logo" class="auth-logo">
-    <p class="auth-title">selamat kembali 🌊</p>
-    <div class="auth-form">
-      <div class="input-group">
-        <label>emel</label>
-        <input type="email" id="login-email" placeholder="emel@contoh.com">
+<!-- ═══════════════════ AUTH PAGE ═══════════════════ -->
+<div id="page-auth">
+  <div class="logo-wrap">
+    <img src="logo.png" alt="logo" class="logo-img" onerror="this.style.display='none'" />
+  </div>
+
+  <div class="auth-card">
+    <h2 id="auth-title">log masuk.</h2>
+    <div id="auth-error" class="auth-error hidden"></div>
+
+    <div id="form-login">
+      <div class="field">
+        <label>e-mel atau nama pengguna.</label>
+        <input type="text" id="login-id" placeholder="e-mel atau nama pengguna" autocomplete="username" />
       </div>
-      <div class="input-group">
-        <label>kata laluan</label>
-        <input type="password" id="login-pass" placeholder="••••••••">
+      <div class="field">
+        <label>kata laluan.</label>
+        <div class="input-wrap">
+          <input type="password" id="login-pw" placeholder="kata laluan" autocomplete="current-password" />
+          <button class="pw-toggle" onclick="togglePw('login-pw',this)">papar</button>
+        </div>
       </div>
-      <div class="msg-error" id="login-error"></div>
-      <button class="btn-primary" onclick="doLogin()">masuk</button>
-      <button class="btn-ghost" onclick="showPage('register')">buat akaun baharu</button>
+      <button class="btn-primary" id="btn-login" onclick="doLogin()">log masuk.</button>
     </div>
-    <p class="auth-switch">tiada akaun? <a onclick="showPage('register')">daftar di sini</a></p>
+
+    <div id="form-register" class="hidden">
+      <div class="field">
+        <label>nama pengguna.</label>
+        <input type="text" id="reg-uname" placeholder="nama pengguna unik" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label>e-mel.</label>
+        <input type="email" id="reg-email" placeholder="alamat e-mel" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label>kata laluan.</label>
+        <div class="input-wrap">
+          <input type="password" id="reg-pw" placeholder="kata laluan (min 6 aksara)" autocomplete="new-password" />
+          <button class="pw-toggle" onclick="togglePw('reg-pw',this)">papar</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-register" onclick="doRegister()">daftar.</button>
+    </div>
+
+    <div class="auth-switch">
+      <span id="auth-switch-text">belum ada akaun?</span>
+      <button id="auth-switch-btn" onclick="toggleAuthMode()">daftar.</button>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PAGE: REGISTER
-══════════════════════════════════════ -->
-<div id="page-register" class="page">
-  <div class="auth-card fade-in">
-    <img src="logo.png" alt="logo" class="auth-logo">
-    <p class="auth-title">mulakan perjalanan anda ✨</p>
-    <div class="auth-form">
-      <div class="input-group">
-        <label>username</label>
-        <input type="text" id="reg-username" placeholder="pilih username unik" maxlength="24">
-      </div>
-      <div class="input-group">
-        <label>emel</label>
-        <input type="email" id="reg-email" placeholder="emel@contoh.com">
-      </div>
-      <div class="input-group">
-        <label>kata laluan</label>
-        <input type="password" id="reg-pass" placeholder="sekurang-kurangnya 6 aksara">
-      </div>
-      <div class="msg-error" id="reg-error"></div>
-      <button class="btn-primary" onclick="doRegister()">daftar</button>
-      <button class="btn-ghost" onclick="showPage('login')">sudah ada akaun</button>
+<!-- ═══════════════════ APP SHELL ═══════════════════ -->
+<div id="app">
+  <aside id="sidebar">
+    <div class="logo-wrap">
+      <img src="logo.png" alt="logo" onerror="this.style.display='none'" />
     </div>
-    <p class="auth-switch">sudah ada akaun? <a onclick="showPage('login')">masuk di sini</a></p>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     PAGE: APP
-══════════════════════════════════════ -->
-<div id="page-app" class="page">
-
-  <!-- TOP NAV -->
-  <nav class="topnav">
-    <a class="nav-logo" onclick="switchSection('home')">
-      <img src="logo.png" alt="logo">
-      <span>crash out, burn out, turn out d</span>
-    </a>
-    <div class="nav-actions">
-      <div style="position:relative">
-        <button class="nav-btn" onclick="switchSection('notifications')" id="nav-notif-btn" title="Notifikasi">🔔</button>
-        <div class="notif-badge" id="notif-badge" style="display:none">0</div>
+    <nav>
+      <a href="#" class="nav-link active" data-page="dashboard">papan muka.</a>
+      <a href="#" class="nav-link" data-page="post">luahan.</a>
+      <a href="#" class="nav-link" data-page="bertahan">bertahan.</a>
+      <a href="#" class="nav-link" data-page="tenang">ruang tenang.</a>
+      <div class="nav-notif-wrap" style="display:block">
+        <a href="#" class="nav-link" data-page="notifikasi">notifikasi.</a>
+        <span class="notif-dot" id="sidebar-notif-dot"></span>
       </div>
-      <img src="" alt="profil" class="nav-avatar" id="nav-avatar" onclick="switchSection('profile')" onerror="this.src='https://api.dicebear.com/7.x/thumbs/svg?seed=user'">
+      <a href="#" class="nav-link" data-page="profile">profil.</a>
+      <a href="#" class="nav-link" data-page="settings">tetapan.</a>
+    </nav>
+    <div class="sidebar-user" id="sidebar-user" onclick="navigate('settings')">
+      <div class="sidebar-user-avatar" id="sidebar-avatar-wrap"></div>
+      <div class="sidebar-user-info">
+        log masuk sebagai
+        <span class="uname" id="sidebar-uname"></span>
+      </div>
     </div>
-  </nav>
+  </aside>
 
-  <!-- APP BODY -->
-  <div class="app-body">
+  <main id="main">
+    <div class="mobile-logo">
+      <img src="logo.png" alt="logo" onerror="this.style.display='none'" />
+    </div>
 
-    <!-- LEFT SIDEBAR -->
-    <aside class="sidebar-left">
-      <button class="sidebar-item active" id="sbar-home" onclick="switchSection('home')">
-        <span class="icon">🏠</span> laman utama
-      </button>
-      <button class="sidebar-item" id="sbar-bertahan" onclick="switchSection('bertahan')">
-        <span class="icon">✨</span> masih bertahan
-      </button>
-      <button class="sidebar-item" id="sbar-luah" onclick="switchSection('luah')">
-        <span class="icon">💬</span> luahan hati
-      </button>
-      <button class="sidebar-item" id="sbar-explore" onclick="switchSection('explore')">
-        <span class="icon">🔍</span> terokai
-      </button>
-      <button class="sidebar-item" id="sbar-tenang" onclick="switchSection('tenang')">
-        <span class="icon">🌿</span> ruang tenang
-      </button>
-      <button class="sidebar-item" id="sbar-mood" onclick="switchSection('mood')">
-        <span class="icon">📊</span> rekod mood
-      </button>
-      <button class="sidebar-item" id="sbar-profile" onclick="switchSection('profile')">
-        <span class="icon">👤</span> profil saya
-      </button>
-      <button class="sidebar-item" id="sbar-settings" onclick="switchSection('settings')">
-        <span class="icon">⚙️</span> tetapan
-      </button>
-    </aside>
+    <nav id="bottom-nav">
+      <a href="#" class="nav-link active" data-page="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        utama.
+      </a>
+      <a href="#" class="nav-link" data-page="post">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        luahan.
+      </a>
+      <a href="#" class="nav-link" data-page="bertahan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        bertahan.
+      </a>
+      <a href="#" class="nav-link" data-page="notifikasi" style="position:relative">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        notif.
+        <span class="notif-dot" id="bnav-notif-dot" style="position:absolute;top:2px;right:calc(50% - 14px)"></span>
+      </a>
+      <a href="#" class="nav-link" data-page="profile">
+        <div class="bnav-avatar" id="bnav-avatar-wrap"></div>
+        profil.
+      </a>
+    </nav>
 
-    <!-- MAIN -->
-    <main class="main-content">
-
-      <!-- ── LAMAN UTAMA ── -->
-      <div class="section active fade-in" id="section-home">
-        <div class="section-header">
-          <h1 class="section-heading">laman utama</h1>
-        </div>
-
-        <!-- Bertahan quick widget -->
-        <div class="card" id="home-bertahan-widget" style="cursor:pointer" onclick="switchSection('bertahan')">
-          <div style="display:flex;align-items:center;gap:16px">
-            <div class="bertahan-checkbox" id="home-tick-circle" style="width:50px;height:50px;font-size:24px;flex-shrink:0">☁️</div>
-            <div>
-              <div style="font-family:var(--font-accent);font-size:17px;color:var(--text)">✨ saya masih cuba bertahan hari ini</div>
-              <div style="font-size:12px;color:var(--text-soft);margin-top:4px">ketik untuk tandakan hari ini</div>
-            </div>
+    <!-- ── DASHBOARD ── -->
+    <div id="page-dashboard" class="content-area page hidden">
+      <p class="page-title">papan muka.</p>
+      <div class="card bertahan-card">
+        <div class="bertahan-label">"saya masih cuba bertahan hari ini."</div>
+        <button class="tick-btn" id="tick-btn" onclick="doTick()">
+          <svg id="tick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+        <div class="streak-info">
+          <div class="streak-item">
+            <div class="streak-num" id="streak-num">0</div>
+            <div class="streak-lbl">hari berturut.</div>
           </div>
-        </div>
-
-        <!-- Feed -->
-        <div class="tabs">
-          <button class="tab-btn active" onclick="switchFeedTab(this, 'all')">semua luahan</button>
-          <button class="tab-btn" onclick="switchFeedTab(this, 'following')">diikuti</button>
-        </div>
-
-        <div id="home-feed">
-          <div class="loader"></div>
-        </div>
-      </div>
-
-      <!-- ── MASIH BERTAHAN ── -->
-      <div class="section fade-in" id="section-bertahan">
-        <div class="bertahan-card">
-          <div class="bertahan-title">✨ saya masih cuba bertahan hari ini</div>
-          <div class="bertahan-subtitle">tandakan setiap hari selagi kamu masih di sini</div>
-          <div class="bertahan-tick-area">
-            <div class="bertahan-checkbox" id="bertahan-tick" onclick="toggleBertahan()">☁️</div>
-            <div class="bertahan-streak">streik <span id="streak-num">0</span> hari berturut-turut 🌊</div>
-            <div id="bertahan-status-text" style="font-size:13px;color:var(--text-soft)">belum ditandakan hari ini</div>
-            <div class="bertahan-history" id="bertahan-dots"></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">🗓️ rekod 30 hari lalu</div>
-          <div class="bertahan-history" id="bertahan-30days" style="gap:8px"></div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">🏅 pencapaian kamu</div>
-          <div id="bertahan-achievements" style="display:flex;flex-wrap:wrap;gap:10px"></div>
-        </div>
-      </div>
-
-      <!-- ── LUAHAN HATI ── -->
-      <div class="section fade-in" id="section-luah">
-        <div class="section-header">
-          <h1 class="section-heading">luahan hati</h1>
-        </div>
-        <div class="card">
-          <div class="card-title">💬 apa yang ada di hati?</div>
-          <div class="luahan-form">
-            <div class="luahan-mood-row">
-              <button class="mood-btn" onclick="selectMood(this, 'penat')">😮‍💨 penat</button>
-              <button class="mood-btn" onclick="selectMood(this, 'kosong')">🌫️ kosong</button>
-              <button class="mood-btn" onclick="selectMood(this, 'harapan')">🌱 harapan</button>
-              <button class="mood-btn" onclick="selectMood(this, 'marah')">🌊 marah</button>
-              <button class="mood-btn" onclick="selectMood(this, 'sedih')">💧 sedih</button>
-              <button class="mood-btn" onclick="selectMood(this, 'bingung')">🌀 bingung</button>
-              <button class="mood-btn" onclick="selectMood(this, 'tenang')">🌿 tenang</button>
-            </div>
-            <textarea class="luahan-textarea" id="luah-text" placeholder="luahkan apa sahaja di sini... tiada yang dihakimi." rows="4" maxlength="500"></textarea>
-            <div id="luah-char" style="font-size:11px;color:var(--text-soft);text-align:right">0 / 500</div>
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-              <label class="toggle-anon" onclick="toggleAnon()">
-                <div class="toggle-switch" id="anon-toggle"></div>
-                <span id="anon-label">nama nyata</span>
-              </label>
-              <button class="btn-primary" style="width:auto;padding:12px 28px" onclick="submitLuahan()">hantar</button>
-            </div>
+          <div class="streak-item">
+            <div class="streak-num" id="total-ticked">0</div>
+            <div class="streak-lbl">jumlah bertahan.</div>
           </div>
         </div>
       </div>
+      <div class="card">
+        <div class="calendar-title" id="mini-cal-title"></div>
+        <div class="mini-cal" id="mini-cal"></div>
+      </div>
+      <div class="feed-title">luahan semua.</div>
+      <div id="feed-list"></div>
+    </div>
 
-      <!-- ── TEROKAI ── -->
-      <div class="section fade-in" id="section-explore">
-        <div class="section-header">
-          <h1 class="section-heading">terokai</h1>
+    <!-- ── POST ── -->
+    <div id="page-post" class="content-area page hidden">
+      <p class="page-title">luahan perasaan.</p>
+      <div class="card post-card">
+        <textarea id="post-text" placeholder="apa yang ingin kamu luahkan hari ini..." maxlength="1000" oninput="updateCharCount()"></textarea>
+        <div class="post-options">
+          <div class="toggle-wrap">
+            <button class="toggle" id="anon-toggle" onclick="toggleAnon()"></button>
+            <span id="anon-label">hantar dengan nama.</span>
+          </div>
+          <span class="char-count"><span id="char-count">0</span>/1000</span>
         </div>
-        <div class="card">
-          <input type="text" placeholder="🔍  cari pengguna atau luahan..." style="width:100%;background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none" id="search-input" oninput="doSearch(this.value)">
+        <button class="btn-primary" id="btn-post" onclick="doPost()" style="margin-top:16px;">hantar luahan.</button>
+      </div>
+    </div>
+
+    <!-- ── BERTAHAN ── -->
+    <div id="page-bertahan" class="content-area page hidden">
+      <p class="page-title">masih bertahan.</p>
+      <div class="card bertahan-card">
+        <div class="bertahan-label">"saya masih cuba bertahan hari ini."</div>
+        <button class="tick-btn" id="tick-btn-b" onclick="doTick()">
+          <svg id="tick-icon-b" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+        <div class="streak-info">
+          <div class="streak-item">
+            <div class="streak-num" id="streak-num-b">0</div>
+            <div class="streak-lbl">hari berturut.</div>
+          </div>
+          <div class="streak-item">
+            <div class="streak-num" id="total-ticked-b">0</div>
+            <div class="streak-lbl">jumlah bertahan.</div>
+          </div>
         </div>
-        <div id="explore-results">
-          <div class="loader"></div>
+        <div id="bertahan-status" style="margin-top:10px;font-size:0.82rem;color:var(--text-light);font-style:italic;"></div>
+      </div>
+      <div class="card">
+        <div class="calendar-title">30 hari lalu.</div>
+        <div class="dots-row" id="bertahan-30dots"></div>
+      </div>
+      <div class="card">
+        <div class="calendar-title">pencapaian kamu.</div>
+        <div class="achievement-row" id="achievement-row"></div>
+      </div>
+      <div class="card">
+        <div class="calendar-title" id="bertahan-cal-title"></div>
+        <div class="full-cal-header">
+          <button class="cal-nav" onclick="changeBertahanMonth(-1)">←</button>
+          <span class="month-name" id="bertahan-month-name"></span>
+          <button class="cal-nav" onclick="changeBertahanMonth(1)">→</button>
+        </div>
+        <div class="full-cal" id="bertahan-full-cal"></div>
+      </div>
+    </div>
+
+    <!-- ── RUANG TENANG ── -->
+    <div id="page-tenang" class="content-area page hidden">
+      <p class="page-title">ruang tenang.</p>
+      <div class="card">
+        <div class="calendar-title" style="margin-bottom:16px;">pilih aktiviti.</div>
+        <div class="tenang-grid">
+          <div class="tenang-tile" onclick="openTenang('nafas')">
+            <span class="tt-label">pernafasan.</span>
+          </div>
+          <div class="tenang-tile" onclick="openTenang('gratitud')">
+            <span class="tt-label">syukur.</span>
+          </div>
+          <div class="tenang-tile" onclick="openTenang('afirmasi')">
+            <span class="tt-label">afirmasi.</span>
+          </div>
+          <div class="tenang-tile" onclick="openTenang('sos')">
+            <span class="tt-label">talian bantuan.</span>
+          </div>
+          <div class="tenang-tile" onclick="openTenang('jurnal')">
+            <span class="tt-label">jurnal.</span>
+          </div>
         </div>
       </div>
+      <div id="tenang-sub-content"></div>
+    </div>
 
-      <!-- ── RUANG TENANG ── -->
-      <div class="section fade-in" id="section-tenang">
-        <div class="section-header">
-          <h1 class="section-heading">ruang tenang</h1>
-        </div>
-        <div class="card">
-          <div class="card-title">🌿 pilih aktiviti</div>
-          <div class="tenang-grid">
-            <div class="tenang-card" onclick="openTenang('nafas')">
-              <span class="icon">🫁</span>
-              <span class="label">latihan pernafasan</span>
-            </div>
-            <div class="tenang-card" onclick="openTenang('gratitud')">
-              <span class="icon">🙏</span>
-              <span class="label">buku rasa syukur</span>
-            </div>
-            <div class="tenang-card" onclick="openTenang('afirmasi')">
-              <span class="icon">💫</span>
-              <span class="label">afirmasi harian</span>
-            </div>
-            <div class="tenang-card" onclick="openTenang('sos')">
-              <span class="icon">🆘</span>
-              <span class="label">talian bantuan</span>
-            </div>
-            <div class="tenang-card" onclick="openTenang('jurnal')">
-              <span class="icon">📓</span>
-              <span class="label">jurnal peribadi</span>
-            </div>
-            <div class="tenang-card" onclick="openTenang('suara')">
-              <span class="icon">🎵</span>
-              <span class="label">bunyi menenangkan</span>
-            </div>
-          </div>
-        </div>
-        <div id="tenang-content"></div>
-      </div>
+    <!-- ── NOTIFIKASI ── -->
+    <div id="page-notifikasi" class="content-area page hidden">
+      <p class="page-title">notifikasi.</p>
+      <div id="notif-list"><div class="spinner"></div></div>
+    </div>
 
-      <!-- ── REKOD MOOD ── -->
-      <div class="section fade-in" id="section-mood">
-        <div class="section-header">
-          <h1 class="section-heading">rekod mood</h1>
-        </div>
-        <div class="card">
-          <div class="card-title">📊 mood hari ini</div>
-          <div class="luahan-mood-row">
-            <button class="mood-btn" onclick="recordMood(this, 1, '😮‍💨 penat')">😮‍💨 penat</button>
-            <button class="mood-btn" onclick="recordMood(this, 2, '🌫️ kosong')">🌫️ kosong</button>
-            <button class="mood-btn" onclick="recordMood(this, 3, '🌱 harapan')">🌱 harapan</button>
-            <button class="mood-btn" onclick="recordMood(this, 4, '🌊 marah')">🌊 marah</button>
-            <button class="mood-btn" onclick="recordMood(this, 5, '💧 sedih')">💧 sedih</button>
-            <button class="mood-btn" onclick="recordMood(this, 6, '🌿 tenang')">🌿 tenang</button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">🗓️ kalender mood</div>
-          <div id="mood-calendar-days" style="display:flex;gap:6px;font-size:11px;color:var(--text-soft);margin-bottom:4px">
-            <span style="flex:1;text-align:center">Ah</span>
-            <span style="flex:1;text-align:center">Is</span>
-            <span style="flex:1;text-align:center">Se</span>
-            <span style="flex:1;text-align:center">Ra</span>
-            <span style="flex:1;text-align:center">Kh</span>
-            <span style="flex:1;text-align:center">Ju</span>
-            <span style="flex:1;text-align:center">Sa</span>
-          </div>
-          <div class="mood-calendar" id="mood-calendar"></div>
-        </div>
-      </div>
-
-      <!-- ── PROFIL ── -->
-      <div class="section fade-in" id="section-profile">
-        <div class="profile-header-card">
-          <div class="profile-avatar-wrap">
-            <img src="" alt="avatar" class="profile-avatar" id="profile-avatar-img" onerror="this.src='https://api.dicebear.com/7.x/thumbs/svg?seed=user'">
-          </div>
+    <!-- ── PROFILE ── -->
+    <div id="page-profile" class="content-area page hidden">
+      <p class="page-title" id="profile-page-title">profil.</p>
+      <div class="card">
+        <div class="profile-header">
+          <div class="profile-avatar" id="prof-avatar"></div>
           <div class="profile-info">
-            <div class="profile-username" id="profile-username-display">
-              @pengguna
-              <img src="verifiedbadge.png" alt="verified" class="verified-badge" id="profile-badge" style="display:none" onerror="this.style.display='none'">
+            <div class="username">
+              <span id="prof-uname"></span>
+              <svg id="prof-badge" class="luahan-badge hidden" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+              <svg id="prof-ach-badge" class="achievement-badge-icon hidden" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5" fill="#c9a63e" stroke="#a68a2e" stroke-width="1"/><polygon points="12,3 14,7 18,7 15,10 16,14 12,11 8,14 9,10 6,7 10,7" fill="#fff"/></svg>
             </div>
-            <div class="profile-bio" id="profile-bio-display">belum ada bio lagi...</div>
+            <div class="bio" id="prof-bio"></div>
             <div class="profile-stats">
-              <div class="stat-item">
-                <div class="stat-num" id="stat-luahan">0</div>
-                <div class="stat-label">luahan</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-num" id="stat-streak">0</div>
-                <div class="stat-label">hari bertahan</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-num" id="stat-aura">0</div>
-                <div class="stat-label">aura</div>
-              </div>
+              <div class="stat-item"><div class="stat-num" id="prof-luahan-count">0</div><div class="stat-lbl">luahan.</div></div>
+              <div class="stat-item"><div class="stat-num" id="prof-streak">0</div><div class="stat-lbl">streak.</div></div>
+              <div class="stat-item"><div class="stat-num" id="prof-total">0</div><div class="stat-lbl">bertahan.</div></div>
             </div>
           </div>
-          <button class="btn-ghost btn-sm" onclick="openModal('edit-profile-modal')">✏️ edit profil</button>
         </div>
-
-        <div class="tabs">
-          <button class="tab-btn active" onclick="switchProfileTab(this, 'luahan')">luahan saya</button>
-          <button class="tab-btn" onclick="switchProfileTab(this, 'bertahan')">rekod bertahan</button>
-        </div>
-
-        <div id="my-luahan-list"><div class="loader"></div></div>
-        <div id="my-bertahan-profile" style="display:none">
-          <div class="card">
-            <div class="card-title">✨ rekod kesinambungan</div>
-            <div id="profile-bertahan-dots" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
-          </div>
-        </div>
+        <div id="profile-actions"></div>
       </div>
-
-      <!-- ── NOTIFIKASI ── -->
-      <div class="section fade-in" id="section-notifications">
-        <div class="section-header">
-          <h1 class="section-heading">notifikasi</h1>
-        </div>
-        <div id="notif-list"><div class="loader"></div></div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-luahan',this)">luahan saya.</button>
+        <button class="tab-btn" onclick="switchTab('tab-rekod',this)">rekod bertahan.</button>
       </div>
-
-      <!-- ── TETAPAN ── -->
-      <div class="section fade-in" id="section-settings">
-        <div class="section-header">
-          <h1 class="section-heading">tetapan</h1>
-        </div>
-
+      <div id="tab-luahan" class="tab-panel active"><div id="my-luahan-list"></div></div>
+      <div id="tab-rekod" class="tab-panel">
         <div class="card">
-          <p class="settings-section-title">🖼️ gambar profil</p>
-          <div class="input-group">
-            <label>pautan gambar profil (URL)</label>
-            <input type="url" id="settings-pic-url" placeholder="https://..." style="background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none;width:100%">
+          <div class="full-cal-header">
+            <button class="cal-nav" onclick="changeCalMonth(-1)">←</button>
+            <span class="month-name" id="full-cal-title"></span>
+            <button class="cal-nav" onclick="changeCalMonth(1)">→</button>
           </div>
-          <button class="btn-primary" style="margin-top:12px" onclick="savePicUrl()">simpan gambar profil</button>
-        </div>
-
-        <div class="card">
-          <p class="settings-section-title">👤 maklumat akaun</p>
-          <div class="input-group" style="margin-bottom:12px">
-            <label>ubah username</label>
-            <input type="text" id="settings-username" placeholder="username baharu" maxlength="24" style="background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none;width:100%">
-          </div>
-          <div class="input-group" style="margin-bottom:12px">
-            <label>bio</label>
-            <textarea id="settings-bio" placeholder="ceritakan sedikit tentang diri kamu..." maxlength="150" style="background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none;width:100%;resize:none;min-height:70px"></textarea>
-          </div>
-          <button class="btn-primary" onclick="saveProfile()">simpan profil</button>
-        </div>
-
-        <div class="card">
-          <p class="settings-section-title">🔒 keselamatan</p>
-          <div class="input-group" style="margin-bottom:12px">
-            <label>kata laluan baharu</label>
-            <input type="password" id="settings-newpass" placeholder="kata laluan baharu" style="background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none;width:100%">
-          </div>
-          <div class="input-group" style="margin-bottom:12px">
-            <label>kata laluan semasa (untuk sahkan)</label>
-            <input type="password" id="settings-currpass" placeholder="kata laluan semasa" style="background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none;width:100%">
-          </div>
-          <button class="btn-primary" onclick="changePassword()">ubah kata laluan</button>
-        </div>
-
-        <div class="card">
-          <p class="settings-section-title">🚪 sesi & akaun</p>
-          <button class="btn-ghost" style="width:100%;margin-bottom:10px" onclick="doLogout()">log keluar</button>
-          <button class="btn-danger" style="width:100%" onclick="openModal('delete-account-modal')">padam akaun</button>
+          <div class="full-cal" id="full-cal"></div>
         </div>
       </div>
-
-    </main>
-
-    <!-- RIGHT SIDEBAR -->
-    <aside class="sidebar-right">
-      <div class="sidebar-widget">
-        <div class="widget-title">💫 kata semangat</div>
-        <div class="harta-card" id="semangat-text">memuatkan...</div>
-      </div>
-      <div class="sidebar-widget" id="sidebar-users-widget">
-        <div class="widget-title">👥 pengguna aktif</div>
-        <div id="sidebar-users-list"><div class="loader"></div></div>
-      </div>
-    </aside>
-  </div>
-
-  <!-- BOTTOM NAV -->
-  <nav class="bottomnav">
-    <div class="bottomnav-inner">
-      <button class="bnav-btn active" id="bnav-home" onclick="switchSection('home')">
-        <span class="icon">🏠</span><span>utama</span>
-      </button>
-      <button class="bnav-btn" id="bnav-bertahan" onclick="switchSection('bertahan')">
-        <span class="icon">✨</span><span>bertahan</span>
-      </button>
-      <button class="bnav-btn" id="bnav-luah" onclick="switchSection('luah')">
-        <span class="icon">💬</span><span>luah</span>
-      </button>
-      <button class="bnav-btn" id="bnav-tenang" onclick="switchSection('tenang')">
-        <span class="icon">🌿</span><span>tenang</span>
-      </button>
-      <button class="bnav-btn" id="bnav-profile" onclick="switchSection('profile')">
-        <span class="icon">👤</span><span>profil</span>
-      </button>
     </div>
-  </nav>
+
+    <!-- ── SETTINGS ── -->
+    <div id="page-settings" class="content-area page hidden">
+      <p class="page-title">tetapan.</p>
+      <div class="card">
+        <div class="settings-section">
+          <h3>maklumat profil.</h3>
+          <div class="field"><label>nama pengguna.</label><input type="text" id="set-uname" placeholder="nama pengguna baru" /></div>
+          <div class="field"><label>bio.</label><input type="text" id="set-bio" placeholder="cerita ringkas tentang diri kamu" /></div>
+          <div class="field"><label>pautan gambar profil (url).</label><input type="url" id="set-photo" placeholder="https://..." /></div>
+          <button class="btn-primary" onclick="saveProfile()">simpan perubahan.</button>
+        </div>
+        <div class="settings-section">
+          <h3>tukar kata laluan.</h3>
+          <div class="field"><label>kata laluan semasa.</label><div class="input-wrap"><input type="password" id="set-pw-old" placeholder="kata laluan semasa" /><button class="pw-toggle" onclick="togglePw('set-pw-old',this)">papar</button></div></div>
+          <div class="field"><label>kata laluan baharu.</label><div class="input-wrap"><input type="password" id="set-pw-new" placeholder="kata laluan baharu" /><button class="pw-toggle" onclick="togglePw('set-pw-new',this)">papar</button></div></div>
+          <button class="btn-primary" onclick="changePassword()">tukar kata laluan.</button>
+        </div>
+        <div class="settings-section">
+          <h3>akaun.</h3>
+          <button class="btn-logout" onclick="doLogout()">log keluar.</button>
+          <button class="btn-danger" style="margin-top:10px;" onclick="openDeleteModal()">padam akaun.</button>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
 
-<!-- ══════════════════════════════════════
-     MODALS
-══════════════════════════════════════ -->
-
-<!-- Edit Profile Modal -->
-<div class="modal-overlay" id="edit-profile-modal">
+<!-- Delete modal -->
+<div class="modal-overlay" id="delete-modal">
   <div class="modal">
-    <div class="modal-title">✏️ edit profil</div>
-    <div class="input-group" style="margin-bottom:12px">
-      <label>username</label>
-      <input type="text" id="modal-username" maxlength="24" style="background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none;width:100%">
-    </div>
-    <div class="input-group" style="margin-bottom:12px">
-      <label>bio</label>
-      <textarea id="modal-bio" maxlength="150" style="background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none;width:100%;resize:none;min-height:70px"></textarea>
-    </div>
-    <div class="input-group" style="margin-bottom:12px">
-      <label>pautan gambar profil</label>
-      <input type="url" id="modal-pic-url" placeholder="https://..." style="background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none;width:100%">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal('edit-profile-modal')">batal</button>
-      <button class="btn-primary" onclick="saveProfileFromModal()">simpan</button>
-    </div>
+    <h3>padam akaun.</h3>
+    <p>tindakan ini tidak boleh dibatalkan. semua data kamu akan dipadam selama-lamanya.</p>
+    <div class="field"><label>masukkan kata laluan untuk pengesahan.</label><div class="input-wrap"><input type="password" id="del-pw" placeholder="kata laluan" /><button class="pw-toggle" onclick="togglePw('del-pw',this)">papar</button></div></div>
+    <div class="modal-actions"><button class="btn-edit" onclick="closeDeleteModal()">batal.</button><button class="btn-danger" onclick="doDeleteAccount()">padam.</button></div>
   </div>
 </div>
 
-<!-- Delete Account Modal -->
-<div class="modal-overlay" id="delete-account-modal">
-  <div class="modal">
-    <div class="modal-title">⚠️ padam akaun</div>
-    <p style="font-size:14px;color:var(--text-light);line-height:1.6;margin-bottom:16px">tindakan ini tidak boleh dibatalkan. semua data kamu akan dipadam selamanya.</p>
-    <div class="input-group">
-      <label>masukkan kata laluan untuk sahkan</label>
-      <input type="password" id="delete-confirm-pass" placeholder="kata laluan" style="background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--font-main);font-size:14px;color:var(--text);outline:none;width:100%">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal('delete-account-modal')">batal</button>
-      <button class="btn-danger" onclick="deleteAccount()">ya, padam akaun</button>
-    </div>
-  </div>
-</div>
-
-<!-- Tenang Modal -->
+<!-- Tenang modal -->
 <div class="modal-overlay" id="tenang-modal">
-  <div class="modal">
-    <div class="modal-title" id="tenang-modal-title"></div>
+  <div class="modal" id="tenang-modal-box">
+    <h3 id="tenang-modal-title"></h3>
     <div id="tenang-modal-body"></div>
-    <div class="modal-actions" style="margin-top:16px">
-      <button class="btn-ghost" onclick="closeModal('tenang-modal')">tutup</button>
-    </div>
+    <div class="modal-actions" style="margin-top:16px;"><button class="btn-edit" onclick="closeTenangModal()">tutup.</button></div>
   </div>
 </div>
 
-<!-- Comment Modal -->
-<div class="modal-overlay" id="comment-modal">
-  <div class="modal">
-    <div class="modal-title">💬 komen</div>
-    <div id="comment-list" style="max-height:200px;overflow-y:auto;margin-bottom:12px"></div>
-    <textarea class="comment-input" id="comment-input-text" placeholder="tulis komen kamu..." rows="2"></textarea>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal('comment-modal')">tutup</button>
-      <button class="btn-primary" onclick="submitComment()">hantar komen</button>
-    </div>
-  </div>
-</div>
+<div id="toast"></div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- ═══════════════════ FIREBASE + LOGIC ═══════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  onAuthStateChanged, signOut, updatePassword, reauthenticateWithCredential,
+  EmailAuthProvider, deleteUser
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc,
+  collection, query, where, orderBy, limit, serverTimestamp,
+  updateDoc, writeBatch, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<!-- ══════════════════════════════════════
-     MAIN SCRIPT
-══════════════════════════════════════ -->
-<script>
-// ─── STATE ───
-let currentUser = null;
-let currentUserData = null;
-let currentSection = 'home';
-let selectedMood = '';
-let isAnon = false;
-let currentCommentPostId = null;
-let feedTab = 'all';
-let profileTab = 'luahan';
+const firebaseConfig = {
+  apiKey: "AIzaSyB5Rzsr8YaGNb5E0I6hSQYbdOd1C2e54Gs",
+  authDomain: "crash-out-burn-out-turn-out-d.firebaseapp.com",
+  projectId: "crash-out-burn-out-turn-out-d",
+  storageBucket: "crash-out-burn-out-turn-out-d.firebasestorage.app",
+  messagingSenderId: "280103809790",
+  appId: "1:280103809790:web:514756e3aa0bf6a69cabaf",
+  measurementId: "G-FVFZJ1D6GK"
+};
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-const semangat = [
-  "kamu masih di sini. itu sudah cukup.",
-  "hari yang berat bukan bererti hidup yang berat.",
-  "kamu tidak perlu sembuh hari ini. teruskan sahaja.",
-  "setiap hari yang kamu lalui adalah satu kemenangan.",
-  "ruang ini ada untuk kamu. tiada penghakiman.",
-  "kamu layak untuk bertahan. percayalah.",
-  "langkah kecil tetap langkah ke hadapan.",
-  "tidak mengapa untuk tidak baik-baik sahaja.",
-  "kamu lebih kuat daripada yang kamu sangka.",
-  "hari ini pun kamu berjaya sampai ke sini."
-];
+/* ─── STATE ─── */
+let currentUser  = null;
+let userData     = null;
+let isAnon       = false;
+let calViewMonth = null;
+let bertahanCalMonth = null;
+let feedUnsub    = null;
+let notifUnsub   = null;
+let tickedDays   = {};
+let viewingUserId = null;
 
-// ─── UTILS ───
+/* ─── ACHIEVEMENT BADGE SVG ─── */
+function achievementBadgeSVG(size = '') {
+  const cls = size === 'small' ? 'achievement-badge-icon small' : 'achievement-badge-icon';
+  return `<svg class="${cls}" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5" fill="#c9a63e" stroke="#a68a2e" stroke-width="1"/><polygon points="12,3 14,7 18,7 15,10 16,14 12,11 8,14 9,10 6,7 10,7" fill="#fff"/></svg>`;
+}
+
+/* ─── HELPERS ─── */
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-  if (id === 'edit-profile-modal' && currentUserData) {
-    document.getElementById('modal-username').value = currentUserData.username || '';
-    document.getElementById('modal-bio').value = currentUserData.bio || '';
-    document.getElementById('modal-pic-url').value = currentUserData.photoURL || '';
-  }
-}
-
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-function fmtTime(ts) {
-  if (!ts) return '';
-  const d = ts.toDate ? ts.toDate() : new Date(ts);
-  const diff = Date.now() - d.getTime();
-  const m = Math.floor(diff / 60000);
-  if (m < 1) return 'baru sahaja';
-  if (m < 60) return `${m} minit lalu`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h} jam lalu`;
-  return `${Math.floor(h/24)} hari lalu`;
 }
 
 function todayKey() {
@@ -1706,771 +1047,867 @@ function todayKey() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-function makeAvatar(ud) {
-  return ud?.photoURL || `https://api.dicebear.com/7.x/thumbs/svg?seed=${ud?.username||'user'}`;
+function formatTime(ts) {
+  if (!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const diff = Date.now() - d.getTime();
+  if (diff < 60000) return 'baru sahaja.';
+  if (diff < 3600000) return `${Math.floor(diff/60000)} minit lalu.`;
+  if (diff < 86400000) return `${Math.floor(diff/3600000)} jam lalu.`;
+  return d.toLocaleDateString('ms-MY') + '.';
 }
 
-function badgeHTML(ud) {
-  if (!ud?.verified) return '';
-  return `<img src="verifiedbadge.png" alt="verified" class="verified-badge" onerror="this.style.display='none'">`;
+function verifiedBadgeSVG() {
+  return `<svg class="luahan-badge" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" stroke="currentColor" stroke-width="2" fill="none"/></svg>`;
 }
 
-// ─── PAGES ───
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
+function escapeHTML(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 
-// ─── AUTH ───
-async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-pass').value;
-  const err = document.getElementById('login-error');
-  err.classList.remove('show');
-  try {
-    await window._fb.signInWithEmailAndPassword(window._fb.auth, email, pass);
-  } catch(e) {
-    err.textContent = 'emel atau kata laluan tidak sah.';
-    err.classList.add('show');
+function makeDefaultAvatar(uname) {
+  return `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(uname||'user')}`;
+}
+
+function renderAvatar(container, photourl, uname) {
+  if (photourl) {
+    container.innerHTML = `<img src="${photourl}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(uname||'?')[0].toUpperCase()}'">`;
+  } else {
+    container.innerHTML = `<img src="${makeDefaultAvatar(uname)}" alt="${(uname||'?')[0].toUpperCase()}" onerror="this.style.display='none';this.parentNode.textContent='${(uname||'?')[0].toUpperCase()}'">`;
   }
 }
 
-async function doRegister() {
-  const username = document.getElementById('reg-username').value.trim().toLowerCase().replace(/\s/g,'');
-  const email = document.getElementById('reg-email').value.trim();
-  const pass = document.getElementById('reg-pass').value;
-  const err = document.getElementById('reg-error');
-  err.classList.remove('show');
-  if (!username || username.length < 3) { err.textContent = 'username sekurang-kurangnya 3 aksara.'; err.classList.add('show'); return; }
-  if (!/^[a-z0-9_.]+$/.test(username)) { err.textContent = 'username hanya boleh mengandungi huruf, nombor, titik dan garis bawah.'; err.classList.add('show'); return; }
+function updateSidebarUser() {
+  if (!userData) return;
+  const uname = userData.namapengguna || '';
+  document.getElementById('sidebar-uname').textContent = '@' + uname;
+  const sav = document.getElementById('sidebar-avatar-wrap');
+  renderAvatar(sav, userData.photourl, uname);
+  const bav = document.getElementById('bnav-avatar-wrap');
+  renderAvatar(bav, userData.photourl, uname);
+}
+
+/* ─── MONTHS ─── */
+const MONTHS = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+
+/* ─── AUTH ─── */
+window.togglePw = (id, btn) => {
+  const el = document.getElementById(id);
+  if (el.type === 'password') { el.type = 'text'; btn.textContent = 'sembunyi.'; }
+  else { el.type = 'password'; btn.textContent = 'papar'; }
+};
+
+window.toggleAuthMode = () => {
+  const isLogin = !document.getElementById('form-register').classList.contains('hidden');
+  document.getElementById('form-login').classList.toggle('hidden', !isLogin);
+  document.getElementById('form-register').classList.toggle('hidden', isLogin);
+  document.getElementById('auth-title').textContent = isLogin ? 'log masuk.' : 'pendaftaran.';
+  document.getElementById('auth-switch-text').textContent = isLogin ? 'belum ada akaun?' : 'sudah ada akaun?';
+  document.getElementById('auth-switch-btn').textContent = isLogin ? 'daftar.' : 'log masuk.';
+  document.getElementById('auth-error').classList.add('hidden');
+};
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg; el.classList.remove('hidden');
+}
+
+window.doLogin = async () => {
+  const id = document.getElementById('login-id').value.trim().toLowerCase();
+  const pw = document.getElementById('login-pw').value;
+  if (!id || !pw) return showAuthError('sila isi semua medan.');
+  document.getElementById('btn-login').disabled = true;
+  document.getElementById('auth-error').classList.add('hidden');
   try {
-    const { db, doc, getDoc, setDoc, collection, query, where, getDocs } = window._fb;
-    // Check username unique
-    const uq = query(collection(db, 'users'), where('username','==',username));
-    const uSnap = await getDocs(uq);
-    if (!uSnap.empty) { err.textContent = 'username ini sudah digunakan.'; err.classList.add('show'); return; }
-    const cred = await window._fb.createUserWithEmailAndPassword(window._fb.auth, email, pass);
+    let email = id;
+    if (!id.includes('@')) {
+      const q = query(collection(db, 'users'), where('namapengguna', '==', id));
+      const snap = await getDocs(q);
+      if (snap.empty) throw new Error('nama pengguna tidak dijumpai.');
+      email = snap.docs[0].data().emel;
+    }
+    await signInWithEmailAndPassword(auth, email, pw);
+  } catch(e) {
+    showAuthError(friendlyError(e));
+    document.getElementById('btn-login').disabled = false;
+  }
+};
+
+window.doRegister = async () => {
+  const uname = document.getElementById('reg-uname').value.trim().toLowerCase();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pw    = document.getElementById('reg-pw').value;
+  if (!uname || !email || !pw) return showAuthError('sila isi semua medan.');
+  if (uname.length < 3) return showAuthError('nama pengguna terlalu pendek (min 3 aksara).');
+  if (pw.length < 6) return showAuthError('kata laluan terlalu pendek (min 6 aksara).');
+  if (/[A-Z]/.test(uname)) return showAuthError('nama pengguna hanya huruf kecil dibenarkan.');
+  document.getElementById('btn-register').disabled = true;
+  document.getElementById('auth-error').classList.add('hidden');
+  try {
+    const uq = query(collection(db, 'users'), where('namapengguna', '==', uname));
+    const us  = await getDocs(uq);
+    if (!us.empty) throw new Error('nama pengguna sudah digunakan.');
+    const cred = await createUserWithEmailAndPassword(auth, email, pw);
     await setDoc(doc(db, 'users', cred.user.uid), {
-      username, email,
-      bio: '',
-      photoURL: '',
-      verified: false,
-      auraPoints: 0,
-      createdAt: window._fb.serverTimestamp()
+      namapengguna: uname, emel: email, bio: '', photourl: '',
+      verified: false, createdat: serverTimestamp()
     });
   } catch(e) {
-    err.textContent = e.message.includes('email') ? 'emel tidak sah atau sudah digunakan.' : 'ralat: ' + e.message;
-    err.classList.add('show');
+    showAuthError(friendlyError(e));
+    document.getElementById('btn-register').disabled = false;
   }
+};
+
+window.doLogout = async () => {
+  if (feedUnsub) feedUnsub();
+  if (notifUnsub) notifUnsub();
+  await signOut(auth);
+};
+
+function friendlyError(e) {
+  const m = e.message || '';
+  if (m.includes('email-already-in-use')) return 'e-mel sudah didaftarkan.';
+  if (m.includes('wrong-password') || m.includes('invalid-credential')) return 'kata laluan atau e-mel salah.';
+  if (m.includes('user-not-found')) return 'pengguna tidak dijumpai.';
+  if (m.includes('weak-password')) return 'kata laluan terlalu lemah.';
+  if (m.includes('network')) return 'masalah rangkaian. cuba semula.';
+  return e.message || 'ralat tidak diketahui.';
 }
 
-async function doLogout() {
-  await window._fb.signOut(window._fb.auth);
-  currentUser = null; currentUserData = null;
-  showPage('login');
-}
-
-// ─── AUTH STATE ───
-document.addEventListener('DOMContentLoaded', () => {
-  window._fb.onAuthStateChanged(window._fb.auth, async (user) => {
-    if (user) {
-      currentUser = user;
-      await loadUserData();
-      showPage('app');
-      initApp();
-    } else {
-      showPage('login');
-    }
-  });
-
-  // Char count for luahan
-  document.getElementById('luah-text').addEventListener('input', function() {
-    document.getElementById('luah-char').textContent = this.value.length + ' / 500';
-  });
-
-  // Semangat
-  document.getElementById('semangat-text').textContent = semangat[Math.floor(Math.random() * semangat.length)];
+/* ─── AUTH STATE ─── */
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    currentUser = user;
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    userData = snap.exists() ? snap.data() : {};
+    showApp();
+    navigate('dashboard');
+  } else {
+    currentUser = null; userData = null;
+    hideApp();
+  }
 });
 
-async function loadUserData() {
-  const { db, doc, getDoc } = window._fb;
-  const snap = await getDoc(doc(db, 'users', currentUser.uid));
-  if (snap.exists()) currentUserData = snap.data();
-  updateNavUI();
+function showApp() {
+  document.getElementById('page-auth').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+  updateSidebarUser();
 }
 
-function updateNavUI() {
-  if (!currentUserData) return;
-  const av = makeAvatar(currentUserData);
-  document.getElementById('nav-avatar').src = av;
-  document.getElementById('profile-avatar-img').src = av;
-  const un = document.getElementById('profile-username-display');
-  un.innerHTML = `@${currentUserData.username}${badgeHTML(currentUserData)}`;
-  document.getElementById('profile-bio-display').textContent = currentUserData.bio || 'belum ada bio lagi...';
-  document.getElementById('stat-aura').textContent = currentUserData.auraPoints || 0;
-  // Settings
-  if (document.getElementById('settings-username')) document.getElementById('settings-username').value = currentUserData.username || '';
-  if (document.getElementById('settings-bio')) document.getElementById('settings-bio').value = currentUserData.bio || '';
-  if (document.getElementById('settings-pic-url')) document.getElementById('settings-pic-url').value = currentUserData.photoURL || '';
+function hideApp() {
+  document.getElementById('page-auth').style.display = 'flex';
+  document.getElementById('app').classList.remove('active');
 }
 
-// ─── APP INIT ───
-function initApp() {
-  loadFeed();
-  loadBertahan();
-  loadMoodCalendar();
-  loadSidebarUsers();
-  loadMyLuahan();
-  loadNotifications();
-  document.getElementById('semangat-text').textContent = semangat[Math.floor(Math.random() * semangat.length)];
-}
+/* ─── NAVIGATION ─── */
+const pages = ['dashboard','post','bertahan','tenang','notifikasi','profile','settings'];
 
-// ─── SECTION SWITCHING ───
-function switchSection(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('section-' + name)?.classList.add('active');
-  document.getElementById('sbar-' + name)?.classList.add('active');
-  document.getElementById('bnav-' + name)?.classList.add('active');
-  currentSection = name;
-  if (name === 'explore') { loadExplore(); }
-  if (name === 'profile') { loadMyLuahan(); loadProfileBertahan(); updateStatCounts(); }
-  if (name === 'notifications') loadNotifications();
-  window.scrollTo(0, 0);
-}
+window.navigate = (page) => {
+  viewingUserId = null;
+  pages.forEach(p => document.getElementById(`page-${p}`).classList.add('hidden'));
+  document.getElementById(`page-${page}`).classList.remove('hidden');
+  document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.page === page));
+  if (page === 'dashboard')  loadDashboard();
+  if (page === 'profile')    loadProfile();
+  if (page === 'settings')   loadSettings();
+  if (page === 'bertahan')   loadBertahanPage();
+  if (page === 'notifikasi') loadNotifikasi();
+};
 
-// ─── FEED ───
-async function loadFeed() {
-  const { db, collection, query, orderBy, getDocs, limit } = window._fb;
-  const el = document.getElementById('home-feed');
-  el.innerHTML = '<div class="loader"></div>';
-  try {
-    const q = query(collection(db, 'luahan'), orderBy('createdAt', 'desc'), limit(30));
-    const snap = await getDocs(q);
-    if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>tiada luahan lagi. jadilah yang pertama berkongsi.</p></div>'; return; }
-    el.innerHTML = '';
-    for (const d of snap.docs) {
-      el.appendChild(await buildPostEl(d.id, d.data()));
-    }
-  } catch(e) { el.innerHTML = '<div class="empty-state"><p>gagal memuatkan luahan.</p></div>'; }
-}
+document.querySelectorAll('.nav-link').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); navigate(a.dataset.page); });
+});
 
-async function buildPostEl(id, data) {
-  const { db, doc, getDoc } = window._fb;
-  const wrap = document.createElement('div');
-  wrap.className = 'post-item fade-in';
-  let authorData = null;
-  if (!data.anon && data.authorId) {
-    try {
-      const snap = await getDoc(doc(db, 'users', data.authorId));
-      if (snap.exists()) authorData = snap.data();
-    } catch(e){}
-  }
-  const username = data.anon ? 'tanpa nama' : (authorData?.username ? '@' + authorData.username : '@???');
-  const avatar = data.anon ? `https://api.dicebear.com/7.x/thumbs/svg?seed=anon${id}` : makeAvatar(authorData);
-  const badge = (!data.anon && authorData?.verified) ? `<img src="verifiedbadge.png" alt="v" class="verified-badge" onerror="this.style.display='none'">` : '';
-  const liked = data.likes?.includes(currentUser?.uid);
-  wrap.innerHTML = `
-    <div class="post-header">
-      <img src="${avatar}" alt="avatar" class="post-avatar" onerror="this.src='https://api.dicebear.com/7.x/thumbs/svg?seed=anon'">
-      <div class="post-meta">
-        <div class="post-username">${username}${badge}</div>
-        <div class="post-time">${fmtTime(data.createdAt)}</div>
-      </div>
-      ${data.mood ? `<div class="post-mood-tag">${data.mood}</div>` : ''}
-    </div>
-    <div class="post-content">${escHtml(data.text)}</div>
-    <div class="post-actions">
-      <button class="post-action-btn ${liked?'liked':''}" onclick="toggleLike('${id}', this)">
-        ${liked ? '💙' : '🤍'} <span>${(data.likes||[]).length}</span>
-      </button>
-      <button class="post-action-btn" onclick="openComments('${id}')">💬 <span>${data.commentCount||0}</span></button>
-      ${data.authorId === currentUser?.uid ? `<button class="post-action-btn" onclick="deleteLuahan('${id}', this)" style="margin-left:auto">🗑️</button>` : ''}
-    </div>`;
-  return wrap;
-}
+window.viewProfile = async (uid) => {
+  viewingUserId = uid;
+  navigate('profile');
+};
 
-function escHtml(str) {
-  return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
-
-async function toggleLike(postId, btn) {
+/* ─── DASHBOARD ─── */
+async function loadDashboard() {
   if (!currentUser) return;
-  const { db, doc, getDoc, updateDoc } = window._fb;
-  const ref = doc(db, 'luahan', postId);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) return;
-  const likes = snap.data().likes || [];
-  const uid = currentUser.uid;
-  const newLikes = likes.includes(uid) ? likes.filter(l => l !== uid) : [...likes, uid];
-  await updateDoc(ref, { likes: newLikes });
-  btn.classList.toggle('liked', newLikes.includes(uid));
-  btn.innerHTML = (newLikes.includes(uid) ? '💙' : '🤍') + ` <span>${newLikes.length}</span>`;
-  // aura
-  const postData = snap.data();
-  if (postData.authorId && postData.authorId !== uid) {
-    const userRef = doc(db, 'users', postData.authorId);
-    const uSnap = await getDoc(userRef);
-    if (uSnap.exists()) {
-      const pts = (uSnap.data().auraPoints || 0) + (newLikes.includes(uid) ? 1 : -1);
-      await updateDoc(userRef, { auraPoints: Math.max(0, pts) });
-    }
-  }
-}
-
-function switchFeedTab(btn, tab) {
-  document.querySelectorAll('#section-home .tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  feedTab = tab;
+  await loadTickedDays();
+  renderDailyTick();
+  renderMiniCalendar();
   loadFeed();
 }
 
-// ─── LUAHAN ───
-function selectMood(btn, mood) {
-  document.querySelectorAll('#section-luah .mood-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  selectedMood = mood + ' ' + btn.textContent.trim().split(' ')[0];
-}
-
-function toggleAnon() {
-  isAnon = !isAnon;
-  const sw = document.getElementById('anon-toggle');
-  sw.classList.toggle('on', isAnon);
-  document.getElementById('anon-label').textContent = isAnon ? 'tanpa nama' : 'nama nyata';
-}
-
-async function submitLuahan() {
-  const text = document.getElementById('luah-text').value.trim();
-  if (!text) { showToast('tulis sesuatu dahulu 💬'); return; }
-  const { db, collection, addDoc, serverTimestamp, doc, updateDoc, getDoc } = window._fb;
-  try {
-    await addDoc(collection(db, 'luahan'), {
-      text, mood: selectedMood,
-      anon: isAnon,
-      authorId: currentUser.uid,
-      likes: [],
-      commentCount: 0,
-      createdAt: serverTimestamp()
-    });
-    // Aura
-    const uRef = doc(db, 'users', currentUser.uid);
-    const uSnap = await getDoc(uRef);
-    if (uSnap.exists()) await updateDoc(uRef, { auraPoints: (uSnap.data().auraPoints||0) + 2 });
-    document.getElementById('luah-text').value = '';
-    document.getElementById('luah-char').textContent = '0 / 500';
-    selectedMood = '';
-    document.querySelectorAll('#section-luah .mood-btn').forEach(b => b.classList.remove('selected'));
-    showToast('luahan telah dihantar ✨');
-    switchSection('home');
-    loadFeed();
-    loadMyLuahan();
-    await loadUserData();
-    updateStatCounts();
-  } catch(e) { showToast('gagal menghantar luahan.'); }
-}
-
-async function deleteLuahan(id, btn) {
-  const { db, doc, deleteDoc } = window._fb;
-  try {
-    await deleteDoc(doc(db, 'luahan', id));
-    btn.closest('.post-item').remove();
-    showToast('luahan dipadam.');
-    updateStatCounts();
-  } catch(e) { showToast('gagal memadam.'); }
-}
-
-// ─── COMMENTS ───
-async function openComments(postId) {
-  currentCommentPostId = postId;
-  const { db, collection, query, orderBy, getDocs } = window._fb;
-  const el = document.getElementById('comment-list');
-  el.innerHTML = '<div class="loader"></div>';
-  openModal('comment-modal');
-  try {
-    const q = query(collection(db, 'luahan', postId, 'comments'), orderBy('createdAt','asc'));
-    const snap = await getDocs(q);
-    if (snap.empty) { el.innerHTML = '<div style="font-size:13px;color:var(--text-soft);text-align:center;padding:12px">tiada komen lagi</div>'; return; }
-    el.innerHTML = '';
-    for (const d of snap.docs) {
-      const c = d.data();
-      const ci = document.createElement('div');
-      ci.className = 'comment-item';
-      ci.innerHTML = `<span class="comment-author">@${escHtml(c.username||'tanpa nama')}</span>${escHtml(c.text)}`;
-      el.appendChild(ci);
-    }
-  } catch(e) { el.innerHTML = '<div style="font-size:13px;color:var(--text-soft)">gagal memuatkan komen</div>'; }
-}
-
-async function submitComment() {
-  const text = document.getElementById('comment-input-text').value.trim();
-  if (!text || !currentCommentPostId) return;
-  const { db, collection, addDoc, serverTimestamp, doc, updateDoc, getDoc, increment } = window._fb;
-  try {
-    await addDoc(collection(db, 'luahan', currentCommentPostId, 'comments'), {
-      text, authorId: currentUser.uid,
-      username: currentUserData?.username || 'pengguna',
-      createdAt: serverTimestamp()
-    });
-    // update comment count
-    const postRef = doc(db, 'luahan', currentCommentPostId);
-    const postSnap = await getDoc(postRef);
-    if (postSnap.exists()) await updateDoc(postRef, { commentCount: (postSnap.data().commentCount||0)+1 });
-    document.getElementById('comment-input-text').value = '';
-    await openComments(currentCommentPostId);
-    showToast('komen dihantar 💬');
-  } catch(e) { showToast('gagal menghantar komen.'); }
-}
-
-// ─── BERTAHAN ───
-async function loadBertahan() {
-  const { db, doc, getDoc, setDoc, updateDoc } = window._fb;
-  const today = todayKey();
-  const ref = doc(db, 'users', currentUser.uid, 'bertahan', 'data');
-  let data = { days: {}, streak: 0, lastStreak: null };
-  try {
-    const snap = await getDoc(ref);
-    if (snap.exists()) data = snap.data();
-  } catch(e){}
-  window._bertahanData = data;
-  window._bertahanRef = ref;
-  renderBertahan(data);
-}
-
-function renderBertahan(data) {
-  const today = todayKey();
-  const checked = !!data.days?.[today];
-
-  // Main tick
-  const tickEl = document.getElementById('bertahan-tick');
-  if (tickEl) {
-    tickEl.classList.toggle('checked', checked);
-    tickEl.textContent = checked ? '✅' : '☁️';
-  }
-  document.getElementById('bertahan-status-text').textContent = checked ? '✨ kamu sudah tandakan hari ini!' : 'belum ditandakan hari ini';
-
-  // Home widget
-  const homeCircle = document.getElementById('home-tick-circle');
-  if (homeCircle) {
-    homeCircle.classList.toggle('checked', checked);
-    homeCircle.textContent = checked ? '✅' : '☁️';
-  }
-
-  // Streak
-  const streak = calcStreak(data.days||{});
-  document.getElementById('streak-num').textContent = streak;
-  document.getElementById('stat-streak').textContent = streak;
-
-  // 30 days dots
-  renderBertahanDots('bertahan-30days', data.days||{}, 30);
-  renderBertahanDots('bertahan-dots', data.days||{}, 14);
-  renderBertahanDots('profile-bertahan-dots', data.days||{}, 30);
-  renderAchievements(streak, Object.keys(data.days||{}).length);
-}
-
-function renderBertahanDots(elId, days, count) {
-  const el = document.getElementById(elId);
-  if (!el) return;
-  el.innerHTML = '';
-  const today = todayKey();
-  for (let i = count-1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const dot = document.createElement('div');
-    dot.className = 'day-dot' + (days[key] ? ' done' : '') + (key === today ? ' today' : '');
-    dot.title = key;
-    el.appendChild(dot);
+async function loadTickedDays(uid = null) {
+  const targetUid = uid || currentUser.uid;
+  const ref = doc(db, 'users', targetUid, 'bertahan', 'data');
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    const d = snap.data();
+    tickedDays = d.days || {};
+    const streak = d.currentstreak || 0;
+    const total = Object.keys(tickedDays).length;
+    ['streak-num','streak-num-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = streak; });
+    ['total-ticked','total-ticked-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = total; });
+    return { streak, total };
+  } else {
+    tickedDays = {};
+    ['streak-num','total-ticked','streak-num-b','total-ticked-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = 0; });
+    return { streak: 0, total: 0 };
   }
 }
 
-function renderAchievements(streak, total) {
-  const el = document.getElementById('bertahan-achievements');
-  if (!el) return;
-  const badges = [
-    { min: 1, icon: '🌱', label: '1 hari pertama' },
-    { min: 3, icon: '🌿', label: '3 hari berturut' },
-    { min: 7, icon: '🌊', label: '7 hari bertahan' },
-    { min: 14, icon: '🌙', label: '2 minggu kuat' },
-    { min: 30, icon: '⭐', label: '30 hari cahaya' },
-    { min: 60, icon: '🌟', label: '60 hari luar biasa' },
-    { min: 100, icon: '💫', label: '100 hari wira' },
-  ];
-  el.innerHTML = '';
-  badges.forEach(b => {
-    const div = document.createElement('div');
-    div.style.cssText = `background:var(--c2);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;text-align:center;opacity:${total>=b.min?1:0.3};transition:opacity 0.2s`;
-    div.innerHTML = `<div style="font-size:22px">${b.icon}</div><div style="font-size:11px;color:var(--text-light);margin-top:4px">${b.label}</div>`;
-    el.appendChild(div);
+function renderDailyTick() {
+  const already = !!tickedDays[todayKey()];
+  ['tick-btn','tick-btn-b'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.disabled = already;
+    btn.classList.toggle('ticked', already);
   });
+  ['tick-icon','tick-icon-b'].forEach(id => {
+    const icon = document.getElementById(id);
+    if (!icon) return;
+    icon.setAttribute('stroke', already ? '#d7eaf6' : '#3a6b85');
+  });
+  const status = document.getElementById('bertahan-status');
+  if (status) status.textContent = already ? 'kamu sudah tandakan hari ini.' : 'belum ditandakan hari ini.';
 }
 
-function calcStreak(days) {
+function renderMiniCalendar() {
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const todayD = now.getDate();
+  document.getElementById('mini-cal-title').textContent = `${MONTHS[month]} ${year}.`;
+  const cal = document.getElementById('mini-cal');
+  cal.innerHTML = '';
+  const firstDay = new Date(year, month, 1).getDay();
+  for (let i = 0; i < firstDay; i++) cal.appendChild(document.createElement('div'));
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el = document.createElement('div');
+    el.className = 'cal-day';
+    el.textContent = d;
+    if (tickedDays[key]) el.classList.add('ticked');
+    if (d === todayD) el.classList.add('today');
+    if (d > todayD) el.classList.add('future');
+    cal.appendChild(el);
+  }
+}
+
+window.doTick = async () => {
+  if (!currentUser) return;
+  const key = todayKey();
+  if (tickedDays[key]) return;
+  ['tick-btn','tick-btn-b'].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = true; });
+  tickedDays[key] = true;
+  const streak = computeStreak(tickedDays);
+  const total = Object.keys(tickedDays).length;
+  const ref = doc(db, 'users', currentUser.uid, 'bertahan', 'data');
+  await setDoc(ref, { days: tickedDays, currentstreak: streak, laststreak: serverTimestamp() }, { merge: true });
+  ['streak-num','streak-num-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = streak; });
+  ['total-ticked','total-ticked-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = total; });
+  renderDailyTick();
+  renderMiniCalendar();
+  if (document.getElementById('bertahan-30dots')) renderBertahan30Dots();
+  if (document.getElementById('achievement-row')) renderAchievements(total);
+  showToast('kamu masih di sini. terima kasih.');
+};
+
+function computeStreak(days) {
   let streak = 0;
   const d = new Date();
   while (true) {
     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    if (days[key]) { streak++; d.setDate(d.getDate()-1); }
-    else break;
+    if (!days[key]) break;
+    streak++;
+    d.setDate(d.getDate() - 1);
   }
   return streak;
 }
 
-async function toggleBertahan() {
-  if (!window._bertahanRef) return;
-  const today = todayKey();
-  const data = window._bertahanData || { days: {}, streak: 0 };
-  if (!data.days) data.days = {};
-  const wasChecked = !!data.days[today];
-  data.days[today] = !wasChecked;
-  window._bertahanData = data;
-  const { setDoc } = window._fb;
-  await setDoc(window._bertahanRef, data);
-  renderBertahan(data);
-  showToast(wasChecked ? 'tandaan dibatalkan.' : '✨ kamu sudah bertahan hari ini!');
-  // Aura
-  if (!wasChecked) {
-    const { db, doc, getDoc, updateDoc } = window._fb;
-    const uRef = doc(db, 'users', currentUser.uid);
-    const uSnap = await getDoc(uRef);
-    if (uSnap.exists()) await updateDoc(uRef, { auraPoints: (uSnap.data().auraPoints||0) + 5 });
-    await loadUserData();
-  }
+/* ─── FEED ─── */
+function loadFeed() {
+  if (feedUnsub) feedUnsub();
+  const q = query(collection(db, 'luahan'), orderBy('createdat', 'desc'), limit(50));
+  feedUnsub = onSnapshot(q, async snap => {
+    const list = document.getElementById('feed-list');
+    if (!list) return;
+    if (snap.empty) { list.innerHTML = '<div class="empty-feed">tiada luahan lagi. jadilah yang pertama.</div>'; return; }
+    const uids = [...new Set(snap.docs.map(d => d.data().authorid))];
+    const userMap = {};
+    const bertahanMap = {};
+    await Promise.all(uids.map(async uid => {
+      const u = await getDoc(doc(db, 'users', uid));
+      if (u.exists()) userMap[uid] = u.data();
+      const b = await getDoc(doc(db, 'users', uid, 'bertahan', 'data'));
+      if (b.exists()) bertahanMap[uid] = Object.keys(b.data().days || {}).length;
+    }));
+    list.innerHTML = snap.docs.map(d => {
+      const data = d.data();
+      const author = userMap[data.authorid] || {};
+      const showAnon = data.anon;
+      const uname = showAnon ? null : (author.namapengguna || 'tanpa nama');
+      const photo = showAnon ? null : (author.photourl || '');
+      const verified = !showAnon && author.verified;
+      const totalBertahan = bertahanMap[data.authorid] || 0;
+      const hasAchievement = totalBertahan >= 365;
+      const avatarSrc = photo || makeDefaultAvatar(uname);
+      const uid = data.authorid;
+      const achBadge = hasAchievement ? achievementBadgeSVG('small') : '';
+      
+      return `<div class="luahan-item">
+        <div class="luahan-header">
+          ${showAnon ? '' : `<div class="luahan-avatar" onclick="viewProfile('${uid}')"><img src="${avatarSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(uname||'?')[0].toUpperCase()}'"></div>`}
+          ${showAnon
+            ? `<span class="luahan-anon">tanpa nama.</span>`
+            : `<span class="luahan-user" onclick="viewProfile('${uid}')">${escapeHTML(uname)}${verified ? verifiedBadgeSVG() : ''}${achBadge}</span>`}
+        </div>
+        <div class="luahan-text">${escapeHTML(data.text)}</div>
+        <div class="luahan-time">${formatTime(data.createdat)}</div>
+      </div>`;
+    }).join('');
+  });
 }
 
-// ─── MOOD CALENDAR ───
-async function loadMoodCalendar() {
-  const { db, collection, query, where, getDocs } = window._fb;
-  const el = document.getElementById('mood-calendar');
+/* ─── POST ─── */
+window.updateCharCount = () => {
+  document.getElementById('char-count').textContent = document.getElementById('post-text').value.length;
+};
+
+window.toggleAnon = () => {
+  isAnon = !isAnon;
+  document.getElementById('anon-toggle').classList.toggle('on', isAnon);
+  document.getElementById('anon-label').textContent = isAnon ? 'hantar tanpa nama.' : 'hantar dengan nama.';
+};
+
+window.doPost = async () => {
+  const text = document.getElementById('post-text').value.trim();
+  if (!text) return showToast('luahan tidak boleh kosong.');
+  const btn = document.getElementById('btn-post');
+  btn.disabled = true;
+  try {
+    await addDoc(collection(db, 'luahan'), {
+      authorid: currentUser.uid, text, anon: isAnon, createdat: serverTimestamp()
+    });
+    document.getElementById('post-text').value = '';
+    document.getElementById('char-count').textContent = '0';
+    isAnon = false;
+    document.getElementById('anon-toggle').classList.remove('on');
+    document.getElementById('anon-label').textContent = 'hantar dengan nama.';
+    showToast('luahan berjaya dihantar.');
+    navigate('dashboard');
+  } catch(e) { showToast('gagal menghantar. cuba semula.'); }
+  btn.disabled = false;
+};
+
+/* ─── BERTAHAN PAGE ─── */
+async function loadBertahanPage() {
+  if (!currentUser) return;
+  const { total } = await loadTickedDays();
+  renderDailyTick();
+  renderBertahan30Dots();
+  renderAchievements(total);
+  const now = new Date();
+  bertahanCalMonth = { year: now.getFullYear(), month: now.getMonth() };
+  renderBertahanFullCal();
+}
+
+function renderBertahan30Dots() {
+  const el = document.getElementById('bertahan-30dots');
   if (!el) return;
   el.innerHTML = '';
-  const now = new Date();
-  const yr = now.getFullYear(), mo = now.getMonth();
-  const firstDay = new Date(yr, mo, 1).getDay();
-  const daysInMonth = new Date(yr, mo+1, 0).getDate();
-  const todayD = now.getDate();
-
-  let moodData = {};
-  try {
-    const q = query(collection(db, 'users', currentUser.uid, 'moodlog'), where('month', '==', `${yr}-${String(mo+1).padStart(2,'0')}`));
-    const snap = await getDocs(q);
-    snap.forEach(d => { moodData[d.data().day] = d.data().label; });
-  } catch(e){}
-
-  for (let i = 0; i < firstDay; i++) {
-    const blank = document.createElement('div');
-    blank.className = 'mood-day';
-    el.appendChild(blank);
-  }
-  for (let d = 1; d <= daysInMonth; d++) {
-    const div = document.createElement('div');
-    const isToday = d === todayD;
-    div.className = 'mood-day' + (moodData[d] ? ' filled' : '') + (isToday ? ' today' : '');
-    div.title = moodData[d] || '';
-    div.textContent = d;
-    el.appendChild(div);
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const dot = document.createElement('div');
+    dot.className = 'day-dot' + (tickedDays[key] ? ' done' : '') + (i === 0 ? ' today-dot' : '');
+    dot.title = key; el.appendChild(dot);
   }
 }
 
-async function recordMood(btn, level, label) {
-  const { db, doc, setDoc } = window._fb;
-  const now = new Date();
-  const month = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const day = now.getDate();
-  await setDoc(doc(db, 'users', currentUser.uid, 'moodlog', `${month}-${day}`), { month, day, level, label, createdAt: window._fb.serverTimestamp() });
-  document.querySelectorAll('#section-mood .mood-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  showToast('mood hari ini direkodkan 📊');
-  loadMoodCalendar();
+const ACHIEVEMENTS = [
+  { min:1,   icon:'1', label:'1 hari.' },
+  { min:3,   icon:'3', label:'3 hari.' },
+  { min:7,   icon:'7', label:'7 hari.' },
+  { min:14,  icon:'14', label:'2 minggu.' },
+  { min:30,  icon:'30', label:'30 hari.' },
+  { min:60,  icon:'60', label:'60 hari.' },
+  { min:100, icon:'100', label:'100 hari.' },
+  { min:365, icon:'365', label:'1 tahun.' },
+];
+
+function renderAchievements(total) {
+  const el = document.getElementById('achievement-row');
+  if (!el) return;
+  el.innerHTML = ACHIEVEMENTS.map(b => `
+    <div class="achievement-badge ${total >= b.min ? 'earned' : 'locked'}">
+      <span class="badge-icon">${b.icon}</span>
+      <span>${b.label}</span>
+    </div>`).join('');
 }
 
-// ─── EXPLORE ───
-async function loadExplore() {
-  const { db, collection, query, orderBy, getDocs, limit } = window._fb;
-  const el = document.getElementById('explore-results');
-  el.innerHTML = '<div class="loader"></div>';
-  try {
-    const q = query(collection(db, 'luahan'), orderBy('createdAt','desc'), limit(20));
-    const snap = await getDocs(q);
-    el.innerHTML = '';
-    if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>tiada luahan lagi.</p></div>'; return; }
-    for (const d of snap.docs) el.appendChild(await buildPostEl(d.id, d.data()));
-  } catch(e) { el.innerHTML = '<div class="empty-state"><p>gagal memuatkan.</p></div>'; }
+window.changeBertahanMonth = (dir) => {
+  bertahanCalMonth.month += dir;
+  if (bertahanCalMonth.month > 11) { bertahanCalMonth.month = 0; bertahanCalMonth.year++; }
+  if (bertahanCalMonth.month < 0)  { bertahanCalMonth.month = 11; bertahanCalMonth.year--; }
+  renderBertahanFullCal();
+};
+
+function renderBertahanFullCal() {
+  const { year, month } = bertahanCalMonth;
+  document.getElementById('bertahan-month-name').textContent = `${MONTHS[month]} ${year}.`;
+  const cal = document.getElementById('bertahan-full-cal');
+  const days = ['Ahd','Isn','Sel','Rab','Kha','Jum','Sab'];
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const todayStr = todayKey();
+  cal.innerHTML = days.map(d=>`<div class="day-label">${d}</div>`).join('');
+  for (let i=0;i<firstDay;i++) cal.innerHTML += '<div></div>';
+  for (let d=1;d<=daysInMonth;d++) {
+    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el = document.createElement('div');
+    el.className = 'cal-day'; el.textContent = d;
+    if (tickedDays[key]) el.classList.add('ticked');
+    if (key === todayStr) el.classList.add('today');
+    cal.appendChild(el);
+  }
 }
 
-let searchTimer;
-async function doSearch(val) {
-  clearTimeout(searchTimer);
-  if (!val.trim()) { loadExplore(); return; }
-  searchTimer = setTimeout(async () => {
-    const { db, collection, query, orderBy, getDocs, where, limit } = window._fb;
-    const el = document.getElementById('explore-results');
-    el.innerHTML = '<div class="loader"></div>';
-    // Search posts by text (simple client-side filter)
-    try {
-      const q = query(collection(db, 'luahan'), orderBy('createdAt','desc'), limit(50));
-      const snap = await getDocs(q);
-      el.innerHTML = '';
-      const lower = val.toLowerCase();
-      let found = 0;
-      for (const d of snap.docs) {
-        if (d.data().text.toLowerCase().includes(lower)) {
-          el.appendChild(await buildPostEl(d.id, d.data()));
-          found++;
-        }
-      }
-      if (!found) el.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>tiada keputusan ditemui.</p></div>';
-    } catch(e) {}
-  }, 400);
-}
-
-// ─── RUANG TENANG ───
-function openTenang(type) {
-  const modal = document.getElementById('tenang-modal');
-  const title = document.getElementById('tenang-modal-title');
-  const body = document.getElementById('tenang-modal-body');
+/* ─── RUANG TENANG ─── */
+window.openTenang = async (type) => {
+  const modalBox = document.getElementById('tenang-modal-box');
+  modalBox.classList.remove('wide');
+  
   const configs = {
     nafas: {
-      t: '🫁 latihan pernafasan',
-      b: `<p style="font-size:14px;color:var(--text-light);line-height:1.8;margin-bottom:16px">ikut kaedah 4-7-8 untuk menenangkan minda:</p>
-         <div style="display:flex;flex-direction:column;gap:10px">
-           <div style="background:var(--c2);border-radius:10px;padding:14px;font-size:14px;color:var(--text)">1️⃣ <strong>tarik nafas</strong> perlahan selama <strong>4 saat</strong></div>
-           <div style="background:var(--c2);border-radius:10px;padding:14px;font-size:14px;color:var(--text)">2️⃣ <strong>tahan nafas</strong> selama <strong>7 saat</strong></div>
-           <div style="background:var(--c2);border-radius:10px;padding:14px;font-size:14px;color:var(--text)">3️⃣ <strong>hembus perlahan</strong> selama <strong>8 saat</strong></div>
-         </div>
-         <p style="margin-top:16px;font-size:13px;color:var(--text-soft)">ulang 3 hingga 4 kali. biarkan bahu kamu rileks.</p>`
+      title: 'latihan pernafasan.',
+      body: `<p style="font-size:0.85rem;color:var(--text-light);margin-bottom:14px;line-height:1.7;">ikut kaedah 4-7-8 untuk menenangkan minda.</p>
+        <div class="tenang-steps">
+          <div class="tenang-step"><strong>tarik nafas</strong> perlahan selama <strong>4 saat.</strong></div>
+          <div class="tenang-step"><strong>tahan nafas</strong> selama <strong>7 saat.</strong></div>
+          <div class="tenang-step"><strong>hembus perlahan</strong> selama <strong>8 saat.</strong></div>
+        </div>
+        <p style="margin-top:14px;font-size:0.78rem;color:var(--text-light);">ulang 3 hingga 4 kali. biarkan bahu kamu rileks.</p>`
     },
     gratitud: {
-      t: '🙏 rasa syukur hari ini',
-      b: `<p style="font-size:14px;color:var(--text-light);line-height:1.7;margin-bottom:14px">tulis 3 perkara yang kamu bersyukur hari ini, walau sekecil mana pun.</p>
-         <textarea id="gratitud-text" class="luahan-textarea" placeholder="1. ...\n2. ...\n3. ..." rows="5" style="width:100%"></textarea>
-         <button class="btn-primary" style="margin-top:12px" onclick="saveGratitud()">simpan syukur</button>`
+      title: 'rasa syukur hari ini.',
+      body: `<div id="gratitud-content"></div>`
     },
     afirmasi: {
-      t: '💫 afirmasi harian',
-      b: `<div style="display:flex;flex-direction:column;gap:10px">
-         ${['saya layak untuk gembira.','saya sedang mencuba dengan sepenuh daya.','perasaan saya adalah sah.','saya tidak perlu sempurna untuk dicintai.','saya pilih untuk terus mencuba hari ini.','hari ini, saya cukup.'].map(a => `<div style="background:var(--c2);border-radius:10px;padding:14px;font-family:var(--font-accent);font-size:16px;color:var(--text);text-align:center">${a}</div>`).join('')}
-         </div>`
+      title: 'afirmasi harian.',
+      body: `<div id="afirmasi-content"></div>`
     },
     sos: {
-      t: '🆘 talian bantuan',
-      b: `<div style="display:flex;flex-direction:column;gap:12px">
-         <div style="background:var(--c2);border-radius:10px;padding:16px">
-           <div style="font-weight:700;color:var(--text);margin-bottom:4px">Befrienders KL</div>
-           <div style="font-size:13px;color:var(--text-light)">📞 03-7627 2929</div>
-           <div style="font-size:12px;color:var(--text-soft);margin-top:4px">24 jam sehari, percuma, sulit</div>
-         </div>
-         <div style="background:var(--c2);border-radius:10px;padding:16px">
-           <div style="font-weight:700;color:var(--text);margin-bottom:4px">Talian Kasih</div>
-           <div style="font-size:13px;color:var(--text-light)">📞 15999</div>
-           <div style="font-size:12px;color:var(--text-soft);margin-top:4px">perkhidmatan kaunseling 24 jam</div>
-         </div>
-         <div style="background:var(--c2);border-radius:10px;padding:16px">
-           <div style="font-weight:700;color:var(--text);margin-bottom:4px">MIASA Helpline</div>
-           <div style="font-size:13px;color:var(--text-light)">📞 1-800-819-819</div>
-           <div style="font-size:12px;color:var(--text-soft);margin-top:4px">kesihatan mental Malaysia</div>
-         </div>
-         <p style="font-size:13px;color:var(--text-soft);text-align:center;line-height:1.6">kamu tidak perlu hadapi ini sorang-sorang. 💙</p>
-         </div>`
+      title: 'talian bantuan.',
+      body: `<div class="sos-list">
+        <div class="sos-item"><strong>befrienders kl.</strong><div class="sos-num">03-7627 2929</div><div class="sos-desc">24 jam sehari, percuma, sulit.</div></div>
+        <div class="sos-item"><strong>talian kasih.</strong><div class="sos-num">15999</div><div class="sos-desc">perkhidmatan kaunseling 24 jam.</div></div>
+        <div class="sos-item"><strong>miasa helpline.</strong><div class="sos-num">1-800-819-819</div><div class="sos-desc">kesihatan mental malaysia.</div></div>
+        <div class="sos-item"><strong>hospital terdekat.</strong><div class="sos-num">999</div><div class="sos-desc">kecemasan perubatan.</div></div>
+      </div>
+      <p style="margin-top:14px;font-size:0.78rem;color:var(--text-light);text-align:center;">kamu tidak perlu hadapi ini sorang-sorang.</p>`,
+      wide: true
     },
     jurnal: {
-      t: '📓 jurnal peribadi',
-      b: `<p style="font-size:13px;color:var(--text-soft);margin-bottom:12px">ruangan ini hanya untuk kamu. apa yang kamu rasa sekarang?</p>
-         <textarea id="jurnal-text" class="luahan-textarea" placeholder="hari ini saya rasa..." rows="6" style="width:100%"></textarea>
-         <button class="btn-primary" style="margin-top:12px" onclick="saveJurnal()">simpan jurnal</button>`
-    },
-    suara: {
-      t: '🎵 bunyi menenangkan',
-      b: `<div style="display:flex;flex-direction:column;gap:10px">
-         ${['🌧️ hujan','🌊 ombak','🌿 angin','🔥 unggun api','🌙 malam sunyi'].map(s => `<div class="tenang-card" style="text-align:left;display:flex;align-items:center;gap:12px;padding:14px" onclick="playSuara(this)"><span style="font-size:24px">${s.split(' ')[0]}</span><span style="font-size:14px;color:var(--text)">${s}</span></div>`).join('')}
-         <p style="font-size:12px;color:var(--text-soft);text-align:center;margin-top:4px">*ketik untuk pilih bunyi (fungsi simbolik)</p>
-         </div>`
+      title: 'jurnal peribadi.',
+      body: `<div id="jurnal-content"></div>`
     }
   };
+  
   const cfg = configs[type];
-  title.textContent = cfg.t;
-  body.innerHTML = cfg.b;
-  modal.classList.add('open');
+  document.getElementById('tenang-modal-title').textContent = cfg.title;
+  document.getElementById('tenang-modal-body').innerHTML = cfg.body;
+  
+  if (cfg.wide) modalBox.classList.add('wide');
+  
+  document.getElementById('tenang-modal').classList.add('open');
+  
+  if (type === 'gratitud') await loadGratitudSlides();
+  if (type === 'afirmasi') await loadAfirmasi();
+  if (type === 'jurnal') await loadJurnalSlides();
+};
+
+window.closeTenangModal = () => document.getElementById('tenang-modal').classList.remove('open');
+
+/* ─── GRATITUD SLIDES ─── */
+async function loadGratitudSlides() {
+  const container = document.getElementById('gratitud-content');
+  if (!container) return;
+  
+  // Get last 14 days of gratitud entries
+  const entries = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const ref = doc(db, 'users', currentUser.uid, 'gratitud', key);
+    const snap = await getDoc(ref);
+    const formattedDate = d.toLocaleDateString('ms-MY', { day:'numeric', month:'short' });
+    entries.push({
+      key, date: formattedDate,
+      text: snap.exists() ? snap.data().text : '',
+      isToday: i === 0
+    });
+  }
+  
+  container.innerHTML = `
+    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:10px;">tulis 3 perkara yang kamu bersyukur. setiap hari adalah slide baharu.</p>
+    <div class="slide-container" id="gratitud-slides">
+      ${entries.map((e, idx) => `
+        <div class="slide-card ${e.isToday ? 'today-slide' : ''} ${!e.text ? 'empty-slide' : ''}" 
+             onclick="openGratitudSlide('${e.key}', '${e.date}', this)" data-key="${e.key}">
+          <div class="slide-date">${e.date}</div>
+          ${e.text ? `<div class="slide-text">${escapeHTML(e.text)}</div>` : '<span>hari ini belum diisi.</span>'}
+        </div>
+      `).join('')}
+    </div>
+    <div id="gratitud-editor" style="margin-top:14px;">
+      <textarea class="tenang-textarea" id="gratitud-text" placeholder="1. ...\n2. ...\n3. ..."></textarea>
+      <button class="btn-primary" style="margin-top:10px;" onclick="saveGratitud()">simpan syukur hari ini.</button>
+    </div>
+  `;
+  
+  // Load today's text if exists
+  const todayEntry = entries.find(e => e.isToday);
+  if (todayEntry && todayEntry.text) {
+    document.getElementById('gratitud-text').value = todayEntry.text;
+  }
 }
 
-async function saveGratitud() {
+window.openGratitudSlide = (key, date, el) => {
+  const text = el.querySelector('.slide-text')?.textContent || '';
+  document.getElementById('gratitud-text').value = text.replace(/<br>/g, '\n');
+  // Highlight selected slide
+  document.querySelectorAll('#gratitud-slides .slide-card').forEach(s => s.style.borderColor = 'var(--border)');
+  el.style.borderColor = 'var(--text)';
+  el.style.borderWidth = '2px';
+};
+
+window.saveGratitud = async () => {
   const text = document.getElementById('gratitud-text')?.value?.trim();
   if (!text) return;
-  const { db, addDoc, collection, serverTimestamp } = window._fb;
-  await addDoc(collection(db, 'users', currentUser.uid, 'gratitud'), { text, createdAt: serverTimestamp() });
-  showToast('syukur disimpan 🙏');
-  closeModal('tenang-modal');
+  const key = todayKey();
+  await setDoc(doc(db, 'users', currentUser.uid, 'gratitud', key), { text, createdat: serverTimestamp() });
+  showToast('syukur disimpan.');
+  // Reload slides
+  await loadGratitudSlides();
+};
+
+/* ─── JURNAL SLIDES ─── */
+async function loadJurnalSlides() {
+  const container = document.getElementById('jurnal-content');
+  if (!container) return;
+  
+  const entries = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const ref = doc(db, 'users', currentUser.uid, 'jurnal', key);
+    const snap = await getDoc(ref);
+    const formattedDate = d.toLocaleDateString('ms-MY', { day:'numeric', month:'short' });
+    entries.push({
+      key, date: formattedDate,
+      text: snap.exists() ? snap.data().text : '',
+      isToday: i === 0
+    });
+  }
+  
+  container.innerHTML = `
+    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:10px;">ruangan peribadi untuk kamu luahkan apa yang dirasa. setiap hari adalah halaman baharu.</p>
+    <div class="slide-container" id="jurnal-slides">
+      ${entries.map((e, idx) => `
+        <div class="slide-card ${e.isToday ? 'today-slide' : ''} ${!e.text ? 'empty-slide' : ''}" 
+             onclick="openJurnalSlide('${e.key}', '${e.date}', this)" data-key="${e.key}">
+          <div class="slide-date">${e.date}</div>
+          ${e.text ? `<div class="slide-text">${escapeHTML(e.text)}</div>` : '<span>hari ini belum diisi.</span>'}
+        </div>
+      `).join('')}
+    </div>
+    <div id="jurnal-editor" style="margin-top:14px;">
+      <textarea class="tenang-textarea" id="jurnal-text" placeholder="hari ini saya rasa..."></textarea>
+      <button class="btn-primary" style="margin-top:10px;" onclick="saveJurnal()">simpan jurnal hari ini.</button>
+    </div>
+  `;
+  
+  const todayEntry = entries.find(e => e.isToday);
+  if (todayEntry && todayEntry.text) {
+    document.getElementById('jurnal-text').value = todayEntry.text;
+  }
 }
 
-async function saveJurnal() {
+window.openJurnalSlide = (key, date, el) => {
+  const text = el.querySelector('.slide-text')?.textContent || '';
+  document.getElementById('jurnal-text').value = text.replace(/<br>/g, '\n');
+  document.querySelectorAll('#jurnal-slides .slide-card').forEach(s => s.style.borderColor = 'var(--border)');
+  el.style.borderColor = 'var(--text)';
+  el.style.borderWidth = '2px';
+};
+
+window.saveJurnal = async () => {
   const text = document.getElementById('jurnal-text')?.value?.trim();
   if (!text) return;
-  const { db, addDoc, collection, serverTimestamp } = window._fb;
-  await addDoc(collection(db, 'users', currentUser.uid, 'jurnal'), { text, createdAt: serverTimestamp() });
-  showToast('jurnal disimpan 📓');
-  closeModal('tenang-modal');
+  const key = todayKey();
+  await setDoc(doc(db, 'users', currentUser.uid, 'jurnal', key), { text, createdat: serverTimestamp() });
+  showToast('jurnal disimpan.');
+  await loadJurnalSlides();
+};
+
+/* ─── AFIRMASI (from firestore, editable by admin) ─── */
+async function loadAfirmasi() {
+  const container = document.getElementById('afirmasi-content');
+  if (!container) return;
+  
+  // Try to load from Firestore, fallback to default
+  const ref = doc(db, 'settings', 'afirmasi');
+  const snap = await getDoc(ref);
+  let items = [];
+  if (snap.exists() && snap.data().items && snap.data().items.length > 0) {
+    items = snap.data().items;
+  } else {
+    items = [
+      'saya layak untuk gembira.',
+      'saya sedang mencuba dengan sepenuh daya.',
+      'perasaan saya adalah sah.',
+      'saya tidak perlu sempurna untuk dicintai.',
+      'saya pilih untuk terus mencuba hari ini.',
+      'hari ini, saya cukup.',
+      'saya kuat walaupun tidak selalu nampak begitu.'
+    ];
+  }
+  
+  container.innerHTML = `
+    <div class="affirmation-list">
+      ${items.map(item => `<div class="affirmation-item">${escapeHTML(item)}</div>`).join('')}
+    </div>`;
 }
 
-function playSuara(el) {
-  document.querySelectorAll('#tenang-modal-body .tenang-card').forEach(c => c.style.background = '');
-  el.style.background = 'var(--c1-dark)';
-  showToast('bunyi dipilih ✨ (simbolik)');
-}
-
-// ─── MY LUAHAN ───
-async function loadMyLuahan() {
-  const { db, collection, query, where, orderBy, getDocs } = window._fb;
-  const el = document.getElementById('my-luahan-list');
-  if (!el) return;
-  el.innerHTML = '<div class="loader"></div>';
-  try {
-    const q = query(collection(db, 'luahan'), where('authorId','==', currentUser.uid), orderBy('createdAt','desc'));
-    const snap = await getDocs(q);
-    el.innerHTML = '';
-    if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="icon">💬</div><p>belum ada luahan. mula berkongsi!</p></div>'; return; }
-    for (const d of snap.docs) el.appendChild(await buildPostEl(d.id, d.data()));
-  } catch(e) { el.innerHTML = '<div class="empty-state"><p>gagal memuatkan.</p></div>'; }
-}
-
-function switchProfileTab(btn, tab) {
-  document.querySelectorAll('#section-profile .tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  profileTab = tab;
-  document.getElementById('my-luahan-list').style.display = tab === 'luahan' ? '' : 'none';
-  document.getElementById('my-bertahan-profile').style.display = tab === 'bertahan' ? '' : 'none';
-  if (tab === 'bertahan') loadProfileBertahan();
-}
-
-function loadProfileBertahan() {
-  if (window._bertahanData) renderBertahan(window._bertahanData);
-}
-
-async function updateStatCounts() {
-  const { db, collection, query, where, getDocs } = window._fb;
-  try {
-    const q = query(collection(db, 'luahan'), where('authorId','==',currentUser.uid));
-    const snap = await getDocs(q);
-    document.getElementById('stat-luahan').textContent = snap.size;
-  } catch(e){}
-}
-
-// ─── SIDEBAR USERS ───
-async function loadSidebarUsers() {
-  const { db, collection, query, orderBy, getDocs, limit } = window._fb;
-  const el = document.getElementById('sidebar-users-list');
-  if (!el) return;
-  try {
-    const q = query(collection(db, 'users'), orderBy('auraPoints','desc'), limit(5));
-    const snap = await getDocs(q);
-    el.innerHTML = '';
-    snap.forEach(d => {
-      const ud = d.data();
-      if (d.id === currentUser?.uid) return;
-      const div = document.createElement('div');
-      div.className = 'user-suggestion';
-      div.innerHTML = `<img src="${makeAvatar(ud)}" class="user-sug-avatar" onerror="this.src='https://api.dicebear.com/7.x/thumbs/svg?seed=${ud.username}'">
-        <div>
-          <div class="user-sug-name">@${escHtml(ud.username||'pengguna')}${ud.verified ? `<img src="verifiedbadge.png" alt="v" class="verified-badge" onerror="this.style.display='none'">` : ''}</div>
-          <div style="font-size:11px;color:var(--text-soft)">${ud.auraPoints||0} aura</div>
-        </div>`;
-      el.appendChild(div);
-    });
-    if (!el.innerHTML.trim()) el.innerHTML = '<div style="font-size:13px;color:var(--text-soft)">tiada pengguna lain lagi.</div>';
-  } catch(e) {}
-}
-
-// ─── NOTIFICATIONS ───
-async function loadNotifications() {
+/* ─── NOTIFIKASI ─── */
+async function loadNotifikasi() {
+  if (!currentUser) return;
   const el = document.getElementById('notif-list');
-  if (!el) return;
-  el.innerHTML = '<div class="empty-state"><div class="icon">🔔</div><p>tiada notifikasi buat masa ini.</p></div>';
-  document.getElementById('notif-badge').style.display = 'none';
+  el.innerHTML = '<div class="spinner"></div>';
+  if (notifUnsub) notifUnsub();
+  const q = query(collection(db, 'users', currentUser.uid, 'notifikasi'), orderBy('createdat', 'desc'), limit(30));
+  notifUnsub = onSnapshot(q, async snap => {
+    updateNotifBadge(snap);
+    if (snap.empty) { el.innerHTML = '<div class="notif-empty">tiada notifikasi buat masa ini.</div>'; return; }
+    el.innerHTML = snap.docs.map(d => {
+      const n = d.data();
+      const unread = !n.read;
+      return `<div class="notif-item ${unread ? 'unread' : ''}" onclick="markNotifRead('${d.id}',this)">
+        <div class="notif-body">
+          <div class="notif-title">${escapeHTML(n.title || 'notifikasi.')}</div>
+          <div class="notif-msg">${escapeHTML(n.message || '')}</div>
+          <div class="notif-time">${formatTime(n.createdat)}</div>
+        </div>
+      </div>`;
+    }).join('');
+    snap.docs.forEach(async d => {
+      if (!d.data().read) await updateDoc(doc(db, 'users', currentUser.uid, 'notifikasi', d.id), { read: true });
+    });
+  });
 }
 
-// ─── SETTINGS ───
-async function saveProfile() {
-  const username = document.getElementById('settings-username').value.trim().toLowerCase();
-  const bio = document.getElementById('settings-bio').value.trim();
-  if (!username || username.length < 3) { showToast('username tidak sah.'); return; }
-  await _saveProfileData(username, bio);
+window.markNotifRead = async (id, el) => {
+  el.classList.remove('unread');
+  await updateDoc(doc(db, 'users', currentUser.uid, 'notifikasi', id), { read: true });
+};
+
+function updateNotifBadge(snap) {
+  const unreadCount = snap.docs.filter(d => !d.data().read).length;
+  [document.getElementById('sidebar-notif-dot'), document.getElementById('bnav-notif-dot')].forEach(dot => {
+    if (dot) dot.classList.toggle('show', unreadCount > 0);
+  });
 }
 
-async function savePicUrl() {
-  const url = document.getElementById('settings-pic-url').value.trim();
-  const { db, doc, updateDoc } = window._fb;
-  await updateDoc(doc(db, 'users', currentUser.uid), { photoURL: url });
-  currentUserData.photoURL = url;
-  updateNavUI();
-  showToast('gambar profil dikemas kini ✨');
+async function startNotifListener() {
+  if (!currentUser) return;
+  const q = query(collection(db, 'users', currentUser.uid, 'notifikasi'), orderBy('createdat', 'desc'), limit(30));
+  onSnapshot(q, snap => updateNotifBadge(snap));
 }
 
-async function saveProfileFromModal() {
-  const username = document.getElementById('modal-username').value.trim().toLowerCase();
-  const bio = document.getElementById('modal-bio').value.trim();
-  const picUrl = document.getElementById('modal-pic-url').value.trim();
-  if (!username || username.length < 3) { showToast('username tidak sah.'); return; }
-  const { db, doc, updateDoc } = window._fb;
-  await updateDoc(doc(db, 'users', currentUser.uid), { username, bio, photoURL: picUrl });
-  currentUserData = { ...currentUserData, username, bio, photoURL: picUrl };
-  updateNavUI();
-  closeModal('edit-profile-modal');
-  showToast('profil dikemas kini ✨');
-}
-
-async function _saveProfileData(username, bio) {
-  const { db, doc, updateDoc, collection, query, where, getDocs } = window._fb;
-  if (username !== currentUserData?.username) {
-    const q = query(collection(db, 'users'), where('username','==',username));
-    const snap = await getDocs(q);
-    if (!snap.empty) { showToast('username ini sudah digunakan.'); return; }
+/* ─── PROFILE ─── */
+async function loadProfile() {
+  const uid = viewingUserId || currentUser.uid;
+  const isOwnProfile = uid === currentUser.uid;
+  const snap = await getDoc(doc(db, 'users', uid));
+  if (!snap.exists()) {
+    if (!isOwnProfile) { showToast('pengguna tidak dijumpai.'); navigate('dashboard'); }
+    return;
   }
-  await updateDoc(doc(db, 'users', currentUser.uid), { username, bio });
-  currentUserData = { ...currentUserData, username, bio };
-  updateNavUI();
-  showToast('profil dikemas kini ✨');
+  const d = snap.data();
+  
+  document.getElementById('profile-page-title').textContent = isOwnProfile ? 'profil.' : `profil @${d.namapengguna}.`;
+  
+  const avatarEl = document.getElementById('prof-avatar');
+  const photoSrc = d.photourl || makeDefaultAvatar(d.namapengguna);
+  avatarEl.innerHTML = `<img src="${photoSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(d.namapengguna||'?')[0].toUpperCase()}'">`;
+  
+  // Get bertahan data for achievement badge
+  let totalBertahan = 0;
+  if (isOwnProfile) {
+    const { total } = await loadTickedDays();
+    totalBertahan = total;
+  } else {
+    const bs = await getDoc(doc(db, 'users', uid, 'bertahan', 'data'));
+    if (bs.exists()) totalBertahan = Object.keys(bs.data().days || {}).length;
+  }
+  
+  const hasAchievement = totalBertahan >= 365;
+  
+  document.getElementById('prof-uname').textContent = d.namapengguna || '';
+  document.getElementById('prof-badge').classList.toggle('hidden', !d.verified);
+  document.getElementById('prof-ach-badge').classList.toggle('hidden', !hasAchievement);
+  document.getElementById('prof-bio').textContent = d.bio || '';
+  
+  const actionsEl = document.getElementById('profile-actions');
+  if (isOwnProfile) {
+    actionsEl.innerHTML = '<button class="btn-edit" onclick="navigate(\'settings\')">sunting profil.</button>';
+  } else {
+    actionsEl.innerHTML = '<button class="back-btn" onclick="navigate(\'dashboard\')">kembali ke papan muka.</button>';
+  }
+  
+  const lq = query(collection(db, 'luahan'), where('authorid', '==', uid));
+  const ls = await getDocs(lq);
+  document.getElementById('prof-luahan-count').textContent = ls.size;
+  
+  if (isOwnProfile) {
+    document.getElementById('prof-streak').textContent = computeStreak(tickedDays);
+    document.getElementById('prof-total').textContent = totalBertahan;
+  } else {
+    const bs = await getDoc(doc(db, 'users', uid, 'bertahan', 'data'));
+    if (bs.exists()) {
+      const bd = bs.data().days || {};
+      document.getElementById('prof-streak').textContent = computeStreak(bd);
+      document.getElementById('prof-total').textContent = Object.keys(bd).length;
+    }
+  }
+  
+  const myList = document.getElementById('my-luahan-list');
+  if (ls.empty) {
+    myList.innerHTML = '<div class="empty-feed">tiada luahan lagi.</div>';
+  } else {
+    const docs = ls.docs.sort((a,b) => (b.data().createdat?.seconds||0)-(a.data().createdat?.seconds||0));
+    myList.innerHTML = docs.map(doc => {
+      const data = doc.data();
+      const avatarSrc = d.photourl || makeDefaultAvatar(d.namapengguna);
+      return `<div class="luahan-item">
+        <div class="luahan-header">
+          ${data.anon
+            ? '<span class="luahan-anon">tanpa nama.</span>'
+            : `<div class="luahan-avatar"><img src="${avatarSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(d.namapengguna||'?')[0].toUpperCase()}'"></div>
+               <span class="luahan-user">${escapeHTML(d.namapengguna||'')}${d.verified?verifiedBadgeSVG():''}${hasAchievement?achievementBadgeSVG('small'):''}</span>`}
+        </div>
+        <div class="luahan-text">${escapeHTML(data.text)}</div>
+        <div class="luahan-time">${formatTime(data.createdat)}</div>
+      </div>`;
+    }).join('');
+  }
+  
+  const now = new Date();
+  calViewMonth = { year: now.getFullYear(), month: now.getMonth() };
+  renderFullCal();
 }
 
-async function changePassword() {
-  const newPass = document.getElementById('settings-newpass').value;
-  const currPass = document.getElementById('settings-currpass').value;
-  if (!newPass || newPass.length < 6) { showToast('kata laluan sekurang-kurangnya 6 aksara.'); return; }
-  if (!currPass) { showToast('masukkan kata laluan semasa.'); return; }
-  const { EmailAuthProvider, reauthenticateWithCredential, updatePassword } = window._fb;
-  try {
-    const cred = EmailAuthProvider.credential(currentUser.email, currPass);
-    await reauthenticateWithCredential(currentUser, cred);
-    await updatePassword(currentUser, newPass);
-    document.getElementById('settings-newpass').value = '';
-    document.getElementById('settings-currpass').value = '';
-    showToast('kata laluan berjaya diubah 🔒');
-  } catch(e) { showToast('kata laluan semasa tidak tepat.'); }
+window.switchTab = (tabId, btn) => {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+};
+
+window.changeCalMonth = (dir) => {
+  calViewMonth.month += dir;
+  if (calViewMonth.month > 11) { calViewMonth.month = 0; calViewMonth.year++; }
+  if (calViewMonth.month < 0)  { calViewMonth.month = 11; calViewMonth.year--; }
+  renderFullCal();
+};
+
+function renderFullCal() {
+  const { year, month } = calViewMonth;
+  document.getElementById('full-cal-title').textContent = `${MONTHS[month]} ${year}.`;
+  const cal = document.getElementById('full-cal');
+  const days = ['Ahd','Isn','Sel','Rab','Kha','Jum','Sab'];
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const todayStr = todayKey();
+  cal.innerHTML = days.map(d=>`<div class="day-label">${d}</div>`).join('');
+  for (let i=0;i<firstDay;i++) cal.innerHTML += '<div></div>';
+  for (let d=1;d<=daysInMonth;d++) {
+    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el = document.createElement('div');
+    el.className = 'cal-day'; el.textContent = d;
+    if (tickedDays[key]) el.classList.add('ticked');
+    if (key === todayStr) el.classList.add('today');
+    cal.appendChild(el);
+  }
 }
 
-async function deleteAccount() {
-  const pass = document.getElementById('delete-confirm-pass').value;
-  if (!pass) { showToast('masukkan kata laluan.'); return; }
-  const { EmailAuthProvider, reauthenticateWithCredential, deleteUser, db, doc, deleteDoc, collection, query, where, getDocs } = window._fb;
+/* ─── SETTINGS ─── */
+async function loadSettings() {
+  if (!currentUser) return;
+  const snap = await getDoc(doc(db, 'users', currentUser.uid));
+  if (!snap.exists()) return;
+  const d = snap.data();
+  document.getElementById('set-uname').value = d.namapengguna || '';
+  document.getElementById('set-bio').value   = d.bio || '';
+  document.getElementById('set-photo').value = d.photourl || '';
+}
+
+window.saveProfile = async () => {
+  const uname = document.getElementById('set-uname').value.trim().toLowerCase();
+  const bio   = document.getElementById('set-bio').value.trim();
+  const photo = document.getElementById('set-photo').value.trim();
+  if (!uname) return showToast('nama pengguna tidak boleh kosong.');
+  if (/[A-Z]/.test(uname)) return showToast('nama pengguna hanya huruf kecil dibenarkan.');
   try {
-    const cred = EmailAuthProvider.credential(currentUser.email, pass);
+    if (uname !== userData?.namapengguna) {
+      const uq = query(collection(db, 'users'), where('namapengguna', '==', uname));
+      const us = await getDocs(uq);
+      if (!us.empty) return showToast('nama pengguna sudah digunakan.');
+    }
+    await updateDoc(doc(db, 'users', currentUser.uid), { namapengguna: uname, bio, photourl: photo });
+    userData = { ...userData, namapengguna: uname, bio, photourl: photo };
+    updateSidebarUser();
+    showToast('profil berjaya dikemas kini.');
+  } catch(e) { showToast('gagal menyimpan.'); }
+};
+
+window.changePassword = async () => {
+  const oldPw = document.getElementById('set-pw-old').value;
+  const newPw = document.getElementById('set-pw-new').value;
+  if (!oldPw || !newPw) return showToast('sila isi kedua-dua medan kata laluan.');
+  if (newPw.length < 6) return showToast('kata laluan baharu terlalu pendek.');
+  try {
+    const cred = EmailAuthProvider.credential(currentUser.email, oldPw);
     await reauthenticateWithCredential(currentUser, cred);
-    // Delete user data
-    await deleteDoc(doc(db, 'users', currentUser.uid));
-    // Delete luahan
-    const q = query(collection(db, 'luahan'), where('authorId','==',currentUser.uid));
-    const snap = await getDocs(q);
-    for (const d of snap.docs) await deleteDoc(doc(db, 'luahan', d.id));
+    await updatePassword(currentUser, newPw);
+    document.getElementById('set-pw-old').value = '';
+    document.getElementById('set-pw-new').value = '';
+    showToast('kata laluan berjaya ditukar.');
+  } catch(e) {
+    showToast(e.code === 'auth/wrong-password' ? 'kata laluan semasa salah.' : 'gagal menukar kata laluan.');
+  }
+};
+
+window.openDeleteModal  = () => document.getElementById('delete-modal').classList.add('open');
+window.closeDeleteModal = () => { document.getElementById('delete-modal').classList.remove('open'); document.getElementById('del-pw').value=''; };
+
+window.doDeleteAccount = async () => {
+  const pw = document.getElementById('del-pw').value;
+  if (!pw) return showToast('sila masukkan kata laluan.');
+  try {
+    const cred = EmailAuthProvider.credential(currentUser.email, pw);
+    await reauthenticateWithCredential(currentUser, cred);
+    const batch = writeBatch(db);
+    const lq = query(collection(db, 'luahan'), where('authorid', '==', currentUser.uid));
+    const ls = await getDocs(lq);
+    ls.forEach(d => batch.delete(d.ref));
+    batch.delete(doc(db, 'users', currentUser.uid));
+    await batch.commit();
     await deleteUser(currentUser);
-    showPage('login');
-    showToast('akaun telah dipadam.');
-  } catch(e) { showToast('gagal memadam akaun. semak kata laluan.'); }
-}
-
-// ─── KEYBOARD ENTER ───
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('page-login').classList.contains('active') && !e.shiftKey) {
-    doLogin();
+    closeDeleteModal();
+  } catch(e) {
+    showToast(e.code === 'auth/wrong-password' ? 'kata laluan salah.' : 'gagal memadam akaun.');
   }
-});
+};
+
+onAuthStateChanged(auth, user => { if (user) startNotifListener(); });
 </script>
 </body>
 </html>
