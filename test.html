@@ -16,7 +16,7 @@
       --text: #3a6b85;
       --radius: 14px;
       --radius-sm: 8px;
-      --sidebar-w: 320px;
+      --sidebar-w: 300px;
     }
 
     html, body {
@@ -82,10 +82,9 @@
       background: var(--bg);
       border-radius: var(--radius);
       padding: 32px 28px;
-      border: 2px solid var(--text);
+      border: 1.5px solid var(--text);
     }
     .auth-card h2 {
-      font-family: 'Open Sans', sans-serif;
       font-size: 1.1rem; font-weight: 600;
       margin-bottom: 24px; text-align: center;
       letter-spacing: 0.01em;
@@ -93,7 +92,6 @@
     .field { margin-bottom: 16px; }
     .field label { 
       display: block; 
-      font-family: 'Open Sans', sans-serif;
       font-size: 0.85rem; 
       font-weight: 600; 
       margin-bottom: 5px; 
@@ -103,15 +101,15 @@
     .field .input-wrap { position: relative; }
     .field input {
       width: 100%; padding: 10px 14px;
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius-sm); color: var(--text);
       font-family: 'Open Sans', sans-serif; font-size: 0.82rem;
-      outline: none; transition: opacity 0.2s;
+      outline: none; transition: border-color 0.2s;
     }
-    .field input:focus { opacity: 0.8; }
+    .field input:focus { border-color: var(--text); }
     .field input::placeholder { 
       color: var(--text);
-      opacity: 0.5;
+      opacity: 0.6;
       font-size: 0.75rem;
     }
     .pw-toggle {
@@ -120,7 +118,6 @@
       color: var(--text); font-size: 0.78rem; font-weight: 600;
       letter-spacing: 0.03em; opacity: 0.7;
     }
-    .pw-toggle:hover { opacity: 1; }
     .btn-primary {
       width: 100%; padding: 11px;
       background: var(--text); color: var(--bg);
@@ -133,21 +130,18 @@
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
     .auth-switch {
       text-align: center; margin-top: 18px;
-      font-size: 0.82rem; color: var(--text);
-      opacity: 0.7;
+      font-size: 0.82rem; color: var(--text); opacity: 0.8;
     }
     .auth-switch button {
       background: none; border: none; cursor: pointer;
       color: var(--text); font-weight: 600; font-size: 0.82rem;
       text-decoration: underline; text-underline-offset: 2px;
-      opacity: 1;
     }
     .auth-error {
       font-size: 0.8rem; color: var(--text);
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1px solid var(--text);
       border-radius: var(--radius-sm); padding: 9px 13px;
       margin-bottom: 14px; text-align: center;
-      opacity: 0.7;
     }
 
     /* ══════════════════════════════
@@ -159,69 +153,67 @@
     /* Sidebar */
     #sidebar {
       width: var(--sidebar-w); min-height: 100vh;
-      background: var(--bg); border-right: 2px solid var(--text);
+      background: var(--bg); border-right: 1.5px solid var(--text);
       display: flex; flex-direction: column;
       padding: 28px 0; position: fixed; left: 0; top: 0; bottom: 0;
       z-index: 100;
     }
-    
-    /* Header sistem */
-    #sidebar .system-header {
-      padding: 0 24px 20px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid var(--text);
-    }
-    
-    #sidebar .system-title {
-      font-size: 0.85rem;
-      line-height: 1.4;
+    #sidebar .logo-wrap {
+      padding: 0 24px; margin-bottom: 20px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       text-align: center;
+    }
+    #sidebar .logo-wrap img { 
+      width: 70px; 
+      height: 70px; 
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid var(--text);
       margin-bottom: 8px;
     }
     
-    #sidebar .system-title .os { font-family: 'Open Sans', sans-serif; }
-    #sidebar .system-title .cv { font-family: 'Caveat', cursive; font-size: 1.1rem; }
-    
-    #sidebar .system-date {
+    /* Header title */
+    .header-title {
       font-family: 'Open Sans', sans-serif;
-      font-size: 0.7rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
       text-align: center;
+      line-height: 1.5;
+    }
+    .header-title .caveat-word {
+      font-family: 'Caveat', cursive;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .header-date {
+      font-size: 0.7rem;
+      font-weight: 400;
       opacity: 0.7;
-      letter-spacing: 0.05em;
+      margin-top: 2px;
+      letter-spacing: 0.04em;
     }
     
-    #sidebar .logo-wrap {
-      padding: 0 30px; margin-bottom: 24px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    #sidebar .logo-wrap img { 
-      width: 90px; 
-      height: 90px; 
-      object-fit: cover;
-      border-radius: 50%;
-      border: 3px solid var(--text);
-    }
     #sidebar nav { flex: 1; }
     #sidebar nav a {
-      display: block; padding: 11px 24px;
-      color: var(--text); font-family: 'Open Sans', sans-serif;
-      font-size: 0.9rem; font-weight: 600;
+      display: block; padding: 11px 20px;
+      color: var(--text); font-size: 0.9rem; font-weight: 600;
       text-decoration: none; letter-spacing: 0.04em;
       border-left: 3px solid transparent;
       transition: all 0.15s; opacity: 0.7;
     }
     #sidebar nav a:hover { opacity: 1; }
-    #sidebar nav a.active { opacity: 1; border-left-color: var(--text); font-weight: 700; }
+    #sidebar nav a.active { opacity: 1; border-left-color: var(--text); }
 
     /* Sidebar user with avatar */
     #sidebar .sidebar-user {
-      padding: 16px 24px;
-      border-top: 2px solid var(--text);
+      padding: 16px 20px;
+      border-top: 1.5px solid var(--text);
       display: flex; align-items: center; gap: 10px;
       cursor: pointer;
       transition: opacity 0.15s;
     }
-    #sidebar .sidebar-user:hover { opacity: 0.7; }
+    #sidebar .sidebar-user:hover { opacity: 0.8; }
     .sidebar-user-avatar {
       width: 42px; height: 42px; border-radius: 50%;
       background: var(--bg); overflow: hidden; flex-shrink: 0;
@@ -231,16 +223,14 @@
     }
     .sidebar-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .sidebar-user-info { 
-      font-family: 'Open Sans', sans-serif;
       font-size: 0.78rem; 
       color: var(--text);
-      opacity: 0.7;
+      opacity: 0.8;
       line-height: 1.4;
     }
     .sidebar-user-info .uname {
       font-family: 'Caveat', cursive; font-size: 1.3rem;
       color: var(--text); font-weight: 600; display: block;
-      opacity: 1;
     }
 
     /* Notification badge on nav */
@@ -265,19 +255,18 @@
     #bottom-nav {
       display: none;
       position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--bg); border-top: 2px solid var(--text);
+      background: var(--bg); border-top: 1.5px solid var(--text);
       height: 64px; z-index: 100;
       justify-content: space-around; align-items: center;
     }
     #bottom-nav a {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      color: var(--text); font-family: 'Open Sans', sans-serif;
-      font-size: 0.6rem; font-weight: 600;
+      color: var(--text); font-size: 0.6rem; font-weight: 600;
       text-decoration: none; letter-spacing: 0.04em; gap: 3px;
       transition: opacity 0.15s; padding: 4px 0; opacity: 0.7;
     }
-    #bottom-nav a.active { opacity: 1; font-weight: 700; }
+    #bottom-nav a.active { opacity: 1; }
     #bottom-nav a svg { width: 20px; height: 20px; flex-shrink: 0; }
     #bottom-nav a .bnav-avatar {
       width: 26px; height: 26px; border-radius: 50%;
@@ -288,30 +277,21 @@
       flex-shrink: 0;
     }
     #bottom-nav a .bnav-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    #bottom-nav a.active .bnav-avatar { border-width: 3px; }
 
-    /* Mobile header */
-    .mobile-header {
+    /* Mobile logo */
+    .mobile-logo {
       display: none;
       text-align: center;
       padding: 16px 0 8px;
       background: var(--bg);
-      border-bottom: 2px solid var(--text);
     }
-    
-    .mobile-header .system-title-mobile {
-      font-size: 0.8rem;
-      line-height: 1.4;
-      margin-bottom: 4px;
-    }
-    
-    .mobile-header .system-title-mobile .os { font-family: 'Open Sans', sans-serif; }
-    .mobile-header .system-title-mobile .cv { font-family: 'Caveat', cursive; font-size: 1rem; }
-    
-    .mobile-header .system-date-mobile {
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.65rem;
-      opacity: 0.7;
+    .mobile-logo img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid var(--text);
+      background: var(--bg);
     }
 
     /* Content area */
@@ -324,15 +304,14 @@
     .page-title {
       font-family: 'Open Sans', sans-serif;
       font-size: 0.72rem; font-weight: 600;
-      letter-spacing: 0.12em;
-      color: var(--text); opacity: 0.7;
-      margin-bottom: 24px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text); opacity: 0.7; margin-bottom: 24px;
     }
 
     /* ── Card ── */
     .card {
       background: var(--bg);
-      border: 2px solid var(--text);
+      border: 1.5px solid var(--text);
       border-radius: var(--radius);
       padding: 20px;
       margin-bottom: 16px;
@@ -343,7 +322,6 @@
     ══════════════════════════════ */
     .bertahan-card { text-align: center; padding: 28px 20px; }
     .bertahan-label {
-      font-family: 'Open Sans', sans-serif;
       font-size: 1.05rem; font-weight: 400;
       margin-bottom: 22px; color: var(--text);
       font-style: italic;
@@ -351,18 +329,17 @@
     .tick-btn {
       width: 64px; height: 64px;
       border-radius: 50%;
-      border: 3px solid var(--text);
+      border: 2.5px solid var(--text);
       background: transparent;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       margin: 0 auto 18px;
-      transition: opacity 0.2s, transform 0.15s;
+      transition: background 0.2s, transform 0.15s;
     }
     .tick-btn:hover:not(:disabled) { transform: scale(1.05); }
     .tick-btn.ticked { background: var(--text); }
-    .tick-btn.ticked svg { stroke: var(--bg); }
     .tick-btn svg { width: 28px; height: 28px; }
-    .tick-btn:disabled { cursor: default; opacity: 0.6; }
+    .tick-btn:disabled { cursor: default; opacity: 0.8; }
     .streak-info {
       display: flex; gap: 28px; justify-content: center; margin-top: 14px;
     }
@@ -371,105 +348,75 @@
       font-family: 'Caveat', cursive; font-size: 2rem;
       font-weight: 700; line-height: 1;
     }
-    .streak-lbl { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.7rem; font-weight: 600; 
-      letter-spacing: 0.06em; color: var(--text); 
-      opacity: 0.7;
-    }
+    .streak-lbl { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: var(--text); opacity: 0.7; text-transform: uppercase; }
 
     /* Calendar */
-    .calendar-title { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.72rem; font-weight: 600; 
-      letter-spacing: 0.1em; color: var(--text); 
-      opacity: 0.7; margin-bottom: 12px; 
-    }
+    .calendar-title { font-family: 'Open Sans', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); opacity: 0.7; margin-bottom: 12px; }
     .mini-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
     .cal-day {
       aspect-ratio: 1; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-family: 'Caveat', cursive; font-size: 0.85rem;
-      color: var(--text);
+      color: var(--text); position: relative;
     }
     .cal-day.ticked { background: var(--text); color: var(--bg); }
-    .cal-day.today { border: 2px solid var(--text); color: var(--text); }
-    .cal-day.future { opacity: 0.3; }
+    .cal-day.today { border: 1.5px solid var(--text); color: var(--text); }
+    .cal-day.future { opacity: 0.35; }
 
-    /* Achievements */
-    .achievements-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
-    
+    /* Bertahan achievements */
+    .achievement-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; justify-content: flex-start; }
     .achievement-badge {
       display: flex; flex-direction: column; align-items: center;
-      background: var(--bg); border: 2px solid var(--text);
-      border-radius: var(--radius-sm); padding: 12px 8px;
+      background: var(--bg); border: 1.5px solid var(--text);
+      border-radius: var(--radius-sm); padding: 10px 12px;
       font-family: 'Open Sans', sans-serif;
-      font-size: 0.65rem; color: var(--text); text-align: center; 
-      gap: 4px; transition: opacity 0.2s; position: relative;
-      min-height: 100px;
-      justify-content: center;
+      font-size: 0.65rem; color: var(--text); text-align: center; gap: 4px;
+      min-width: 60px; transition: opacity 0.2s;
     }
-    
-    .achievement-badge .badge-icon { 
+    .achievement-badge .badge-icon {
       font-family: 'Caveat', cursive;
-      font-size: 1.8rem; 
+      font-size: 1.4rem;
       font-weight: 700;
     }
+    .achievement-badge.earned { background: var(--text); color: var(--bg); }
+    .achievement-badge.earned .badge-icon { color: var(--bg); }
+    .achievement-badge.locked { opacity: 0.3; }
     
-    .achievement-badge .badge-label {
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.65rem;
+    /* Achievement badge indicator on 365 */
+    .achievement-badge.earned.milestone {
+      position: relative;
     }
-    
-    .achievement-badge.earned { 
-      background: var(--text); 
-      color: var(--bg); 
+    .milestone-star {
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem;
+      color: var(--bg);
+      margin-top: 2px;
     }
-    
-    .achievement-badge.locked { 
-      opacity: 0.4; 
+
+    /* Achievement badge next to username */
+    .achievement-badge-icon {
+      display: inline-block; width: 18px; height: 18px; 
+      vertical-align: middle; margin-left: 4px;
+      fill: #c9a63e; flex-shrink: 0;
     }
-    
-    .achievement-badge .reward-badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 24px;
-      height: 24px;
-      display: none;
-    }
-    
-    .achievement-badge.earned.reward .reward-badge {
-      display: block;
-    }
+    .achievement-badge-icon.small { width: 14px; height: 14px; }
 
     /* 30-day dots */
     .dots-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
     .day-dot {
       width: 10px; height: 10px; border-radius: 50%;
-      background: var(--bg); border: 2px solid var(--text);
-      opacity: 0.3;
+      background: var(--bg); border: 1.5px solid var(--text);
     }
-    .day-dot.done { background: var(--text); opacity: 1; }
-    .day-dot.today-dot { opacity: 0.7; }
+    .day-dot.done { background: var(--text); }
 
     /* Feed */
-    .feed-title { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.72rem; font-weight: 600; 
-      letter-spacing: 0.1em; color: var(--text); 
-      opacity: 0.7; margin-bottom: 14px; margin-top: 28px; 
-    }
+    .feed-title { font-family: 'Open Sans', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); opacity: 0.7; margin-bottom: 14px; margin-top: 28px; }
     .luahan-item {
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
-      position: relative;
+      cursor: pointer;
       transition: opacity 0.15s;
+      position: relative;
     }
     .luahan-item:hover { opacity: 0.8; }
     .luahan-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -478,9 +425,10 @@
       background: var(--bg); overflow: hidden; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 600;
-      border: 2px solid var(--text); cursor: pointer;
+      border: 1.5px solid var(--text);
     }
     .luahan-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .luahan-avatar.clickable { cursor: pointer; }
     .luahan-user { 
       font-family: 'Caveat', cursive; 
       font-size: 1.2rem; 
@@ -490,54 +438,21 @@
       text-underline-offset: 2px;
       display: inline-flex; align-items: center; gap: 4px;
     }
-    .luahan-user:hover { opacity: 0.7; }
-    .luahan-badge {
-      width: 16px; height: 16px; display: inline-block; vertical-align: middle;
-    }
-    .luahan-anon { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.82rem; color: var(--text); opacity: 0.7; 
-      font-style: italic; 
-    }
-    .luahan-text { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.9rem; line-height: 1.65; color: var(--text); 
-    }
-    .luahan-time { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.72rem; color: var(--text); opacity: 0.7; 
-      margin-top: 8px; 
-    }
-    .empty-feed { 
-      text-align: center; color: var(--text); opacity: 0.7; 
-      font-size: 0.88rem; padding: 32px 0; font-style: italic; 
-    }
-    
-    .delete-luahan-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: none;
-      border: 2px solid var(--text);
-      color: var(--text);
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      opacity: 0.5;
-      transition: all 0.2s;
+    .luahan-anon { font-size: 0.82rem; color: var(--text); opacity: 0.7; font-style: italic; }
+    .luahan-text { font-size: 0.9rem; line-height: 1.65; color: var(--text); }
+    .luahan-time { font-family: 'Open Sans', sans-serif; font-size: 0.72rem; color: var(--text); opacity: 0.6; margin-top: 8px; }
+    .luahan-delete {
+      position: absolute; top: 12px; right: 12px;
+      background: none; border: 1px solid var(--text);
+      border-radius: 50%; width: 28px; height: 28px;
+      cursor: pointer; color: var(--text);
+      font-size: 0.9rem; display: flex; align-items: center;
+      justify-content: center; opacity: 0.5;
+      transition: opacity 0.15s;
       font-family: 'Open Sans', sans-serif;
     }
-    
-    .delete-luahan-btn:hover {
-      opacity: 1;
-      background: var(--text);
-      color: var(--bg);
-    }
+    .luahan-delete:hover { opacity: 1; background: var(--text); color: var(--bg); }
+    .empty-feed { text-align: center; color: var(--text); opacity: 0.7; font-size: 0.88rem; padding: 32px 0; font-style: italic; }
 
     /* ══════════════════════════════
        POST PAGE
@@ -545,33 +460,33 @@
     .post-card { padding: 24px; }
     .post-card textarea {
       width: 100%; min-height: 160px;
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius-sm); color: var(--text);
       font-family: 'Open Sans', sans-serif; font-size: 0.92rem;
       line-height: 1.7; padding: 14px;
       resize: vertical; outline: none;
-      transition: opacity 0.2s;
+      transition: border-color 0.2s;
     }
-    .post-card textarea:focus { opacity: 0.8; }
+    .post-card textarea:focus { border-color: var(--text); }
     .post-card textarea::placeholder { color: var(--text); opacity: 0.5; }
     .post-options {
       display: flex; align-items: center; justify-content: space-between;
       margin-top: 14px; flex-wrap: wrap; gap: 12px;
     }
-    .toggle-wrap { display: flex; align-items: center; gap: 10px; font-family: 'Open Sans', sans-serif; font-size: 0.82rem; }
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; }
     .toggle {
       width: 40px; height: 22px; border-radius: 11px;
-      background: var(--bg); border: 2px solid var(--text); cursor: pointer;
-      position: relative; transition: opacity 0.2s;
+      background: var(--bg); border: 1.5px solid var(--text); cursor: pointer;
+      position: relative; transition: background 0.2s;
     }
     .toggle::after {
       content: ''; position: absolute;
-      width: 14px; height: 14px; border-radius: 50%;
+      width: 16px; height: 16px; border-radius: 50%;
       background: var(--text); top: 2px; left: 2px;
       transition: left 0.2s;
     }
     .toggle.on { background: var(--text); }
-    .toggle.on::after { left: 22px; background: var(--bg); }
+    .toggle.on::after { left: 20px; background: var(--bg); }
     .char-count { font-family: 'Open Sans', sans-serif; font-size: 0.75rem; color: var(--text); opacity: 0.7; }
 
     /* ══════════════════════════════
@@ -581,36 +496,29 @@
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px;
     }
     .tenang-tile {
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius-sm); padding: 18px 10px;
       text-align: center; cursor: pointer; transition: all 0.2s;
     }
     .tenang-tile:hover { background: var(--text); }
     .tenang-tile:hover .tt-label { color: var(--bg); }
-    .tt-label { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.72rem; font-weight: 600; 
-      color: var(--text); letter-spacing: 0.03em; 
-    }
+    .tt-label { font-family: 'Open Sans', sans-serif; font-size: 0.72rem; font-weight: 600; color: var(--text); letter-spacing: 0.03em; }
 
     /* Tenang sub-content */
-    .tenang-sub { margin-top: 0; }
     .tenang-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
     .tenang-step {
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius-sm); padding: 13px 16px;
-      font-family: 'Open Sans', sans-serif;
       font-size: 0.88rem; color: var(--text);
     }
     .affirmation-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
     .affirmation-item {
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius-sm); padding: 12px 16px;
       font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--text);
       text-align: center;
     }
     
-    /* SOS wide layout */
     .sos-list { 
       display: grid; 
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
@@ -618,13 +526,12 @@
       margin-top: 8px; 
     }
     .sos-item {
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius-sm); padding: 14px 16px;
-      font-family: 'Open Sans', sans-serif;
     }
-    .sos-item strong { display: block; font-family: 'Caveat', cursive; font-size: 1rem; margin-bottom: 3px; }
-    .sos-item .sos-num { font-family: 'Caveat', cursive; font-size: 1.2rem; font-weight: 600; }
-    .sos-item .sos-desc { font-family: 'Open Sans', sans-serif; font-size: 0.72rem; opacity: 0.7; margin-top: 3px; }
+    .sos-item strong { display: block; font-size: 0.9rem; margin-bottom: 3px; }
+    .sos-item .sos-num { font-family: 'Caveat', cursive; font-size: 1.2rem; font-weight: 600; color: var(--text); }
+    .sos-item .sos-desc { font-family: 'Open Sans', sans-serif; font-size: 0.72rem; color: var(--text); opacity: 0.7; margin-top: 3px; }
 
     /* Jurnal/gratitud slides */
     .slide-container {
@@ -633,15 +540,14 @@
     }
     .slide-card {
       flex: 0 0 200px; height: 200px;
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius-sm); padding: 14px;
       scroll-snap-align: start; cursor: pointer;
       transition: all 0.2s; display: flex; flex-direction: column;
-      font-family: 'Open Sans', sans-serif;
       font-size: 0.82rem; color: var(--text); overflow: hidden;
       position: relative;
     }
-    .slide-card:hover { opacity: 0.8; }
+    .slide-card:hover { background: var(--text); color: var(--bg); }
     .slide-card .slide-date {
       font-family: 'Open Sans', sans-serif;
       font-size: 0.65rem; color: var(--text); opacity: 0.7;
@@ -651,7 +557,7 @@
       flex: 1; overflow: hidden; line-height: 1.6;
       display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical;
     }
-    .slide-card.today-slide { border-width: 3px; }
+    .slide-card.today-slide { border-width: 2px; }
     .slide-card.empty-slide {
       display: flex; align-items: center; justify-content: center;
       color: var(--text); opacity: 0.5; font-style: italic;
@@ -660,14 +566,14 @@
     /* Jurnal/gratitud textarea */
     .tenang-textarea {
       width: 100%; min-height: 120px;
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius-sm); color: var(--text);
       font-family: 'Open Sans', sans-serif; font-size: 0.88rem;
       line-height: 1.7; padding: 12px 14px;
       resize: vertical; outline: none; margin-top: 10px;
-      transition: opacity 0.2s;
+      transition: border-color 0.2s;
     }
-    .tenang-textarea:focus { opacity: 0.8; }
+    .tenang-textarea:focus { border-color: var(--text); }
     .tenang-textarea::placeholder { color: var(--text); opacity: 0.5; }
 
     /* ══════════════════════════════
@@ -680,7 +586,7 @@
       display: flex; align-items: center; justify-content: center;
       font-family: 'Caveat', cursive; font-size: 2.2rem; font-weight: 700;
       border: 3px solid var(--text); cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.15s;
     }
     .profile-avatar:hover { transform: scale(1.05); }
     .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -688,29 +594,21 @@
       font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700;
       display: flex; align-items: center; gap: 6px;
     }
-    .profile-info .bio { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.85rem; color: var(--text); opacity: 0.7; 
-      margin-top: 3px; 
-    }
+    .profile-info .bio { font-family: 'Open Sans', sans-serif; font-size: 0.85rem; color: var(--text); opacity: 0.7; margin-top: 3px; }
     .profile-stats { display: flex; gap: 24px; margin-top: 8px; }
     .stat-item { text-align: center; }
     .stat-num { font-family: 'Caveat', cursive; font-size: 1.5rem; font-weight: 700; }
-    .stat-lbl { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.68rem; font-weight: 600; 
-      letter-spacing: 0.06em; color: var(--text); opacity: 0.7;
-    }
+    .stat-lbl { font-family: 'Open Sans', sans-serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); opacity: 0.7; }
 
     /* Tabs */
-    .tabs { display: flex; border-bottom: 2px solid var(--text); margin-bottom: 20px; }
+    .tabs { display: flex; border-bottom: 1.5px solid var(--text); margin-bottom: 20px; }
     .tab-btn {
       padding: 10px 18px; font-family: 'Open Sans', sans-serif;
       font-size: 0.78rem; font-weight: 600;
-      letter-spacing: 0.06em;
-      color: var(--text); background: none; border: none;
-      border-bottom: 3px solid transparent; cursor: pointer;
-      transition: all 0.15s; opacity: 0.5; margin-bottom: -2px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text); opacity: 0.6; background: none; border: none;
+      border-bottom: 2.5px solid transparent; cursor: pointer;
+      transition: all 0.15s; margin-bottom: -1.5px;
     }
     .tab-btn.active { opacity: 1; border-bottom-color: var(--text); }
     .tab-panel { display: none; }
@@ -719,15 +617,14 @@
     /* Full calendar */
     .full-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
     .full-cal-header .month-name { font-family: 'Caveat', cursive; font-size: 1.3rem; font-weight: 600; }
-    .cal-nav { background: none; border: 2px solid var(--text); border-radius: var(--radius-sm); padding: 4px 10px; cursor: pointer; color: var(--text); font-family: 'Open Sans', sans-serif; font-size: 0.8rem; }
-    .cal-nav:hover { background: var(--text); color: var(--bg); }
+    .cal-nav { background: none; border: 1.5px solid var(--text); border-radius: var(--radius-sm); padding: 4px 10px; cursor: pointer; color: var(--text); font-family: 'Open Sans', sans-serif; font-size: 0.8rem; }
     .full-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .full-cal .day-label { font-family: 'Open Sans', sans-serif; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.06em; text-align: center; color: var(--text); opacity: 0.7; padding-bottom: 4px; }
+    .full-cal .day-label { font-family: 'Open Sans', sans-serif; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; color: var(--text); opacity: 0.7; padding-bottom: 4px; }
     .full-cal .cal-day { font-size: 0.88rem; }
 
     .btn-edit {
       display: inline-block; padding: 8px 18px;
-      border: 2px solid var(--text); border-radius: var(--radius-sm);
+      border: 1.5px solid var(--text); border-radius: var(--radius-sm);
       color: var(--text); font-family: 'Open Sans', sans-serif;
       font-size: 0.8rem; font-weight: 600;
       letter-spacing: 0.04em; cursor: pointer; background: none;
@@ -739,56 +636,52 @@
     /* Back button */
     .back-btn {
       display: inline-block; padding: 6px 14px;
-      border: 2px solid var(--text); border-radius: var(--radius-sm);
+      border: 1.5px solid var(--text); border-radius: var(--radius-sm);
       color: var(--text); font-family: 'Open Sans', sans-serif;
       font-size: 0.78rem; font-weight: 600;
-      cursor: pointer; background: none; margin-bottom: 16px; opacity: 0.7;
+      cursor: pointer; background: none; margin-bottom: 16px;
       transition: all 0.15s;
     }
-    .back-btn:hover { opacity: 1; }
+    .back-btn:hover { background: var(--text); color: var(--bg); }
 
     /* ══════════════════════════════
        NOTIFIKASI PAGE
     ══════════════════════════════ */
     .notif-item {
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
       display: flex; gap: 12px; align-items: flex-start;
     }
-    .notif-item.unread { opacity: 1; }
+    .notif-item.unread { border-width: 2px; }
     .notif-body { flex: 1; }
-    .notif-title { font-family: 'Caveat', cursive; font-weight: 600; font-size: 1rem; margin-bottom: 3px; }
-    .notif-msg { font-family: 'Open Sans', sans-serif; font-size: 0.85rem; opacity: 0.7; line-height: 1.55; }
-    .notif-time { font-family: 'Open Sans', sans-serif; font-size: 0.72rem; opacity: 0.7; margin-top: 6px; }
-    .notif-empty { text-align: center; opacity: 0.7; font-family: 'Open Sans', sans-serif; font-size: 0.88rem; padding: 40px 0; font-style: italic; }
+    .notif-title { font-family: 'Open Sans', sans-serif; font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
+    .notif-msg { font-family: 'Open Sans', sans-serif; font-size: 0.85rem; color: var(--text); opacity: 0.7; line-height: 1.55; }
+    .notif-time { font-family: 'Open Sans', sans-serif; font-size: 0.72rem; color: var(--text); opacity: 0.6; margin-top: 6px; }
+    .notif-empty { text-align: center; color: var(--text); opacity: 0.7; font-size: 0.88rem; padding: 40px 0; font-style: italic; }
 
     /* ══════════════════════════════
        SETTINGS PAGE
     ══════════════════════════════ */
     .settings-section { margin-bottom: 28px; }
-    .settings-section h3 { 
-      font-family: 'Open Sans', sans-serif;
-      font-size: 0.72rem; font-weight: 600; 
-      letter-spacing: 0.12em; color: var(--text); 
-      opacity: 0.7; margin-bottom: 14px; 
-    }
+    .settings-section h3 { font-family: 'Open Sans', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text); opacity: 0.7; margin-bottom: 14px; }
     
+    /* Preview foto profil */
     .photo-preview {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid var(--text);
-      margin: 10px 0;
-      object-fit: cover;
-      display: none;
-      cursor: pointer;
+      width: 60px; height: 60px; border-radius: 50%;
+      border: 2px solid var(--text); margin-top: 8px;
+      overflow: hidden; display: flex; align-items: center;
+      justify-content: center;
+      background: var(--bg);
     }
-    
-    .photo-preview.show { display: block; }
+    .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-preview .no-preview {
+      font-family: 'Caveat', cursive; font-size: 0.9rem;
+      color: var(--text); opacity: 0.5;
+    }
     
     .btn-danger {
       width: 100%; padding: 11px;
-      background: none; border: 2px solid var(--text);
+      background: none; border: 1.5px solid var(--text);
       border-radius: var(--radius-sm); color: var(--text);
       font-family: 'Open Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
       cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em;
@@ -808,41 +701,32 @@
     ══════════════════════════════ */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: var(--text);
-      opacity: 0;
+      background: rgba(182, 226, 245, 0.8);
       display: none; align-items: center; justify-content: center;
       z-index: 200; padding: 20px;
-      transition: opacity 0.3s;
     }
-    .modal-overlay.open { display: flex; opacity: 0.3; }
+    .modal-overlay.open { display: flex; }
     .modal {
-      background: var(--bg); border: 2px solid var(--text);
+      background: var(--bg); border: 1.5px solid var(--text);
       border-radius: var(--radius); padding: 28px 24px;
       width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
-      opacity: 1;
     }
-    .modal h3 { font-family: 'Caveat', cursive; font-size: 1.5rem; font-weight: 600; margin-bottom: 18px; }
-    .modal p { font-family: 'Open Sans', sans-serif; font-size: 0.85rem; opacity: 0.7; margin-bottom: 18px; }
+    .modal h3 { font-family: 'Open Sans', sans-serif; font-size: 1rem; font-weight: 600; margin-bottom: 18px; }
+    .modal p { font-family: 'Open Sans', sans-serif; font-size: 0.85rem; color: var(--text); opacity: 0.7; margin-bottom: 18px; }
     .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
     .modal-actions button { flex: 1; }
 
-    /* Wide modal for SOS */
-    .modal.wide { max-width: 700px; }
-
-    /* ══════════════════════════════
-       IMAGE ZOOM MODAL
-    ══════════════════════════════ */
-    #image-zoom-modal .modal {
-      max-width: 90vw;
-      max-height: 90vh;
-      text-align: center;
+    /* Image preview modal */
+    .image-preview-modal {
+      position: fixed; inset: 0;
+      background: rgba(182, 226, 245, 0.95);
+      display: none; align-items: center; justify-content: center;
+      z-index: 300; cursor: pointer;
     }
-    
-    #zoom-image {
-      max-width: 80vw;
-      max-height: 70vh;
-      object-fit: contain;
-      border-radius: var(--radius);
+    .image-preview-modal.open { display: flex; }
+    .image-preview-modal img {
+      max-width: 90vw; max-height: 90vh;
+      border-radius: var(--radius); border: 3px solid var(--text);
     }
 
     /* ══════════════════════════════
@@ -855,26 +739,16 @@
       .content-area { padding: 22px 16px 90px; }
       .profile-header { flex-direction: column; align-items: flex-start; }
       .tenang-grid { grid-template-columns: repeat(2, 1fr); }
-      .mobile-header { display: block; }
+      .mobile-logo { display: block; }
       .sos-list { grid-template-columns: 1fr; }
-      .achievements-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    @media (min-width: 701px) and (max-width: 900px) {
-      .achievements-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
+      .achievement-row { justify-content: flex-start; }
     }
     @media (min-width: 701px) {
       #bottom-nav { display: none; }
-      .mobile-header { display: none; }
+      .mobile-logo { display: none; }
     }
     @media (min-width: 1100px) {
       .content-area { max-width: 700px; }
-    }
-    @media (min-width: 1400px) {
-      :root { --sidebar-w: 360px; }
     }
 
     .page { animation: fadeIn 0.2s ease; }
@@ -934,16 +808,21 @@
   </div>
 </div>
 
+<!-- Image preview modal -->
+<div class="image-preview-modal" id="image-preview-modal" onclick="closeImagePreview()">
+  <img src="" alt="preview" id="image-preview-img" />
+</div>
+
 <!-- ═══════════════════ APP SHELL ═══════════════════ -->
 <div id="app">
   <aside id="sidebar">
-    <div class="system-header">
-      <div class="system-title">
-        <span class="os">crash</span> <span class="cv">out</span><span class="os">,</span> <span class="os">burn</span> <span class="cv">out</span><span class="os">,</span> <span class="cv">turn out</span> <span class="cv">d</span><span class="os">.</span>
+    <div class="logo-wrap">
+      <img src="logo.png" alt="logo" onerror="this.style.display='none'" />
+      <div class="header-title">
+        <span>crash </span><span class="caveat-word">out</span><span>, burn </span><span class="caveat-word">out</span><span>, </span><span class="caveat-word">turn out d.</span>
       </div>
-      <div class="system-date" id="sidebar-date"></div>
+      <div class="header-date" id="header-date"></div>
     </div>
-    
     <nav>
       <a href="#" class="nav-link active" data-page="dashboard">papan muka.</a>
       <a href="#" class="nav-link" data-page="post">luahan.</a>
@@ -966,11 +845,12 @@
   </aside>
 
   <main id="main">
-    <div class="mobile-header">
-      <div class="system-title-mobile">
-        <span class="os">crash</span> <span class="cv">out</span><span class="os">,</span> <span class="os">burn</span> <span class="cv">out</span><span class="os">,</span> <span class="cv">turn out</span> <span class="cv">d</span><span class="os">.</span>
+    <div class="mobile-logo">
+      <img src="logo.png" alt="logo" onerror="this.style.display='none'" />
+      <div class="header-title">
+        <span>crash </span><span class="caveat-word">out</span><span>, burn </span><span class="caveat-word">out</span><span>, </span><span class="caveat-word">turn out d.</span>
       </div>
-      <div class="system-date-mobile" id="mobile-date"></div>
+      <div class="header-date" id="header-date-mobile"></div>
     </div>
 
     <nav id="bottom-nav">
@@ -1062,7 +942,7 @@
             <div class="streak-lbl">jumlah bertahan.</div>
           </div>
         </div>
-        <div id="bertahan-status" style="margin-top:10px;font-family:'Open Sans',sans-serif;font-size:0.82rem;opacity:0.7;font-style:italic;"></div>
+        <div id="bertahan-status" style="margin-top:10px;font-family:'Open Sans',sans-serif;font-size:0.82rem;color:var(--text);opacity:0.7;font-style:italic;"></div>
       </div>
       <div class="card">
         <div class="calendar-title">30 hari lalu.</div>
@@ -1070,7 +950,7 @@
       </div>
       <div class="card">
         <div class="calendar-title">pencapaian kamu.</div>
-        <div class="achievements-grid" id="achievement-row"></div>
+        <div class="achievement-row" id="achievement-row"></div>
       </div>
       <div class="card">
         <div class="calendar-title" id="bertahan-cal-title"></div>
@@ -1120,7 +1000,7 @@
       <p class="page-title" id="profile-page-title">profil.</p>
       <div class="card">
         <div class="profile-header">
-          <div class="profile-avatar" id="prof-avatar" onclick="zoomProfileImage()"></div>
+          <div class="profile-avatar" id="prof-avatar" onclick="previewProfileImage()"></div>
           <div class="profile-info">
             <div class="username">
               <span id="prof-uname"></span>
@@ -1164,8 +1044,10 @@
           <div class="field"><label>bio.</label><input type="text" id="set-bio" placeholder="cerita ringkas tentang diri kamu" /></div>
           <div class="field">
             <label>pautan gambar profil (url).</label>
-            <input type="url" id="set-photo" placeholder="https://..." oninput="previewProfilePhoto()" />
-            <img id="photo-preview" class="photo-preview" src="" alt="preview" onclick="zoomPreviewPhoto()" />
+            <input type="url" id="set-photo" placeholder="https://..." oninput="previewPhoto()" />
+            <div class="photo-preview" id="photo-preview">
+              <span class="no-preview">tiada gambar</span>
+            </div>
           </div>
           <button class="btn-primary" onclick="saveProfile()">simpan perubahan.</button>
         </div>
@@ -1201,14 +1083,6 @@
     <h3 id="tenang-modal-title"></h3>
     <div id="tenang-modal-body"></div>
     <div class="modal-actions" style="margin-top:16px;"><button class="btn-edit" onclick="closeTenangModal()">tutup.</button></div>
-  </div>
-</div>
-
-<!-- Image zoom modal -->
-<div class="modal-overlay" id="image-zoom-modal" onclick="closeImageZoom()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <img id="zoom-image" src="" alt="gambar profil" />
-    <div class="modal-actions" style="margin-top:16px;"><button class="btn-edit" onclick="closeImageZoom()">tutup.</button></div>
   </div>
 </div>
 
@@ -1251,28 +1125,14 @@ let feedUnsub    = null;
 let notifUnsub   = null;
 let tickedDays   = {};
 let viewingUserId = null;
-let currentUserId = null;
-let currentPage   = 'dashboard';
+let currentPage  = 'dashboard';
+let profileImageUrl = null;
 
 /* ─── ACHIEVEMENT BADGE SVG ─── */
 function achievementBadgeSVG(size = '') {
   const cls = size === 'small' ? 'achievement-badge-icon small' : 'achievement-badge-icon';
   return `<svg class="${cls}" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5" fill="#c9a63e" stroke="#a68a2e" stroke-width="1"/><polygon points="12,3 14,7 18,7 15,10 16,14 12,11 8,14 9,10 6,7 10,7" fill="#fff"/></svg>`;
 }
-
-/* ─── UPDATE DATE ─── */
-function updateDates() {
-  const now = new Date();
-  const options = { day: 'numeric', month: 'long', year: 'numeric' };
-  const dateStr = now.toLocaleDateString('ms-MY', options) + '.';
-  const sidebarDate = document.getElementById('sidebar-date');
-  const mobileDate = document.getElementById('mobile-date');
-  if (sidebarDate) sidebarDate.textContent = dateStr;
-  if (mobileDate) mobileDate.textContent = dateStr;
-}
-
-setInterval(updateDates, 60000);
-updateDates();
 
 /* ─── HELPERS ─── */
 function showToast(msg) {
@@ -1316,6 +1176,15 @@ function renderAvatar(container, photourl, uname) {
   }
 }
 
+function updateHeaderDates() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ms-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const hd = document.getElementById('header-date');
+  const hdm = document.getElementById('header-date-mobile');
+  if (hd) hd.textContent = dateStr;
+  if (hdm) hdm.textContent = dateStr;
+}
+
 function updateSidebarUser() {
   if (!userData) return;
   const uname = userData.namapengguna || '';
@@ -1324,7 +1193,31 @@ function updateSidebarUser() {
   renderAvatar(sav, userData.photourl, uname);
   const bav = document.getElementById('bnav-avatar-wrap');
   renderAvatar(bav, userData.photourl, uname);
+  updateHeaderDates();
 }
+
+/* ─── PREVIEW FUNCTIONS ─── */
+window.previewPhoto = () => {
+  const url = document.getElementById('set-photo').value.trim();
+  const preview = document.getElementById('photo-preview');
+  if (url) {
+    preview.innerHTML = `<img src="${url}" alt="preview" onerror="this.innerHTML='<span class=\\'no-preview\\'>pautan tidak sah</span>'" />`;
+  } else {
+    preview.innerHTML = '<span class="no-preview">tiada gambar</span>';
+  }
+};
+
+window.previewProfileImage = () => {
+  const imgSrc = profileImageUrl || userData?.photourl || makeDefaultAvatar(userData?.namapengguna);
+  const modal = document.getElementById('image-preview-modal');
+  const img = document.getElementById('image-preview-img');
+  img.src = imgSrc;
+  modal.classList.add('open');
+};
+
+window.closeImagePreview = () => {
+  document.getElementById('image-preview-modal').classList.remove('open');
+};
 
 /* ─── MONTHS ─── */
 const MONTHS = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
@@ -1352,15 +1245,15 @@ function showAuthError(msg) {
 }
 
 window.doLogin = async () => {
-  const id = document.getElementById('login-id').value.trim().toLowerCase();
+  const idInput = document.getElementById('login-id').value.trim().toLowerCase();
   const pw = document.getElementById('login-pw').value;
-  if (!id || !pw) return showAuthError('sila isi semua medan.');
+  if (!idInput || !pw) return showAuthError('sila isi semua medan.');
   document.getElementById('btn-login').disabled = true;
   document.getElementById('auth-error').classList.add('hidden');
   try {
-    let email = id;
-    if (!id.includes('@')) {
-      const q = query(collection(db, 'users'), where('namapengguna', '==', id));
+    let email = idInput;
+    if (!idInput.includes('@')) {
+      const q = query(collection(db, 'users'), where('namapengguna', '==', idInput));
       const snap = await getDocs(q);
       if (snap.empty) throw new Error('nama pengguna tidak dijumpai.');
       email = snap.docs[0].data().emel;
@@ -1391,9 +1284,6 @@ window.doRegister = async () => {
       namapengguna: uname, emel: email, bio: '', photourl: '',
       verified: false, createdat: serverTimestamp()
     });
-    await setDoc(doc(db, 'users', cred.user.uid, 'bertahan', 'data'), {
-      days: {}, currentstreak: 0, laststreak: null
-    });
   } catch(e) {
     showAuthError(friendlyError(e));
     document.getElementById('btn-register').disabled = false;
@@ -1405,7 +1295,6 @@ window.doLogout = async () => {
   if (notifUnsub) notifUnsub();
   await signOut(auth);
   currentPage = 'dashboard';
-  sessionStorage.removeItem('currentPage');
 };
 
 function friendlyError(e) {
@@ -1415,29 +1304,28 @@ function friendlyError(e) {
   if (m.includes('user-not-found')) return 'pengguna tidak dijumpai.';
   if (m.includes('weak-password')) return 'kata laluan terlalu lemah.';
   if (m.includes('network')) return 'masalah rangkaian. cuba semula.';
-  if (m.includes('nama pengguna tidak dijumpai')) return 'nama pengguna tidak dijumpai.';
+  if (m.includes('nama pengguna')) return e.message;
   return e.message || 'ralat tidak diketahui.';
 }
 
 /* ─── AUTH STATE ─── */
+let authReady = false;
+
 onAuthStateChanged(auth, async user => {
+  authReady = true;
   if (user) {
     currentUser = user;
-    currentUserId = user.uid;
     const snap = await getDoc(doc(db, 'users', user.uid));
     userData = snap.exists() ? snap.data() : {};
-    
-    const savedPage = sessionStorage.getItem('currentPage');
-    if (savedPage && pages.includes(savedPage)) {
-      currentPage = savedPage;
-    }
-    
     showApp();
-    navigate(currentPage);
+    // Navigate to saved page or dashboard
+    if (currentPage && currentPage !== 'dashboard') {
+      navigate(currentPage);
+    } else {
+      navigate('dashboard');
+    }
   } else {
-    currentUser = null; 
-    currentUserId = null;
-    userData = null;
+    currentUser = null; userData = null;
     hideApp();
     currentPage = 'dashboard';
   }
@@ -1447,7 +1335,6 @@ function showApp() {
   document.getElementById('page-auth').style.display = 'none';
   document.getElementById('app').classList.add('active');
   updateSidebarUser();
-  updateDates();
 }
 
 function hideApp() {
@@ -1459,29 +1346,27 @@ function hideApp() {
 const pages = ['dashboard','post','bertahan','tenang','notifikasi','profile','settings'];
 
 window.navigate = (page) => {
-  viewingUserId = null;
   currentPage = page;
-  sessionStorage.setItem('currentPage', page);
+  // Don't reset viewingUserId if navigating to profile (might be viewing other's profile)
+  if (page !== 'profile') {
+    viewingUserId = null;
+  }
   
-  pages.forEach(p => document.getElementById(`page-${p}`)?.classList.add('hidden'));
-  const targetPage = document.getElementById(`page-${page}`);
-  if (targetPage) targetPage.classList.remove('hidden');
-  
+  pages.forEach(p => document.getElementById(`page-${p}`).classList.add('hidden'));
+  document.getElementById(`page-${page}`).classList.remove('hidden');
   document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.page === page));
   
   if (page === 'dashboard')  loadDashboard();
   if (page === 'profile')    loadProfile();
-  if (page === 'settings')   loadSettings();
+  if (page === 'settings')   { loadSettings(); previewPhoto(); }
   if (page === 'bertahan')   loadBertahanPage();
   if (page === 'notifikasi') loadNotifikasi();
+  
+  updateHeaderDates();
 };
 
 document.querySelectorAll('.nav-link').forEach(a => {
-  a.addEventListener('click', e => { 
-    e.preventDefault(); 
-    const page = a.dataset.page;
-    navigate(page);
-  });
+  a.addEventListener('click', e => { e.preventDefault(); navigate(a.dataset.page); });
 });
 
 window.viewProfile = async (uid) => {
@@ -1606,6 +1491,7 @@ function loadFeed() {
     }));
     list.innerHTML = snap.docs.map(d => {
       const data = d.data();
+      const docId = d.id;
       const author = userMap[data.authorid] || {};
       const showAnon = data.anon;
       const uname = showAnon ? null : (author.namapengguna || 'tanpa nama');
@@ -1613,15 +1499,15 @@ function loadFeed() {
       const verified = !showAnon && author.verified;
       const totalBertahan = bertahanMap[data.authorid] || 0;
       const hasAchievement = totalBertahan >= 365;
+      const avatarSrc = photo || makeDefaultAvatar(uname);
       const uid = data.authorid;
       const achBadge = hasAchievement ? achievementBadgeSVG('small') : '';
-      const isOwner = currentUserId === uid;
-      const avatarSrc = photo || makeDefaultAvatar(uname);
+      const isOwner = currentUser && data.authorid === currentUser.uid;
       
       return `<div class="luahan-item">
-        ${isOwner ? `<button class="delete-luahan-btn" onclick="event.stopPropagation();deleteLuahan('${d.id}')" title="padam luahan.">✕</button>` : ''}
+        ${isOwner ? `<button class="luahan-delete" onclick="event.stopPropagation();deleteLuahan('${docId}')">×</button>` : ''}
         <div class="luahan-header">
-          ${showAnon ? '' : `<div class="luahan-avatar" onclick="viewProfile('${uid}')"><img src="${avatarSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(uname||'?')[0].toUpperCase()}'"></div>`}
+          ${showAnon ? '' : `<div class="luahan-avatar clickable" onclick="viewProfile('${uid}')"><img src="${avatarSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(uname||'?')[0].toUpperCase()}'"></div>`}
           ${showAnon
             ? `<span class="luahan-anon">tanpa nama.</span>`
             : `<span class="luahan-user" onclick="viewProfile('${uid}')">${escapeHTML(uname)}${verified ? verifiedBadgeSVG() : ''}${achBadge}</span>`}
@@ -1633,11 +1519,11 @@ function loadFeed() {
   });
 }
 
-window.deleteLuahan = async (luahanId) => {
-  if (!currentUser) return;
+window.deleteLuahan = async (docId) => {
+  if (!confirm('padam luahan ini?')) return;
   try {
-    await deleteDoc(doc(db, 'luahan', luahanId));
-    showToast('luahan berjaya dipadam.');
+    await deleteDoc(doc(db, 'luahan', docId));
+    showToast('luahan dipadam.');
   } catch(e) {
     showToast('gagal memadam luahan.');
   }
@@ -1694,7 +1580,7 @@ function renderBertahan30Dots() {
     const d = new Date(); d.setDate(d.getDate() - i);
     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const dot = document.createElement('div');
-    dot.className = 'day-dot' + (tickedDays[key] ? ' done' : '') + (i === 0 ? ' today-dot' : '');
+    dot.className = 'day-dot' + (tickedDays[key] ? ' done' : '');
     dot.title = key; el.appendChild(dot);
   }
 }
@@ -1707,18 +1593,22 @@ const ACHIEVEMENTS = [
   { min:30,  icon:'30', label:'30 hari.' },
   { min:60,  icon:'60', label:'60 hari.' },
   { min:100, icon:'100', label:'100 hari.' },
-  { min:365, icon:'365', label:'1 tahun.' },
+  { min:365, icon:'365', label:'1 tahun.', badge: true },
 ];
 
 function renderAchievements(total) {
   const el = document.getElementById('achievement-row');
   if (!el) return;
-  el.innerHTML = ACHIEVEMENTS.map(b => `
-    <div class="achievement-badge ${total >= b.min ? 'earned' : 'locked'} ${b.min === 365 && total >= 365 ? 'reward' : ''}">
-      ${b.min === 365 && total >= 365 ? `<div class="reward-badge">${achievementBadgeSVG()}</div>` : ''}
+  el.innerHTML = ACHIEVEMENTS.map(b => {
+    const earned = total >= b.min;
+    const isMilestone = b.badge && earned;
+    return `
+    <div class="achievement-badge ${earned ? 'earned' + (isMilestone ? ' milestone' : '') : 'locked'}">
       <span class="badge-icon">${b.icon}</span>
-      <span class="badge-label">${b.label}</span>
-    </div>`).join('');
+      <span>${b.label}</span>
+      ${isMilestone ? '<span class="milestone-star">⭐</span>' : ''}
+    </div>`;
+  }).join('');
 }
 
 window.changeBertahanMonth = (dir) => {
@@ -1756,13 +1646,13 @@ window.openTenang = async (type) => {
   const configs = {
     nafas: {
       title: 'latihan pernafasan.',
-      body: `<p style="font-family:'Open Sans',sans-serif;font-size:0.85rem;opacity:0.7;margin-bottom:14px;line-height:1.7;">ikut kaedah 4-7-8 untuk menenangkan minda.</p>
+      body: `<p style="font-family:'Open Sans',sans-serif;font-size:0.85rem;color:var(--text);opacity:0.7;margin-bottom:14px;line-height:1.7;">ikut kaedah 4-7-8 untuk menenangkan minda.</p>
         <div class="tenang-steps">
           <div class="tenang-step"><strong>tarik nafas</strong> perlahan selama <strong>4 saat.</strong></div>
           <div class="tenang-step"><strong>tahan nafas</strong> selama <strong>7 saat.</strong></div>
           <div class="tenang-step"><strong>hembus perlahan</strong> selama <strong>8 saat.</strong></div>
         </div>
-        <p style="margin-top:14px;font-family:'Open Sans',sans-serif;font-size:0.78rem;opacity:0.7;">ulang 3 hingga 4 kali. biarkan bahu kamu rileks.</p>`
+        <p style="margin-top:14px;font-family:'Open Sans',sans-serif;font-size:0.78rem;color:var(--text);opacity:0.7;">ulang 3 hingga 4 kali. biarkan bahu kamu rileks.</p>`
     },
     gratitud: {
       title: 'rasa syukur hari ini.',
@@ -1780,7 +1670,7 @@ window.openTenang = async (type) => {
         <div class="sos-item"><strong>miasa helpline.</strong><div class="sos-num">1-800-819-819</div><div class="sos-desc">kesihatan mental malaysia.</div></div>
         <div class="sos-item"><strong>hospital terdekat.</strong><div class="sos-num">999</div><div class="sos-desc">kecemasan perubatan.</div></div>
       </div>
-      <p style="margin-top:14px;font-family:'Open Sans',sans-serif;font-size:0.78rem;opacity:0.7;text-align:center;">kamu tidak perlu hadapi ini sorang-sorang.</p>`,
+      <p style="margin-top:14px;font-family:'Open Sans',sans-serif;font-size:0.78rem;color:var(--text);opacity:0.7;text-align:center;">kamu tidak perlu hadapi ini sorang-sorang.</p>`,
       wide: true
     },
     jurnal: {
@@ -1824,7 +1714,7 @@ async function loadGratitudSlides() {
   }
   
   container.innerHTML = `
-    <p style="font-family:'Open Sans',sans-serif;font-size:0.85rem;opacity:0.7;margin-bottom:10px;">tulis 3 perkara yang kamu bersyukur. setiap hari adalah slide baharu.</p>
+    <p style="font-family:'Open Sans',sans-serif;font-size:0.85rem;color:var(--text);opacity:0.7;margin-bottom:10px;">tulis 3 perkara yang kamu bersyukur. setiap hari adalah slide baharu.</p>
     <div class="slide-container" id="gratitud-slides">
       ${entries.map((e, idx) => `
         <div class="slide-card ${e.isToday ? 'today-slide' : ''} ${!e.text ? 'empty-slide' : ''}" 
@@ -1849,12 +1739,8 @@ async function loadGratitudSlides() {
 window.openGratitudSlide = (key, date, el) => {
   const text = el.querySelector('.slide-text')?.textContent || '';
   document.getElementById('gratitud-text').value = text.replace(/<br>/g, '\n');
-  document.querySelectorAll('#gratitud-slides .slide-card').forEach(s => {
-    s.style.borderColor = 'var(--text)';
-    s.style.borderWidth = '2px';
-  });
+  document.querySelectorAll('#gratitud-slides .slide-card').forEach(s => s.style.borderColor = 'var(--text)');
   el.style.borderColor = 'var(--text)';
-  el.style.borderWidth = '3px';
 };
 
 window.saveGratitud = async () => {
@@ -1886,7 +1772,7 @@ async function loadJurnalSlides() {
   }
   
   container.innerHTML = `
-    <p style="font-family:'Open Sans',sans-serif;font-size:0.85rem;opacity:0.7;margin-bottom:10px;">ruangan peribadi untuk kamu luahkan apa yang dirasa. setiap hari adalah halaman baharu.</p>
+    <p style="font-family:'Open Sans',sans-serif;font-size:0.85rem;color:var(--text);opacity:0.7;margin-bottom:10px;">ruangan peribadi untuk kamu luahkan apa yang dirasa. setiap hari adalah halaman baharu.</p>
     <div class="slide-container" id="jurnal-slides">
       ${entries.map((e, idx) => `
         <div class="slide-card ${e.isToday ? 'today-slide' : ''} ${!e.text ? 'empty-slide' : ''}" 
@@ -1911,12 +1797,8 @@ async function loadJurnalSlides() {
 window.openJurnalSlide = (key, date, el) => {
   const text = el.querySelector('.slide-text')?.textContent || '';
   document.getElementById('jurnal-text').value = text.replace(/<br>/g, '\n');
-  document.querySelectorAll('#jurnal-slides .slide-card').forEach(s => {
-    s.style.borderColor = 'var(--text)';
-    s.style.borderWidth = '2px';
-  });
+  document.querySelectorAll('#jurnal-slides .slide-card').forEach(s => s.style.borderColor = 'var(--text)');
   el.style.borderColor = 'var(--text)';
-  el.style.borderWidth = '3px';
 };
 
 window.saveJurnal = async () => {
@@ -2014,11 +1896,10 @@ async function loadProfile() {
   
   document.getElementById('profile-page-title').textContent = isOwnProfile ? 'profil.' : `profil @${d.namapengguna}.`;
   
+  profileImageUrl = d.photourl;
   const avatarEl = document.getElementById('prof-avatar');
   const photoSrc = d.photourl || makeDefaultAvatar(d.namapengguna);
   avatarEl.innerHTML = `<img src="${photoSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(d.namapengguna||'?')[0].toUpperCase()}'">`;
-  avatarEl.dataset.photoUrl = d.photourl || '';
-  avatarEl.dataset.uname = d.namapengguna || '';
   
   let totalBertahan = 0;
   if (isOwnProfile) {
@@ -2068,8 +1949,9 @@ async function loadProfile() {
       const data = doc.data();
       const avatarSrc = d.photourl || makeDefaultAvatar(d.namapengguna);
       const isOwner = isOwnProfile;
+      const docId = doc.id;
       return `<div class="luahan-item">
-        ${isOwner ? `<button class="delete-luahan-btn" onclick="event.stopPropagation();deleteLuahan('${doc.id}')" title="padam luahan.">✕</button>` : ''}
+        ${isOwner ? `<button class="luahan-delete" onclick="deleteLuahan('${docId}')">×</button>` : ''}
         <div class="luahan-header">
           ${data.anon
             ? '<span class="luahan-anon">tanpa nama.</span>'
@@ -2086,27 +1968,6 @@ async function loadProfile() {
   calViewMonth = { year: now.getFullYear(), month: now.getMonth() };
   renderFullCal();
 }
-
-window.zoomProfileImage = () => {
-  const avatarEl = document.getElementById('prof-avatar');
-  const photoUrl = avatarEl.dataset.photoUrl;
-  const uname = avatarEl.dataset.uname;
-  const src = photoUrl || makeDefaultAvatar(uname);
-  document.getElementById('zoom-image').src = src;
-  document.getElementById('image-zoom-modal').classList.add('open');
-};
-
-window.zoomPreviewPhoto = () => {
-  const preview = document.getElementById('photo-preview');
-  if (preview.src && preview.classList.contains('show')) {
-    document.getElementById('zoom-image').src = preview.src;
-    document.getElementById('image-zoom-modal').classList.add('open');
-  }
-};
-
-window.closeImageZoom = () => {
-  document.getElementById('image-zoom-modal').classList.remove('open');
-};
 
 window.switchTab = (tabId, btn) => {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -2151,19 +2012,8 @@ async function loadSettings() {
   document.getElementById('set-uname').value = d.namapengguna || '';
   document.getElementById('set-bio').value   = d.bio || '';
   document.getElementById('set-photo').value = d.photourl || '';
-  previewProfilePhoto();
+  previewPhoto();
 }
-
-window.previewProfilePhoto = () => {
-  const url = document.getElementById('set-photo').value.trim();
-  const preview = document.getElementById('photo-preview');
-  if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-    preview.src = url;
-    preview.classList.add('show');
-  } else {
-    preview.classList.remove('show');
-  }
-};
 
 window.saveProfile = async () => {
   const uname = document.getElementById('set-uname').value.trim().toLowerCase();
@@ -2215,7 +2065,6 @@ window.doDeleteAccount = async () => {
     const ls = await getDocs(lq);
     ls.forEach(d => batch.delete(d.ref));
     batch.delete(doc(db, 'users', currentUser.uid));
-    batch.delete(doc(db, 'users', currentUser.uid, 'bertahan', 'data'));
     await batch.commit();
     await deleteUser(currentUser);
     closeDeleteModal();
@@ -2224,12 +2073,11 @@ window.doDeleteAccount = async () => {
   }
 };
 
-onAuthStateChanged(auth, user => { 
-  if (user) {
-    currentUserId = user.uid;
-    startNotifListener(); 
-  }
-});
+onAuthStateChanged(auth, user => { if (user) startNotifListener(); });
+
+// Update dates every minute
+setInterval(updateHeaderDates, 60000);
+updateHeaderDates();
 </script>
 </body>
-</html>
+  </html>
