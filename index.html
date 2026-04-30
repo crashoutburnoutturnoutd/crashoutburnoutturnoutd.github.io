@@ -2,7 +2,7 @@
 <html lang="ms">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>crash out, burn out, turn out d.</title>
   <link rel="icon" type="image/png" href="logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -13,14 +13,18 @@
 
     :root {
       --bg: #d7eaf6;
+      --bg2: #c5dff0;
       --text: #3a6b85;
       --text-light: #6a9ab5;
       --border: #8fc8e0;
-      --surface: #c8ebf7;
+      --surface: #c8e8f5;
       --surface2: #d8f0fa;
-      --radius: 14px;
-      --radius-sm: 8px;
-      --sidebar-w: 260px;
+      --radius: 22px;
+      --radius-sm: 14px;
+      --radius-pill: 50px;
+      --sidebar-w: 250px;
+      --header-h: 66px;
+      --bnav-h: 76px;
     }
 
     html, body {
@@ -30,122 +34,286 @@
       font-family: 'Open Sans', sans-serif;
       font-size: 15px;
       line-height: 1.6;
+      overflow-x: hidden;
     }
 
     .hidden { display: none !important; }
 
-    /* ─── LOGO ─── */
-    .logo-img {
-      display: block;
-      object-fit: contain;
+    /* ══════════════════════════════
+       SNOWFLAKES & AUTH BG
+    ══════════════════════════════ */
+    .snow-wrap {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+      overflow: hidden;
+    }
+    .snow-dot {
+      position: absolute;
       border-radius: 50%;
-      background: var(--bg);
+      background: rgba(255,255,255,0.8);
+      animation: snowfall linear infinite;
+    }
+    .snow-star {
+      position: absolute;
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+      animation: snowfall linear infinite;
+    }
+    @keyframes snowfall {
+      0%   { transform: translateY(-30px) rotate(0deg);   opacity: 1; }
+      100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+    }
+    .pine-trees {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      pointer-events: none; z-index: 0;
+      background: linear-gradient(transparent, rgba(150,200,230,0.25));
+    }
+    .pine-trees::before, .pine-trees::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      width: 0; height: 0;
+    }
+    .pine-trees::before {
+      left: -20px;
+      border-left: 80px solid transparent;
+      border-right: 80px solid transparent;
+      border-bottom: 110px solid rgba(120,180,215,0.3);
+    }
+    .pine-trees::after {
+      right: -20px;
+      border-left: 100px solid transparent;
+      border-right: 100px solid transparent;
+      border-bottom: 130px solid rgba(100,165,205,0.25);
     }
 
-    /* ─── TOAST ─── */
+    /* ══════════════════════════════
+       TOAST
+    ══════════════════════════════ */
     #toast {
-      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      position: fixed; bottom: 92px; left: 50%;
+      transform: translateX(-50%);
       background: var(--text); color: var(--bg);
-      padding: 10px 22px; border-radius: 20px;
-      font-size: 0.85rem; font-weight: 600;
+      padding: 11px 24px; border-radius: var(--radius-pill);
+      font-size: 0.82rem; font-weight: 600;
       opacity: 0; pointer-events: none;
       transition: opacity 0.3s; z-index: 9999;
+      white-space: nowrap;
     }
     #toast.show { opacity: 1; }
 
-    /* ─── SPINNER ─── */
+    /* ══════════════════════════════
+       SPINNER
+    ══════════════════════════════ */
     .spinner {
-      width: 32px; height: 32px;
-      border: 3px solid var(--border);
+      width: 28px; height: 28px;
+      border: 2.5px solid var(--border);
       border-top-color: var(--text);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
-      margin: 40px auto;
+      margin: 32px auto;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ══════════════════════════════
-       AUTH PAGE
+       SPLASH
     ══════════════════════════════ */
-    #page-auth {
-      min-height: 100vh;
+    #page-splash {
+      position: fixed; inset: 0;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      padding: 32px 20px;
-      background: var(--bg);
+      background: var(--bg); z-index: 500;
+      padding: 40px 28px;
     }
-    #page-auth .logo-wrap { margin-bottom: 28px; }
-    #page-auth .logo-img { 
-      width: 140px; 
-      height: 140px; 
-      margin: 0 auto;
-      border-radius: 50%;
+    #page-splash .logo-main {
+      width: 120px; height: 120px;
+      object-fit: cover; border-radius: 50%;
+      border: 3px solid var(--border);
+      position: relative; z-index: 1;
+      margin-bottom: 28px;
     }
-    .auth-card {
-      width: 100%; max-width: 380px;
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 32px 28px;
-      border: 1.5px solid var(--border);
+    .brand-stack {
+      font-family: 'Caveat', cursive;
+      font-size: 3rem; font-weight: 700;
+      line-height: 1.05; text-align: center;
+      color: var(--text); position: relative; z-index: 1;
+      margin-bottom: 36px;
     }
-    .auth-card h2 {
-      font-size: 1.1rem; font-weight: 600;
-      margin-bottom: 24px; text-align: center;
-      letter-spacing: 0.01em;
+    .brand-stack .brand-out {
+      font-size: 3.8rem;
     }
-    .field { margin-bottom: 16px; }
-    .field label { 
-      display: block; 
-      font-size: 0.85rem; 
-      font-weight: 600; 
-      margin-bottom: 5px; 
-      letter-spacing: 0.04em; 
-      color: var(--text);
+    .brand-stack .brand-row {
+      display: flex; align-items: baseline;
+      justify-content: center; gap: 4px;
     }
-    .field .input-wrap { position: relative; }
-    .field input {
-      width: 100%; padding: 10px 14px;
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); color: var(--text);
-      font-family: 'Open Sans', sans-serif; font-size: 0.82rem;
-      outline: none; transition: border-color 0.2s;
+    .brand-stack .brand-sub {
+      font-size: 1.9rem; font-weight: 400;
+      font-style: italic;
     }
-    .field input:focus { border-color: var(--text); }
-    .field input::placeholder { 
-      color: var(--text-light); 
-      font-size: 0.75rem;
+    .splash-text {
+      text-align: center; max-width: 300px;
+      position: relative; z-index: 1;
+      margin-bottom: 32px;
     }
-    .pw-toggle {
-      position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer;
-      color: var(--text-light); font-size: 0.78rem; font-weight: 600;
-      letter-spacing: 0.03em;
+    .splash-text strong {
+      display: block; font-size: 1.3rem; font-weight: 700;
+      font-family: 'Caveat', cursive; margin-bottom: 10px;
     }
-    .btn-primary {
-      width: 100%; padding: 11px;
-      background: var(--text); color: var(--bg);
-      border: none; border-radius: var(--radius-sm);
-      font-family: 'Open Sans', sans-serif; font-size: 0.92rem; font-weight: 600;
-      cursor: pointer; transition: opacity 0.2s;
-      margin-top: 6px;
+    .splash-text p {
+      font-size: 0.88rem; color: var(--text); line-height: 1.7;
     }
-    .btn-primary:hover { opacity: 0.85; }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    .auth-switch {
-      text-align: center; margin-top: 18px;
+
+    /* ══════════════════════════════
+       AUTH PAGES
+    ══════════════════════════════ */
+    #page-auth {
+      position: fixed; inset: 0;
+      display: none; background: var(--bg);
+      z-index: 400; overflow-y: auto;
+    }
+    #page-auth.show { display: block; }
+    .auth-screen {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      padding: 0 24px 40px;
+    }
+    .auth-topbar {
+      display: flex; align-items: center;
+      padding: 18px 0;
+      position: relative; z-index: 1;
+    }
+    .auth-back {
+      background: none; border: none;
+      color: var(--text); cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.85rem; font-weight: 600;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .auth-topbar-title {
+      font-size: 1.1rem; font-weight: 700;
+      margin-left: 10px;
+    }
+    .auth-logo-center {
+      text-align: center; position: relative; z-index: 1;
+      margin: 10px 0 28px;
+    }
+    .auth-logo-center img {
+      width: 100px; height: 100px;
+      object-fit: cover; border-radius: 50%;
+      border: 3px solid var(--border);
+    }
+    .auth-logo-center .brand-stack {
+      margin-top: 14px; font-size: 2.4rem;
+    }
+    .auth-logo-center .brand-stack .brand-out { font-size: 3rem; }
+    .auth-heading {
+      font-family: 'Caveat', cursive;
+      font-size: 1.8rem; font-weight: 700;
+      text-align: center; position: relative; z-index: 1;
+      margin-bottom: 24px;
+    }
+    .auth-sub {
       font-size: 0.82rem; color: var(--text-light);
+      text-align: center; margin-top: 20px;
+      position: relative; z-index: 1;
     }
-    .auth-switch button {
-      background: none; border: none; cursor: pointer;
-      color: var(--text); font-weight: 600; font-size: 0.82rem;
-      text-decoration: underline; text-underline-offset: 2px;
+    .auth-sub button {
+      background: none; border: none;
+      color: var(--text); font-weight: 700;
+      font-size: 0.82rem; cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+      text-decoration: underline;
     }
     .auth-error {
       font-size: 0.8rem; color: var(--text);
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 9px 13px;
-      margin-bottom: 14px; text-align: center;
+      background: rgba(255,255,255,0.4);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px; margin-bottom: 16px;
+      text-align: center; position: relative; z-index: 1;
     }
+
+    /* Auth field */
+    .auth-field {
+      position: relative; z-index: 1;
+      margin-bottom: 14px;
+    }
+    .auth-input {
+      width: 100%; padding: 14px 18px;
+      background: rgba(255,255,255,0.35);
+      border: 1.8px solid var(--border);
+      border-radius: var(--radius-pill);
+      color: var(--text);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.88rem; outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .auth-input:focus {
+      border-color: var(--text);
+      background: rgba(255,255,255,0.5);
+    }
+    .auth-input::placeholder { color: var(--text-light); }
+    .pw-wrap { position: relative; }
+    .pw-toggle {
+      position: absolute; right: 16px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-light); font-size: 0.72rem;
+      font-weight: 600; letter-spacing: 0.03em;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%; padding: 14px;
+      background: var(--text); color: var(--bg);
+      border: none; border-radius: var(--radius-pill);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s;
+      position: relative; z-index: 1;
+      letter-spacing: 0.02em;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-outlined {
+      width: 100%; padding: 14px;
+      background: rgba(255,255,255,0.2);
+      color: var(--text);
+      border: 1.8px solid var(--text);
+      border-radius: var(--radius-pill);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+      position: relative; z-index: 1;
+    }
+    .btn-outlined:hover {
+      background: var(--text); color: var(--bg);
+    }
+    .btn-sm {
+      padding: 7px 18px;
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-pill);
+      color: var(--text-light);
+      font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .btn-sm:hover { border-color: var(--text); color: var(--text); }
+    .btn-danger-sm {
+      padding: 7px 18px;
+      background: none;
+      border: 1.5px solid var(--text);
+      border-radius: var(--radius-pill);
+      color: var(--text);
+      font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .btn-danger-sm:hover { background: var(--text); color: var(--bg); }
 
     /* ══════════════════════════════
        APP SHELL
@@ -153,136 +321,180 @@
     #app { display: none; min-height: 100vh; }
     #app.active { display: flex; }
 
-    /* Sidebar */
+    /* ── Sidebar (desktop) ── */
     #sidebar {
-      width: var(--sidebar-w); min-height: 100vh;
-      background: var(--surface); border-right: 1.5px solid var(--border);
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1.5px solid var(--border);
       display: flex; flex-direction: column;
-      padding: 28px 0; position: fixed; left: 0; top: 0; bottom: 0;
+      padding: 0;
+      position: fixed; left: 0; top: 0; bottom: 0;
       z-index: 100;
     }
-    #sidebar .logo-wrap {
-      padding: 0 30px; margin-bottom: 32px;
-      display: flex; align-items: center; justify-content: center;
+    .sidebar-logo {
+      padding: 28px 24px 20px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1.5px solid var(--border);
     }
-    #sidebar .logo-wrap img { 
-      width: 90px; 
-      height: 90px; 
-      object-fit: cover;
-      border-radius: 50%;
-      border: 3px solid var(--border);
+    .sidebar-logo img {
+      width: 48px; height: 48px;
+      object-fit: cover; border-radius: 50%;
+      border: 2px solid var(--border);
     }
-    #sidebar nav { flex: 1; }
-    #sidebar nav a {
-      display: block; padding: 11px 20px;
+    .sidebar-logo .brand {
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem; font-weight: 700;
+      color: var(--text); line-height: 1.1;
+    }
+    #sidebar nav { flex: 1; padding: 16px 0; }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 24px;
       color: var(--text-light); font-size: 0.9rem; font-weight: 600;
-      text-decoration: none; letter-spacing: 0.04em;
+      text-decoration: none;
       border-left: 3px solid transparent;
-      transition: all 0.15s;
+      transition: all 0.15s; cursor: pointer;
+      letter-spacing: 0.03em;
     }
-    #sidebar nav a:hover { color: var(--text); }
-    #sidebar nav a.active { color: var(--text); border-left-color: var(--text); background: var(--bg); }
-
-    /* Sidebar user with avatar */
-    #sidebar .sidebar-user {
+    .sidebar-link:hover { color: var(--text); background: rgba(0,0,0,0.03); }
+    .sidebar-link.active {
+      color: var(--text);
+      border-left-color: var(--text);
+      background: var(--bg);
+    }
+    .sidebar-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .sidebar-notif-wrap { position: relative; }
+    .sidebar-notif-dot {
+      position: absolute; top: 14px; right: 20px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--text); display: none;
+    }
+    .sidebar-notif-dot.show { display: block; }
+    .sidebar-user {
       padding: 16px 20px;
       border-top: 1.5px solid var(--border);
-      display: flex; align-items: center; gap: 10px;
-      cursor: pointer;
-      transition: background 0.15s;
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer; transition: background 0.15s;
     }
-    #sidebar .sidebar-user:hover { background: var(--bg); }
-    .sidebar-user-avatar {
-      width: 42px; height: 42px; border-radius: 50%;
-      background: var(--border); overflow: hidden; flex-shrink: 0;
+    .sidebar-user:hover { background: var(--bg); }
+    .s-avatar {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: 50%; overflow: hidden;
+      border: 2px solid var(--border);
+      background: var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Caveat', cursive; font-size: 1.2rem; font-weight: 600;
-      color: var(--text); border: 2px solid var(--border);
+      font-family: 'Caveat', cursive; font-size: 1.1rem;
+      font-weight: 600;
     }
-    .sidebar-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .sidebar-user-info { 
-      font-size: 0.78rem; 
-      color: var(--text-light);
-      line-height: 1.4;
-    }
-    .sidebar-user-info .uname {
-      font-family: 'Caveat', cursive; font-size: 1.3rem;
-      color: var(--text); font-weight: 600; display: block;
+    .s-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .s-user-info { font-size: 0.75rem; color: var(--text-light); }
+    .s-user-info .s-uname {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--text); display: block;
     }
 
-    /* Notification badge on nav */
-    .nav-notif-wrap { position: relative; display: inline-block; }
-    .notif-dot {
-      position: absolute; top: 4px; right: 16px;
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--text); border: 2px solid var(--surface);
-      display: none;
-    }
-    .notif-dot.show { display: block; }
-
-    /* Main content */
+    /* ── Main content ── */
     #main {
       flex: 1;
       margin-left: var(--sidebar-w);
-      min-height: 100vh;
       display: flex; flex-direction: column;
+      min-height: 100vh;
     }
 
-    /* Bottom navbar (mobile) */
+    /* ── App Header (mobile/tablet) ── */
+    #app-header {
+      display: none;
+      position: sticky; top: 0; z-index: 90;
+      background: var(--bg);
+      border-bottom: 1.5px solid var(--border);
+      padding: 12px 18px;
+      align-items: center; justify-content: space-between;
+      gap: 10px;
+    }
+    .header-title {
+      font-size: 0.82rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: lowercase;
+      color: var(--text-light); flex: 1;
+    }
+    .header-title .greet-name {
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem; font-weight: 700;
+      color: var(--text); letter-spacing: 0;
+    }
+    .header-right {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .header-bell {
+      position: relative; cursor: pointer;
+      background: none; border: none;
+      color: var(--text); padding: 4px;
+    }
+    .header-bell svg { width: 22px; height: 22px; }
+    .bell-badge {
+      position: absolute; top: 0; right: 0;
+      min-width: 16px; height: 16px;
+      background: var(--text); color: var(--bg);
+      border-radius: 8px; font-size: 0.6rem;
+      font-weight: 700; display: none;
+      align-items: center; justify-content: center;
+      padding: 0 3px;
+    }
+    .bell-badge.show { display: flex; }
+    .header-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      overflow: hidden; border: 2px solid var(--border);
+      background: var(--border); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 600;
+      flex-shrink: 0;
+    }
+    .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── Bottom Nav ── */
     #bottom-nav {
       display: none;
       position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--surface); border-top: 1.5px solid var(--border);
-      height: 64px; z-index: 100;
+      background: var(--surface);
+      border-top: 1.5px solid var(--border);
+      height: var(--bnav-h); z-index: 100;
       justify-content: space-around; align-items: center;
+      padding: 0 6px;
     }
-    #bottom-nav a {
+    .bnav-item {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      color: var(--text-light); font-size: 0.6rem; font-weight: 600;
-      text-decoration: none; letter-spacing: 0.04em; gap: 3px;
-      transition: color 0.15s; padding: 4px 0;
+      color: var(--text-light); font-size: 0.55rem;
+      font-weight: 700; text-decoration: none;
+      letter-spacing: 0.05em; gap: 3px; cursor: pointer;
+      transition: color 0.15s; padding: 6px 2px;
+      background: none; border: none;
+      font-family: 'Open Sans', sans-serif;
     }
-    #bottom-nav a.active { color: var(--text); }
-    #bottom-nav a svg { width: 20px; height: 20px; flex-shrink: 0; }
-    #bottom-nav a .bnav-avatar {
-      width: 26px; height: 26px; border-radius: 50%;
-      border: 2px solid var(--border); overflow: hidden;
+    .bnav-item.active { color: var(--text); }
+    .bnav-item svg { width: 22px; height: 22px; }
+    .bnav-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid var(--border);
+      overflow: hidden; background: var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Caveat', cursive; font-size: 0.8rem; font-weight: 600;
-      color: var(--text); background: var(--border);
-      flex-shrink: 0;
+      font-family: 'Caveat', cursive; font-size: 0.85rem;
+      font-weight: 600; flex-shrink: 0;
     }
-    #bottom-nav a .bnav-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    #bottom-nav a.active .bnav-avatar { border-color: var(--text); }
+    .bnav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .bnav-item.active .bnav-avatar { border-color: var(--text); }
 
-    /* Mobile logo */
-    .mobile-logo {
-      display: none;
-      text-align: center;
-      padding: 16px 0 8px;
-      background: var(--bg);
-    }
-    .mobile-logo img {
-      width: 65px;
-      height: 65px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 3px solid var(--border);
-      background: var(--bg);
-    }
-
-    /* Content area */
+    /* ── Content Area ── */
     .content-area {
-      max-width: 640px; width: 100%;
-      margin: 0 auto; padding: 36px 20px 100px;
+      max-width: 620px; width: 100%;
+      margin: 0 auto;
+      padding: 24px 18px calc(var(--bnav-h) + 24px);
     }
-
-    /* Page headings */
-    .page-title {
-      font-size: 0.72rem; font-weight: 600;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--text-light); margin-bottom: 24px;
+    .page-label {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: lowercase;
+      color: var(--text-light); margin-bottom: 20px;
     }
 
     /* ── Card ── */
@@ -294,698 +506,1317 @@
       margin-bottom: 16px;
     }
 
+    /* ── Page animation ── */
+    .page { animation: fadeUp 0.22s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════
+       AVATAR FRAMES (achievement shapes)
+    ══════════════════════════════ */
+    .avatar-outer {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .avatar-frame-wrap {
+      overflow: hidden;
+      background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar-frame-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .avatar-frame-border {
+      display: flex; align-items: center; justify-content: center;
+      background: var(--text-light); padding: 3px;
+    }
+    /* shapes */
+    .shape-circle .avatar-frame-border,
+    .shape-circle .avatar-frame-wrap { border-radius: 50%; }
+    .shape-pentagon .avatar-frame-border,
+    .shape-pentagon .avatar-frame-wrap {
+      clip-path: polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%);
+    }
+    .shape-hexagon .avatar-frame-border,
+    .shape-hexagon .avatar-frame-wrap {
+      clip-path: polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);
+    }
+    .shape-octagon .avatar-frame-border,
+    .shape-octagon .avatar-frame-wrap {
+      clip-path: polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%);
+    }
+    .shape-square .avatar-frame-border,
+    .shape-square .avatar-frame-wrap { border-radius: 22%; }
+
     /* ══════════════════════════════
        DASHBOARD
     ══════════════════════════════ */
-    .bertahan-card { text-align: center; padding: 28px 20px; }
-    .bertahan-label {
-      font-size: 1.05rem; font-weight: 400;
-      margin-bottom: 22px; color: var(--text);
-      font-style: italic;
+    .greet-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
     }
-    .tick-btn {
-      width: 64px; height: 64px;
+    .greet-left { flex: 1; }
+    .greet-text {
+      font-size: 0.8rem; font-weight: 600;
+      color: var(--text-light); margin-bottom: 2px;
+    }
+    .greet-user {
+      font-family: 'Caveat', cursive;
+      font-size: 1.6rem; font-weight: 700;
+      color: var(--text);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .greet-verified { width: 18px; height: 18px; flex-shrink: 0; }
+    .greet-right {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .notif-btn {
+      position: relative; cursor: pointer;
+      background: none; border: none; color: var(--text); padding: 4px;
+    }
+    .notif-btn svg { width: 22px; height: 22px; }
+    .notif-count {
+      position: absolute; top: -2px; right: -2px;
+      min-width: 16px; height: 16px;
+      background: var(--text); color: var(--bg);
+      border-radius: 8px; font-size: 0.58rem;
+      font-weight: 700; display: none;
+      align-items: center; justify-content: center;
+      padding: 0 3px;
+    }
+    .notif-count.show { display: flex; }
+
+    /* Bertahan card */
+    .bertahan-card {
+      display: flex; flex-direction: column;
+      gap: 10px; cursor: pointer;
+    }
+    .bertahan-card-inner {
+      background: linear-gradient(135deg, var(--text) 0%, #2d5670 100%);
+      border-radius: var(--radius);
+      padding: 22px;
+      color: var(--bg);
+      display: flex; align-items: stretch;
+      justify-content: space-between; gap: 12px;
+      text-decoration: none; position: relative; overflow: hidden;
+    }
+    .bertahan-card-inner::before {
+      content: '';
+      position: absolute;
+      right: -30px; top: -30px;
+      width: 130px; height: 130px;
+      background: rgba(255,255,255,0.06);
       border-radius: 50%;
-      border: 2.5px solid var(--text);
-      background: transparent;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 18px;
-      transition: background 0.2s, transform 0.15s;
     }
-    .tick-btn:hover:not(:disabled) { transform: scale(1.05); }
+    .bertahan-left { flex: 1; }
+    .bertahan-phrase {
+      font-size: 0.88rem; font-style: italic;
+      color: rgba(215,234,246,0.85);
+      margin-bottom: 16px; line-height: 1.5;
+    }
+    .bertahan-stats { display: flex; flex-direction: column; gap: 4px; }
+    .bertahan-stat { display: flex; flex-direction: column; }
+    .bertahan-num {
+      font-family: 'Caveat', cursive;
+      font-size: 2rem; font-weight: 700;
+      line-height: 1;
+    }
+    .bertahan-lbl {
+      font-size: 0.65rem; font-weight: 600;
+      letter-spacing: 0.06em;
+      color: rgba(215,234,246,0.7);
+    }
+    .bertahan-right {
+      display: flex; flex-direction: column;
+      align-items: flex-end; justify-content: space-between;
+    }
+    .bertahan-arrow {
+      font-size: 1.2rem; color: rgba(215,234,246,0.7);
+      font-weight: 300;
+    }
+    .bertahan-icon {
+      width: 48px; height: 48px;
+      opacity: 0.85;
+    }
+    .bertahan-icon circle, .bertahan-icon path, .bertahan-icon polyline {
+      stroke: var(--bg);
+    }
+
+    /* Tick button in bertahan page */
+    .tick-btn {
+      width: 68px; height: 68px;
+      border-radius: 50%; border: 2.5px solid var(--text);
+      background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto; transition: all 0.2s;
+    }
+    .tick-btn:hover:not(:disabled) { transform: scale(1.06); }
     .tick-btn.ticked { background: var(--text); }
     .tick-btn svg { width: 28px; height: 28px; }
-    .tick-btn:disabled { cursor: default; opacity: 0.8; }
-    .streak-info {
-      display: flex; gap: 28px; justify-content: center; margin-top: 14px;
+    .tick-btn:disabled { cursor: default; }
+
+    /* Section label */
+    .section-lbl {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: lowercase;
+      color: var(--text-light); margin-bottom: 12px;
+    }
+
+    /* Luah button */
+    .luah-btn {
+      width: 100%;
+      background: var(--text); color: var(--bg);
+      border: none; border-radius: var(--radius-pill);
+      padding: 14px; font-size: 0.9rem; font-weight: 700;
+      font-family: 'Open Sans', sans-serif;
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+      margin-bottom: 18px; transition: opacity 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .luah-btn:hover { opacity: 0.85; }
+    .luah-btn svg { width: 18px; height: 18px; }
+
+    /* Feed */
+    .feed-item {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px; margin-bottom: 12px;
+    }
+    .feed-header {
+      display: flex; align-items: center;
+      gap: 10px; margin-bottom: 10px;
+    }
+    .feed-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--border); overflow: hidden;
+      flex-shrink: 0; display: flex;
+      align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 1rem;
+      font-weight: 600; cursor: pointer;
+    }
+    .feed-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .feed-user-wrap { flex: 1; }
+    .feed-user {
+      font-family: 'Caveat', cursive;
+      font-size: 1.15rem; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 4px;
+      cursor: pointer; color: var(--text);
+    }
+    .feed-user:hover { opacity: 0.75; }
+    .verified-badge {
+      width: 15px; height: 15px; flex-shrink: 0;
+    }
+    .feed-anon {
+      font-size: 0.82rem; color: var(--text-light);
+      font-style: italic;
+    }
+    .feed-time {
+      font-size: 0.68rem; color: var(--text-light);
+      display: block; margin-top: 1px;
+    }
+    .feed-text {
+      font-size: 0.88rem; line-height: 1.65;
+      color: var(--text); margin-bottom: 12px;
+    }
+    .feed-actions {
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .feed-star-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      color: var(--text-light); font-size: 0.82rem;
+      font-weight: 700; font-family: 'Open Sans', sans-serif;
+      padding: 0; transition: color 0.15s;
+    }
+    .feed-star-btn:hover, .feed-star-btn.starred { color: #c9a63e; }
+    .feed-star-btn svg { width: 16px; height: 16px; }
+    .feed-edit-btns {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .feed-edit-btns button {
+      background: none; border: none; cursor: pointer;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--text-light); font-style: italic;
+      font-family: 'Open Sans', sans-serif;
+      transition: color 0.15s; padding: 0;
+    }
+    .feed-edit-btns button:hover { color: var(--text); }
+    .empty-feed {
+      text-align: center; color: var(--text-light);
+      font-size: 0.88rem; padding: 36px 0; font-style: italic;
+    }
+
+    /* ══════════════════════════════
+       BERTAHAN PAGE
+    ══════════════════════════════ */
+    .papan-penanda-card {
+      text-align: center; padding: 24px 20px;
+    }
+    .streak-row {
+      display: flex; gap: 28px; justify-content: center;
+      margin: 14px 0;
     }
     .streak-item { text-align: center; }
     .streak-num {
-      font-family: 'Caveat', cursive; font-size: 2rem;
-      font-weight: 700; line-height: 1;
+      font-family: 'Caveat', cursive;
+      font-size: 2.2rem; font-weight: 700; line-height: 1;
     }
-    .streak-lbl { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; color: var(--text-light); text-transform: uppercase; }
+    .streak-lbl {
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.08em; color: var(--text-light);
+      text-transform: lowercase;
+    }
+    .bertahan-phrase-p {
+      font-size: 0.88rem; font-style: italic;
+      color: var(--text-light); margin-bottom: 18px;
+    }
+    .bertahan-status-msg {
+      font-size: 0.78rem; color: var(--text-light);
+      font-style: italic; margin-top: 10px;
+    }
+
+    /* 30-day dots */
+    .dots-grid {
+      display: grid;
+      grid-template-columns: repeat(15, 1fr);
+      gap: 5px;
+    }
+    .day-dot {
+      aspect-ratio: 1; border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+    }
+    .day-dot.done { background: var(--text); border-color: var(--text); }
+    .day-dot.today { border-color: var(--text); border-width: 2px; }
 
     /* Calendar */
-    .calendar-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light); margin-bottom: 12px; }
-    .mini-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+    .cal-nav-row {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 16px;
+    }
+    .cal-nav-btn {
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 5px 12px; cursor: pointer;
+      color: var(--text); font-size: 0.82rem;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .cal-month-name {
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem; font-weight: 700;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    .cal-day-lbl {
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.06em; text-align: center;
+      color: var(--text-light); padding-bottom: 5px;
+    }
     .cal-day {
       aspect-ratio: 1; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Caveat', cursive; font-size: 0.85rem;
-      color: var(--text-light); position: relative;
+      font-family: 'Caveat', cursive; font-size: 0.88rem;
+      color: var(--text-light);
     }
     .cal-day.ticked { background: var(--text); color: var(--bg); }
     .cal-day.today { border: 1.5px solid var(--text); color: var(--text); }
-    .cal-day.future { opacity: 0.35; }
+    .cal-day.future { opacity: 0.3; }
 
-    /* Bertahan achievements */
-    .achievement-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-    .achievement-badge {
-      display: flex; flex-direction: column; align-items: center;
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); padding: 10px 12px;
-      font-size: 0.65rem; color: var(--text-light); text-align: center; gap: 4px;
-      min-width: 60px; transition: opacity 0.2s;
+    /* Achievement badges */
+    .ach-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
     }
-    .achievement-badge .badge-icon { font-size: 1.4rem; }
-    .achievement-badge.earned { border-color: var(--text); color: var(--text); background: var(--surface2); }
-    .achievement-badge.locked { opacity: 0.4; }
-
-    /* Achievement badge next to username */
-    .achievement-badge-icon {
-      display: inline-block; width: 18px; height: 18px; 
-      vertical-align: middle; margin-left: 4px;
-      fill: #c9a63e; flex-shrink: 0;
+    .ach-badge {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 14px 8px; gap: 6px;
+      border: 1.8px solid var(--border);
+      border-radius: 50%;
+      aspect-ratio: 1;
+      transition: all 0.2s;
+      opacity: 0.35;
     }
-    .achievement-badge-icon.small { width: 14px; height: 14px; }
-
-    /* 30-day dots */
-    .dots-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
-    .day-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--surface2); border: 1.5px solid var(--border);
+    .ach-badge.pentagon { clip-path: polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%); border-radius: 0; }
+    .ach-badge.hexagon  { clip-path: polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%); border-radius: 0; }
+    .ach-badge.octagon  { clip-path: polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%); border-radius: 0; }
+    .ach-badge.square   { border-radius: 18%; }
+    .ach-badge.earned   { opacity: 1; border-color: var(--text); background: rgba(58,107,133,0.08); }
+    .ach-num {
+      font-family: 'Caveat', cursive;
+      font-size: 1.4rem; font-weight: 700; line-height: 1;
     }
-    .day-dot.done { background: var(--text); border-color: var(--text); }
-    .day-dot.today-dot { border-color: var(--text-light); border-width: 2px; }
-
-    /* Feed */
-    .feed-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light); margin-bottom: 14px; margin-top: 28px; }
-    .luahan-item {
-      background: var(--surface); border: 1.5px solid var(--border);
-      border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
-      cursor: pointer;
-      transition: background 0.15s;
+    .ach-unit {
+      font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.04em; color: var(--text-light);
     }
-    .luahan-item:hover { background: var(--surface2); }
-    .luahan-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .luahan-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: var(--border); overflow: hidden; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 600;
+    .ach-note {
+      font-size: 0.7rem; color: var(--text-light);
+      margin-top: 14px; display: flex; align-items: center; gap: 6px;
+      flex-wrap: wrap;
     }
-    .luahan-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .luahan-user { 
-      font-family: 'Caveat', cursive; 
-      font-size: 1.2rem; 
-      font-weight: 600; 
-      cursor: pointer;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      display: inline-flex; align-items: center; gap: 4px;
+    .ach-note .shape-demo {
+      display: inline-block; width: 16px; height: 16px;
+      border: 1.5px solid var(--text-light);
+      flex-shrink: 0;
     }
-    .luahan-user:hover { color: var(--text-light); }
-    .luahan-badge {
-      width: 16px; height: 16px; fill: var(--text);
-      display: inline-block; vertical-align: middle;
-    }
-    .luahan-anon { font-size: 0.82rem; color: var(--text-light); font-style: italic; }
-    .luahan-text { font-size: 0.9rem; line-height: 1.65; color: var(--text); }
-    .luahan-time { font-size: 0.72rem; color: var(--text-light); margin-top: 8px; }
-    .empty-feed { text-align: center; color: var(--text-light); font-size: 0.88rem; padding: 32px 0; font-style: italic; }
+    .ach-note .shape-demo.circle { border-radius: 50%; }
+    .ach-note .shape-demo.pentagon { clip-path: polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%); }
+    .ach-note .shape-demo.octagon { clip-path: polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%); }
+    .ach-note .shape-demo.square { border-radius: 22%; }
 
     /* ══════════════════════════════
-       POST PAGE
+       LUAHAN PAGE
     ══════════════════════════════ */
-    .post-card { padding: 24px; }
-    .post-card textarea {
-      width: 100%; min-height: 160px;
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); color: var(--text);
-      font-family: 'Open Sans', sans-serif; font-size: 0.92rem;
-      line-height: 1.7; padding: 14px;
-      resize: vertical; outline: none;
+    .post-textarea {
+      width: 100%; min-height: 140px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.9rem; line-height: 1.7;
+      padding: 14px; resize: vertical; outline: none;
       transition: border-color 0.2s;
     }
-    .post-card textarea:focus { border-color: var(--text); }
-    .post-card textarea::placeholder { color: var(--text-light); }
-    .post-options {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-top: 14px; flex-wrap: wrap; gap: 12px;
+    .post-textarea:focus { border-color: var(--text); }
+    .post-textarea::placeholder { color: var(--text-light); }
+    .post-meta {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-top: 12px; flex-wrap: wrap; gap: 10px;
     }
-    .toggle-wrap { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; }
+    .toggle-row {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.82rem; font-weight: 600;
+    }
     .toggle {
-      width: 40px; height: 22px; border-radius: 11px;
-      background: var(--border); border: none; cursor: pointer;
-      position: relative; transition: background 0.2s;
+      width: 44px; height: 24px; border-radius: 12px;
+      background: var(--border); border: none;
+      cursor: pointer; position: relative;
+      transition: background 0.2s; flex-shrink: 0;
     }
     .toggle::after {
       content: ''; position: absolute;
-      width: 16px; height: 16px; border-radius: 50%;
+      width: 18px; height: 18px; border-radius: 50%;
       background: var(--bg); top: 3px; left: 3px;
       transition: left 0.2s;
     }
     .toggle.on { background: var(--text); }
-    .toggle.on::after { left: 21px; }
-    .char-count { font-size: 0.75rem; color: var(--text-light); }
+    .toggle.on::after { left: 23px; }
+    .char-count { font-size: 0.72rem; color: var(--text-light); }
 
-    /* ══════════════════════════════
-       RUANG TENANG
-    ══════════════════════════════ */
-    .tenang-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px;
+    /* Ruang tenang tiles */
+    .tenang-tiles {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
     }
     .tenang-tile {
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); padding: 18px 10px;
-      text-align: center; cursor: pointer; transition: all 0.2s;
+      background: rgba(255,255,255,0.2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 14px 12px; text-align: center;
+      cursor: pointer; transition: all 0.2s;
+      font-size: 0.82rem; font-style: italic;
+      color: var(--text); font-weight: 400;
+      line-height: 1.2;
     }
-    .tenang-tile:hover { background: var(--text); border-color: var(--text); }
-    .tenang-tile:hover .tt-label { color: var(--bg); }
-    .tt-label { font-size: 0.72rem; font-weight: 600; color: var(--text-light); letter-spacing: 0.03em; }
+    .tenang-tile:hover {
+      background: var(--text); color: var(--bg);
+      border-color: var(--text);
+    }
+    .tenang-tile.wide { grid-column: 1 / -1; }
 
-    /* Tenang sub-content */
-    .tenang-sub { margin-top: 0; }
-    .tenang-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+    /* Tenang content (inside modal) */
+    .tenang-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
     .tenang-step {
       background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); padding: 13px 16px;
-      font-size: 0.88rem; color: var(--text);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+      font-size: 0.88rem;
     }
-    .affirmation-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .affirmation-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .affirmation-item {
       background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 16px;
-      font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--text);
+      border-radius: var(--radius-sm); padding: 13px 16px;
+      font-family: 'Caveat', cursive; font-size: 1.15rem;
       text-align: center;
     }
-    
-    /* SOS wide layout */
-    .sos-list { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
-      gap: 10px; 
-      margin-top: 8px; 
+    .sos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px; margin-top: 12px;
     }
-    .sos-item {
+    .sos-card {
       background: var(--bg); border: 1.5px solid var(--border);
       border-radius: var(--radius-sm); padding: 14px 16px;
     }
-    .sos-item strong { display: block; font-size: 0.9rem; margin-bottom: 3px; }
-    .sos-item .sos-num { font-size: 1rem; font-weight: 600; color: var(--text); }
-    .sos-item .sos-desc { font-size: 0.72rem; color: var(--text-light); margin-top: 3px; }
-
-    /* Jurnal/gratitud slides */
-    .slide-container {
-      display: flex; gap: 10px; overflow-x: auto; padding: 10px 0;
-      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
-    }
-    .slide-card {
-      flex: 0 0 200px; height: 200px;
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); padding: 14px;
-      scroll-snap-align: start; cursor: pointer;
-      transition: all 0.2s; display: flex; flex-direction: column;
-      font-size: 0.82rem; color: var(--text); overflow: hidden;
-      position: relative;
-    }
-    .slide-card:hover { border-color: var(--text); }
-    .slide-card .slide-date {
-      font-size: 0.65rem; color: var(--text-light); 
-      font-weight: 600; letter-spacing: 0.04em; margin-bottom: 6px;
-    }
-    .slide-card .slide-text {
-      flex: 1; overflow: hidden; line-height: 1.6;
-      display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical;
-    }
-    .slide-card.today-slide { border-color: var(--text); border-width: 2px; }
-    .slide-card.empty-slide {
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text-light); font-style: italic;
-    }
-
-    /* Jurnal/gratitud textarea */
+    .sos-card strong { display: block; font-size: 0.88rem; margin-bottom: 4px; }
+    .sos-card .sos-num { font-size: 1.05rem; font-weight: 700; }
+    .sos-card .sos-desc { font-size: 0.7rem; color: var(--text-light); margin-top: 3px; }
     .tenang-textarea {
-      width: 100%; min-height: 120px;
+      width: 100%; min-height: 110px;
       background: var(--bg); border: 1.5px solid var(--border);
       border-radius: var(--radius-sm); color: var(--text);
       font-family: 'Open Sans', sans-serif; font-size: 0.88rem;
       line-height: 1.7; padding: 12px 14px;
       resize: vertical; outline: none; margin-top: 10px;
-      transition: border-color 0.2s;
     }
     .tenang-textarea:focus { border-color: var(--text); }
     .tenang-textarea::placeholder { color: var(--text-light); }
+    .slide-row {
+      display: flex; gap: 10px;
+      overflow-x: auto; padding: 8px 0 12px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .slide-row::-webkit-scrollbar { display: none; }
+    .slide-card {
+      flex: 0 0 180px; height: 180px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 13px;
+      scroll-snap-align: start; cursor: pointer;
+      transition: border-color 0.2s;
+      display: flex; flex-direction: column;
+      font-size: 0.8rem; overflow: hidden;
+    }
+    .slide-card.today-card { border-color: var(--text); border-width: 2px; }
+    .slide-card:hover { border-color: var(--text); }
+    .slide-card .s-date {
+      font-size: 0.62rem; color: var(--text-light);
+      font-weight: 700; letter-spacing: 0.04em; margin-bottom: 5px;
+    }
+    .slide-card .s-text {
+      flex: 1; overflow: hidden; line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 7;
+      -webkit-box-orient: vertical;
+    }
+    .slide-empty {
+      color: var(--text-light); font-style: italic;
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; font-size: 0.78rem;
+    }
 
     /* ══════════════════════════════
        PROFILE PAGE
     ══════════════════════════════ */
-    .profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
-    .profile-avatar {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: var(--border); overflow: hidden; flex-shrink: 0;
+    .profile-top {
+      display: flex; align-items: center;
+      gap: 18px; margin-bottom: 16px;
+    }
+    .profile-avatar-wrap { flex-shrink: 0; }
+    .profile-avatar-frame {
+      width: 90px; height: 90px;
+    }
+    .profile-avatar-border {
+      width: 90px; height: 90px;
+      background: var(--text-light); padding: 3px;
+    }
+    .profile-avatar-inner {
+      width: 100%; height: 100%;
+      background: var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Caveat', cursive; font-size: 2.2rem; font-weight: 700;
-      border: 3px solid var(--border);
+      font-family: 'Caveat', cursive; font-size: 2rem;
+      font-weight: 700; overflow: hidden;
     }
-    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .profile-info .username {
-      font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700;
+    .profile-avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-info { flex: 1; }
+    .profile-stats {
+      display: flex; gap: 20px; margin-bottom: 8px;
+    }
+    .p-stat { text-align: center; }
+    .p-stat-num {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem; font-weight: 700; line-height: 1;
+    }
+    .p-stat-lbl {
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.06em; color: var(--text-light);
+    }
+    .profile-uname {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem; font-weight: 700;
       display: flex; align-items: center; gap: 6px;
+      flex-wrap: wrap;
     }
-    .profile-info .bio { font-size: 0.85rem; color: var(--text-light); margin-top: 3px; }
-    .profile-stats { display: flex; gap: 24px; margin-top: 8px; }
-    .stat-item { text-align: center; }
-    .stat-num { font-family: 'Caveat', cursive; font-size: 1.5rem; font-weight: 700; }
-    .stat-lbl { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-light); }
+    .profile-bio {
+      font-size: 0.82rem; color: var(--text-light);
+      margin-top: 2px; font-style: italic;
+    }
 
-    /* Tabs */
-    .tabs { display: flex; border-bottom: 1.5px solid var(--border); margin-bottom: 20px; }
-    .tab-btn {
-      padding: 10px 18px; font-size: 0.78rem; font-weight: 600;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--text-light); background: none; border: none;
-      border-bottom: 2.5px solid transparent; cursor: pointer;
-      transition: all 0.15s; margin-bottom: -1.5px;
+    /* Profile tabs */
+    .tabs {
+      display: flex; gap: 0;
+      margin-bottom: 18px;
     }
-    .tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
+    .tab-btn {
+      padding: 9px 16px;
+      background: none; border: none;
+      border-bottom: 2.5px solid transparent;
+      color: var(--text-light); font-size: 0.72rem;
+      font-weight: 700; letter-spacing: 0.06em;
+      cursor: pointer; transition: all 0.15s;
+      font-family: 'Open Sans', sans-serif;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+    }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* Full calendar */
-    .full-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .full-cal-header .month-name { font-family: 'Caveat', cursive; font-size: 1.3rem; font-weight: 600; }
-    .cal-nav { background: none; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 4px 10px; cursor: pointer; color: var(--text); font-size: 0.8rem; }
-    .full-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .full-cal .day-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; color: var(--text-light); padding-bottom: 4px; }
-    .full-cal .cal-day { font-size: 0.88rem; }
-
-    .btn-edit {
-      display: inline-block; padding: 8px 18px;
-      border: 1.5px solid var(--text); border-radius: var(--radius-sm);
-      color: var(--text); font-size: 0.8rem; font-weight: 600;
-      letter-spacing: 0.04em; cursor: pointer; background: none;
-      transition: background 0.15s, color 0.15s;
-      text-decoration: none;
+    /* ══════════════════════════════
+       SETTINGS PAGE
+    ══════════════════════════════ */
+    .settings-section { margin-bottom: 24px; }
+    .settings-section h3 {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; color: var(--text-light);
+      margin-bottom: 14px; text-transform: lowercase;
     }
-    .btn-edit:hover { background: var(--text); color: var(--bg); }
-
-    /* Back button */
-    .back-btn {
-      display: inline-block; padding: 6px 14px;
-      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-      color: var(--text-light); font-size: 0.78rem; font-weight: 600;
-      cursor: pointer; background: none; margin-bottom: 16px;
-      transition: all 0.15s;
+    .settings-field { margin-bottom: 13px; }
+    .settings-field label {
+      display: block; font-size: 0.78rem;
+      font-weight: 600; margin-bottom: 5px;
+      color: var(--text); letter-spacing: 0.03em;
     }
-    .back-btn:hover { border-color: var(--text); color: var(--text); }
+    .settings-input {
+      width: 100%; padding: 11px 14px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text);
+      font-family: 'Open Sans', sans-serif; font-size: 0.85rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .settings-input:focus { border-color: var(--text); }
+    .settings-input::placeholder { color: var(--text-light); }
+    .settings-preview-wrap {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 13px;
+    }
+    .settings-preview-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      overflow: hidden; border: 2px solid var(--border);
+      background: var(--border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 1.3rem;
+    }
+    .settings-preview-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .btn-settings-primary {
+      width: 100%; padding: 12px;
+      background: var(--text); color: var(--bg);
+      border: none; border-radius: var(--radius-pill);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s;
+      margin-top: 4px;
+    }
+    .btn-settings-primary:hover { opacity: 0.85; }
+    .btn-settings-delete {
+      width: 100%; padding: 12px;
+      background: var(--text); color: var(--bg);
+      border: none; border-radius: var(--radius-pill);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.88rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-settings-delete:hover { opacity: 0.85; }
+    .btn-logout-text {
+      background: none; border: none;
+      color: var(--text-light); font-size: 0.85rem;
+      cursor: pointer; font-family: 'Open Sans', sans-serif;
+      text-align: center; width: 100%;
+      padding: 10px; display: block;
+      transition: color 0.15s;
+    }
+    .btn-logout-text:hover { color: var(--text); }
 
     /* ══════════════════════════════
        NOTIFIKASI PAGE
     ══════════════════════════════ */
     .notif-item {
-      background: var(--surface); border: 1.5px solid var(--border);
-      border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
-      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px; margin-bottom: 12px;
+      cursor: pointer; transition: background 0.15s;
     }
-    .notif-item.unread { border-color: var(--text); background: var(--surface2); }
-    .notif-body { flex: 1; }
-    .notif-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
-    .notif-msg { font-size: 0.85rem; color: var(--text-light); line-height: 1.55; }
-    .notif-time { font-size: 0.72rem; color: var(--text-light); margin-top: 6px; }
-    .notif-empty { text-align: center; color: var(--text-light); font-size: 0.88rem; padding: 40px 0; font-style: italic; }
-
-    /* ══════════════════════════════
-       SETTINGS PAGE
-    ══════════════════════════════ */
-    .settings-section { margin-bottom: 28px; }
-    .settings-section h3 { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin-bottom: 14px; }
-    .btn-danger {
-      width: 100%; padding: 11px;
-      background: none; border: 1.5px solid var(--text);
-      border-radius: var(--radius-sm); color: var(--text);
-      font-family: 'Open Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
-      cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em;
+    .notif-item.unread {
+      border-color: var(--text);
+      background: var(--surface2);
     }
-    .btn-danger:hover { background: var(--text); color: var(--bg); }
-    .btn-logout {
-      width: 100%; padding: 11px;
-      background: var(--text); border: none;
-      border-radius: var(--radius-sm); color: var(--bg);
-      font-family: 'Open Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
-      cursor: pointer; transition: opacity 0.15s;
+    .notif-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 3px; }
+    .notif-msg { font-size: 0.84rem; color: var(--text-light); line-height: 1.55; }
+    .notif-time { font-size: 0.68rem; color: var(--text-light); margin-top: 6px; }
+    .notif-empty {
+      text-align: center; color: var(--text-light);
+      font-size: 0.88rem; padding: 40px 0; font-style: italic;
     }
-    .btn-logout:hover { opacity: 0.8; }
 
     /* ══════════════════════════════
        MODAL
     ══════════════════════════════ */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(58, 107, 133, 0.3);
-      display: none; align-items: center; justify-content: center;
-      z-index: 200; padding: 20px;
+      background: rgba(58,107,133,0.35);
+      display: none; align-items: center;
+      justify-content: center; z-index: 300;
+      padding: 20px;
     }
     .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--surface); border: 1.5px solid var(--border);
-      border-radius: var(--radius); padding: 28px 24px;
-      width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+    .modal-box {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px 22px;
+      width: 100%; max-width: 480px;
+      max-height: 88vh; overflow-y: auto;
     }
-    .modal h3 { font-size: 1rem; font-weight: 600; margin-bottom: 18px; }
-    .modal p { font-size: 0.85rem; color: var(--text-light); margin-bottom: 18px; }
-    .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
-    .modal-actions button { flex: 1; }
+    .modal-box.wide { max-width: 680px; }
+    .modal-title {
+      font-size: 1rem; font-weight: 700;
+      margin-bottom: 14px; font-family: 'Caveat', cursive;
+      font-size: 1.4rem;
+    }
+    .modal-body { font-size: 0.85rem; color: var(--text-light); line-height: 1.65; margin-bottom: 16px; }
+    .modal-footer {
+      display: flex; gap: 10px; margin-top: 16px;
+    }
+    .modal-footer button { flex: 1; }
+    .modal-close {
+      padding: 11px;
+      background: none; border: 1.5px solid var(--border);
+      border-radius: var(--radius-pill);
+      color: var(--text-light); font-size: 0.85rem;
+      font-weight: 700; cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { border-color: var(--text); color: var(--text); }
 
-    /* Wide modal for SOS */
-    .modal.wide { max-width: 700px; }
+    /* Mini calendar (dashboard) */
+    .mini-cal-title {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; color: var(--text-light);
+      margin-bottom: 10px;
+    }
+    .mini-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .mini-cal-day {
+      aspect-ratio: 1; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive; font-size: 0.78rem;
+      color: var(--text-light);
+    }
+    .mini-cal-day.ticked { background: var(--text); color: var(--bg); }
+    .mini-cal-day.today { border: 1.5px solid var(--text); color: var(--text); }
+    .mini-cal-day.future { opacity: 0.3; }
 
     /* ══════════════════════════════
        RESPONSIVE
     ══════════════════════════════ */
-    @media (max-width: 700px) {
-      #sidebar { display: none; }
-      #bottom-nav { display: flex; }
-      #main { margin-left: 0; padding-bottom: 64px; }
-      .content-area { padding: 22px 16px 90px; }
-      .profile-header { flex-direction: column; align-items: flex-start; }
-      .tenang-grid { grid-template-columns: repeat(2, 1fr); }
-      .mobile-logo { display: block; }
-      .sos-list { grid-template-columns: 1fr; }
+    @media (max-width: 768px) {
+      #sidebar { display: none !important; }
+      #bottom-nav { display: flex !important; }
+      #main { margin-left: 0; }
+      #app-header { display: flex; }
+      .content-area { padding: 18px 16px calc(var(--bnav-h) + 20px); }
+      .ach-grid { grid-template-columns: repeat(3, 1fr); }
+      .profile-top { flex-direction: column; align-items: flex-start; }
+      .greet-header { display: none; }
     }
-    @media (min-width: 701px) {
-      #bottom-nav { display: none; }
-      .mobile-logo { display: none; }
+    @media (min-width: 769px) {
+      #app-header { display: none; }
+      #bottom-nav { display: none !important; }
+      .content-area { padding: 32px 28px 40px; max-width: 680px; }
+      #toast { bottom: 24px; }
     }
     @media (min-width: 1100px) {
-      .content-area { max-width: 700px; }
+      .content-area { max-width: 780px; }
     }
 
-    .page { animation: fadeIn 0.2s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    /* Back button */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 16px; margin-bottom: 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-pill);
+      color: var(--text-light); font-size: 0.78rem;
+      font-weight: 600; cursor: pointer;
+      background: none; transition: all 0.15s;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .back-btn:hover { border-color: var(--text); color: var(--text); }
+
+    /* System popup overlay */
+    #system-popup {
+      position: fixed; inset: 0;
+      background: rgba(58,107,133,0.4);
+      display: none; align-items: center;
+      justify-content: center; z-index: 1000;
+      padding: 24px;
+    }
+    #system-popup.open { display: flex; }
+    .system-popup-box {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      width: 100%; max-width: 420px;
+      text-align: center;
+    }
+    .system-popup-title {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem; font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .system-popup-body {
+      font-size: 0.88rem; color: var(--text-light);
+      line-height: 1.7; margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════ AUTH PAGE ═══════════════════ -->
+<!-- ═══════════════════ SPLASH ═══════════════════ -->
+<div id="page-splash">
+  <div class="snow-wrap" id="snow-wrap"></div>
+  <div class="pine-trees"></div>
+  <img src="logo.png" alt="logo" class="logo-main" onerror="this.style.display='none'" />
+  <div class="brand-stack">
+    <div class="brand-row">
+      <span class="brand-sub">crash</span>
+    </div>
+    <div class="brand-row">
+      <span class="brand-sub">burn</span>
+      <span class="brand-out">out</span>
+    </div>
+    <div class="brand-row">
+      <span class="brand-sub">turn</span>
+      <span style="font-size:1.9rem;font-weight:400;">d.</span>
+    </div>
+  </div>
+  <div class="splash-text">
+    <strong>hai! selamat datang.</strong>
+    <p>kami berharap sistem ini dapat menjadi ruang kecil untuk mengurus kesihatan mental anda. luahlah apa yang terbuku di hati.</p>
+  </div>
+  <button class="btn-primary" style="max-width:320px;position:relative;z-index:1;" onclick="showAuth()">teruskan.</button>
+</div>
+
+<!-- ═══════════════════ AUTH ═══════════════════ -->
 <div id="page-auth">
-  <div class="logo-wrap">
-    <img src="logo.png" alt="logo" class="logo-img" onerror="this.style.display='none'" />
+  <div class="snow-wrap" id="snow-auth"></div>
+  <div class="pine-trees"></div>
+
+  <!-- Login -->
+  <div id="auth-login" class="auth-screen hidden">
+    <div class="auth-topbar">
+      <button class="auth-back" onclick="backToSplash()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="auth-topbar-title">log masuk.</span>
+    </div>
+    <div class="auth-logo-center">
+      <div class="brand-stack" style="margin-top:0;margin-bottom:0;">
+        <div class="brand-row"><span class="brand-sub" style="font-size:1.5rem;">crash</span></div>
+        <div class="brand-row"><span class="brand-sub" style="font-size:1.5rem;">burn</span><span class="brand-out" style="font-size:2.5rem;">out</span></div>
+        <div class="brand-row"><span class="brand-sub" style="font-size:1.5rem;">turn</span><span style="font-size:1.5rem;font-weight:400;">d.</span></div>
+      </div>
+    </div>
+    <div id="login-error" class="auth-error hidden"></div>
+    <div class="auth-field">
+      <input class="auth-input" type="text" id="login-id" placeholder="e-mel atau @namapengguna." autocomplete="username" />
+    </div>
+    <div class="auth-field">
+      <div class="pw-wrap">
+        <input class="auth-input" type="password" id="login-pw" placeholder="kata laluan." autocomplete="current-password" />
+        <button class="pw-toggle" onclick="togglePw('login-pw',this)">papar</button>
+      </div>
+    </div>
+    <button class="btn-outlined" id="btn-login" onclick="doLogin()">log masuk.</button>
+    <div class="auth-sub">
+      belum ada akaun?
+      <button onclick="switchAuth('register')">daftar.</button>
+    </div>
   </div>
 
-  <div class="auth-card">
-    <h2 id="auth-title">log masuk.</h2>
-    <div id="auth-error" class="auth-error hidden"></div>
-
-    <div id="form-login">
-      <div class="field">
-        <label>e-mel atau nama pengguna.</label>
-        <input type="text" id="login-id" placeholder="e-mel atau nama pengguna" autocomplete="username" />
-      </div>
-      <div class="field">
-        <label>kata laluan.</label>
-        <div class="input-wrap">
-          <input type="password" id="login-pw" placeholder="kata laluan" autocomplete="current-password" />
-          <button class="pw-toggle" onclick="togglePw('login-pw',this)">papar</button>
-        </div>
-      </div>
-      <button class="btn-primary" id="btn-login" onclick="doLogin()">log masuk.</button>
+  <!-- Register -->
+  <div id="auth-register" class="auth-screen hidden">
+    <div class="auth-topbar">
+      <button class="auth-back" onclick="backToSplash()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="auth-topbar-title">daftar.</span>
     </div>
-
-    <div id="form-register" class="hidden">
-      <div class="field">
-        <label>nama pengguna.</label>
-        <input type="text" id="reg-uname" placeholder="nama pengguna unik" autocomplete="username" />
-      </div>
-      <div class="field">
-        <label>e-mel.</label>
-        <input type="email" id="reg-email" placeholder="alamat e-mel" autocomplete="email" />
-      </div>
-      <div class="field">
-        <label>kata laluan.</label>
-        <div class="input-wrap">
-          <input type="password" id="reg-pw" placeholder="kata laluan (min 6 aksara)" autocomplete="new-password" />
-          <button class="pw-toggle" onclick="togglePw('reg-pw',this)">papar</button>
-        </div>
-      </div>
-      <button class="btn-primary" id="btn-register" onclick="doRegister()">daftar.</button>
+    <div class="auth-heading">cipta akaun baru.</div>
+    <div id="reg-error" class="auth-error hidden"></div>
+    <div class="auth-field">
+      <input class="auth-input" type="text" id="reg-uname" placeholder="@namapengguna." autocomplete="username" />
     </div>
-
-    <div class="auth-switch">
-      <span id="auth-switch-text">belum ada akaun?</span>
-      <button id="auth-switch-btn" onclick="toggleAuthMode()">daftar.</button>
+    <div class="auth-field">
+      <input class="auth-input" type="email" id="reg-email" placeholder="alamat e-mel." autocomplete="email" />
+    </div>
+    <div class="auth-field">
+      <div class="pw-wrap">
+        <input class="auth-input" type="password" id="reg-pw" placeholder="kata laluan." autocomplete="new-password" />
+        <button class="pw-toggle" onclick="togglePw('reg-pw',this)">papar</button>
+      </div>
+    </div>
+    <div class="auth-field">
+      <div class="pw-wrap">
+        <input class="auth-input" type="password" id="reg-pw2" placeholder="sah kata laluan." autocomplete="new-password" />
+        <button class="pw-toggle" onclick="togglePw('reg-pw2',this)">papar</button>
+      </div>
+    </div>
+    <button class="btn-outlined" id="btn-register" onclick="doRegister()">daftar.</button>
+    <div class="auth-sub">
+      sudah ada akaun?
+      <button onclick="switchAuth('login')">log masuk.</button>
     </div>
   </div>
 </div>
 
 <!-- ═══════════════════ APP SHELL ═══════════════════ -->
 <div id="app">
+  <!-- Sidebar -->
   <aside id="sidebar">
-    <div class="logo-wrap">
+    <div class="sidebar-logo">
       <img src="logo.png" alt="logo" onerror="this.style.display='none'" />
+      <div class="brand">crash out,<br>burn out,<br>turn out d.</div>
     </div>
     <nav>
-      <a href="#" class="nav-link active" data-page="dashboard">papan muka.</a>
-      <a href="#" class="nav-link" data-page="post">luahan.</a>
-      <a href="#" class="nav-link" data-page="bertahan">bertahan.</a>
-      <a href="#" class="nav-link" data-page="tenang">ruang tenang.</a>
-      <div class="nav-notif-wrap" style="display:block">
-        <a href="#" class="nav-link" data-page="notifikasi">notifikasi.</a>
-        <span class="notif-dot" id="sidebar-notif-dot"></span>
+      <div class="sidebar-link active" data-page="dashboard" onclick="navigate('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        papan muka.
       </div>
-      <a href="#" class="nav-link" data-page="profile">profil.</a>
-      <a href="#" class="nav-link" data-page="settings">tetapan.</a>
+      <div class="sidebar-link" data-page="bertahan" onclick="navigate('bertahan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        bertahan.
+      </div>
+      <div class="sidebar-link" data-page="luahan" onclick="navigate('luahan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+        luahan.
+      </div>
+      <div class="sidebar-notif-wrap">
+        <div class="sidebar-link" data-page="notifikasi" onclick="navigate('notifikasi')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          notifikasi.
+        </div>
+        <span class="sidebar-notif-dot" id="sidebar-notif-dot"></span>
+      </div>
+      <div class="sidebar-link" data-page="profil" onclick="navigate('profil')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        profil.
+      </div>
+      <div class="sidebar-link" data-page="tetapan" onclick="navigate('tetapan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        tetapan.
+      </div>
     </nav>
-    <div class="sidebar-user" id="sidebar-user" onclick="navigate('settings')">
-      <div class="sidebar-user-avatar" id="sidebar-avatar-wrap"></div>
-      <div class="sidebar-user-info">
+    <div class="sidebar-user" onclick="navigate('profil')">
+      <div class="s-avatar" id="sidebar-avatar"></div>
+      <div class="s-user-info">
         log masuk sebagai
-        <span class="uname" id="sidebar-uname"></span>
+        <span class="s-uname" id="sidebar-uname"></span>
       </div>
     </div>
   </aside>
 
-  <main id="main">
-    <div class="mobile-logo">
-      <img src="logo.png" alt="logo" onerror="this.style.display='none'" />
-    </div>
-
-    <nav id="bottom-nav">
-      <a href="#" class="nav-link active" data-page="dashboard">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        utama.
-      </a>
-      <a href="#" class="nav-link" data-page="post">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        luahan.
-      </a>
-      <a href="#" class="nav-link" data-page="bertahan">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        bertahan.
-      </a>
-      <a href="#" class="nav-link" data-page="notifikasi" style="position:relative">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        notif.
-        <span class="notif-dot" id="bnav-notif-dot" style="position:absolute;top:2px;right:calc(50% - 14px)"></span>
-      </a>
-      <a href="#" class="nav-link" data-page="profile">
-        <div class="bnav-avatar" id="bnav-avatar-wrap"></div>
-        profil.
-      </a>
-    </nav>
+  <!-- Main -->
+  <div id="main">
+    <!-- Mobile Header -->
+    <header id="app-header">
+      <div class="header-title" id="header-title-wrap">
+        <div id="header-dashboard-greet" class="hidden">
+          <div style="font-size:0.72rem;color:var(--text-light);font-weight:600;">hai,</div>
+          <div class="greet-user" id="header-uname-display"></div>
+        </div>
+        <span id="header-page-title"></span>
+      </div>
+      <div class="header-right">
+        <button class="header-bell" onclick="navigate('notifikasi')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="bell-badge" id="bell-badge"></span>
+        </button>
+        <div class="header-avatar" id="header-avatar" onclick="navigate('profil')"></div>
+      </div>
+    </header>
 
     <!-- ── DASHBOARD ── -->
     <div id="page-dashboard" class="content-area page hidden">
-      <p class="page-title">papan muka.</p>
-      <div class="card bertahan-card">
-        <div class="bertahan-label">"saya masih cuba bertahan hari ini."</div>
+      <!-- Desktop greet (hidden on mobile via media query) -->
+      <div class="greet-header">
+        <div class="greet-left">
+          <div class="greet-text">hai,</div>
+          <div class="greet-user" id="dash-greet-user">
+            <span id="dash-uname"></span>
+          </div>
+        </div>
+        <div class="greet-right">
+          <button class="notif-btn" onclick="navigate('notifikasi')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-count" id="dash-notif-count"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bertahan quick card -->
+      <div class="card" onclick="navigate('bertahan')" style="cursor:pointer;padding:0;overflow:hidden;">
+        <div class="bertahan-card-inner">
+          <div class="bertahan-left">
+            <div class="bertahan-phrase">saya masih bertahan hari ini.</div>
+            <div class="bertahan-stats">
+              <div class="bertahan-stat">
+                <div class="bertahan-num" id="dash-streak">0</div>
+                <div class="bertahan-lbl">hari berturut.</div>
+              </div>
+              <div class="bertahan-stat" style="margin-top:6px;">
+                <div class="bertahan-num" id="dash-total">0</div>
+                <div class="bertahan-lbl">jumlah bertahan.</div>
+              </div>
+            </div>
+          </div>
+          <div class="bertahan-right">
+            <span class="bertahan-arrow">›</span>
+            <svg class="bertahan-icon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M12 2C6 7 3 11 3 14a9 9 0 0 0 18 0c0-3-3-7-9-12z" stroke="rgba(215,234,246,0.7)"/>
+              <polyline points="8 13 11 16 16 11" stroke="rgba(215,234,246,0.9)" stroke-width="2.2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini calendar -->
+      <div class="card">
+        <div class="mini-cal-title" id="mini-cal-title"></div>
+        <div class="mini-cal-grid" id="mini-cal"></div>
+      </div>
+
+      <!-- Feed -->
+      <div class="section-lbl" style="margin-top:8px;">semua luahan.</div>
+      <button class="luah-btn" onclick="navigate('luahan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+        luah.
+      </button>
+      <div id="feed-list"></div>
+    </div>
+
+    <!-- ── BERTAHAN ── -->
+    <div id="page-bertahan" class="content-area page hidden">
+      <div class="page-label">bertahan.</div>
+
+      <!-- Papan penanda card -->
+      <div class="card papan-penanda-card">
+        <div class="section-lbl" style="margin-bottom:14px;">papan penanda.</div>
+        <div class="bertahan-phrase-p">"saya masih bertahan hari ini."</div>
         <button class="tick-btn" id="tick-btn" onclick="doTick()">
           <svg id="tick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         </button>
-        <div class="streak-info">
+        <div class="streak-row">
           <div class="streak-item">
             <div class="streak-num" id="streak-num">0</div>
             <div class="streak-lbl">hari berturut.</div>
           </div>
           <div class="streak-item">
-            <div class="streak-num" id="total-ticked">0</div>
+            <div class="streak-num" id="total-num">0</div>
             <div class="streak-lbl">jumlah bertahan.</div>
           </div>
         </div>
+        <div class="bertahan-status-msg" id="bertahan-status"></div>
       </div>
+
+      <!-- 30 day dots -->
       <div class="card">
-        <div class="calendar-title" id="mini-cal-title"></div>
-        <div class="mini-cal" id="mini-cal"></div>
+        <div class="section-lbl" style="margin-bottom:10px;">hari lalu.</div>
+        <div class="dots-grid" id="dots-grid"></div>
       </div>
-      <div class="feed-title">luahan semua.</div>
-      <div id="feed-list"></div>
+
+      <!-- Calendar -->
+      <div class="card">
+        <div class="cal-nav-row">
+          <button class="cal-nav-btn" onclick="changeCal(-1)">←</button>
+          <span class="cal-month-name" id="cal-month-name"></span>
+          <button class="cal-nav-btn" onclick="changeCal(1)">→</button>
+        </div>
+        <div class="cal-grid" id="bertahan-cal"></div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="card">
+        <div class="section-lbl" style="margin-bottom:14px;">pencapaian saya.</div>
+        <div class="ach-grid" id="ach-grid"></div>
+        <div class="ach-note">
+          <span class="shape-demo circle"></span>
+          <span class="shape-demo pentagon"></span>
+          <span class="shape-demo octagon"></span>
+          <span class="shape-demo square"></span>
+          <span>ialah bentuk bingkai yang dipaparkan pada gambar profil.</span>
+        </div>
+      </div>
     </div>
 
-    <!-- ── POST ── -->
-    <div id="page-post" class="content-area page hidden">
-      <p class="page-title">luahan perasaan.</p>
-      <div class="card post-card">
-        <textarea id="post-text" placeholder="apa yang ingin kamu luahkan hari ini..." maxlength="1000" oninput="updateCharCount()"></textarea>
-        <div class="post-options">
-          <div class="toggle-wrap">
+    <!-- ── LUAHAN ── -->
+    <div id="page-luahan" class="content-area page hidden">
+      <div class="page-label">luahan.</div>
+
+      <!-- Post form -->
+      <div class="card">
+        <div class="section-lbl" style="margin-bottom:12px;">luah.</div>
+        <textarea class="post-textarea" id="post-text" placeholder="apa yang ingin diluahkan sekarang.." maxlength="1000" oninput="updateChar()"></textarea>
+        <div class="post-meta">
+          <div class="toggle-row">
             <button class="toggle" id="anon-toggle" onclick="toggleAnon()"></button>
             <span id="anon-label">hantar dengan nama.</span>
           </div>
-          <span class="char-count"><span id="char-count">0</span>/1000</span>
+          <span class="char-count"><span id="char-count">0</span>/1000 aksara.</span>
         </div>
-        <button class="btn-primary" id="btn-post" onclick="doPost()" style="margin-top:16px;">hantar luahan.</button>
+        <button class="btn-primary" style="margin-top:14px;" id="btn-post" onclick="doPost()">luahkan.</button>
       </div>
-    </div>
 
-    <!-- ── BERTAHAN ── -->
-    <div id="page-bertahan" class="content-area page hidden">
-      <p class="page-title">masih bertahan.</p>
-      <div class="card bertahan-card">
-        <div class="bertahan-label">"saya masih cuba bertahan hari ini."</div>
-        <button class="tick-btn" id="tick-btn-b" onclick="doTick()">
-          <svg id="tick-icon-b" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        </button>
-        <div class="streak-info">
-          <div class="streak-item">
-            <div class="streak-num" id="streak-num-b">0</div>
-            <div class="streak-lbl">hari berturut.</div>
-          </div>
-          <div class="streak-item">
-            <div class="streak-num" id="total-ticked-b">0</div>
-            <div class="streak-lbl">jumlah bertahan.</div>
-          </div>
-        </div>
-        <div id="bertahan-status" style="margin-top:10px;font-size:0.82rem;color:var(--text-light);font-style:italic;"></div>
-      </div>
+      <!-- Ruang Tenang -->
       <div class="card">
-        <div class="calendar-title">30 hari lalu.</div>
-        <div class="dots-row" id="bertahan-30dots"></div>
-      </div>
-      <div class="card">
-        <div class="calendar-title">pencapaian kamu.</div>
-        <div class="achievement-row" id="achievement-row"></div>
-      </div>
-      <div class="card">
-        <div class="calendar-title" id="bertahan-cal-title"></div>
-        <div class="full-cal-header">
-          <button class="cal-nav" onclick="changeBertahanMonth(-1)">←</button>
-          <span class="month-name" id="bertahan-month-name"></span>
-          <button class="cal-nav" onclick="changeBertahanMonth(1)">→</button>
-        </div>
-        <div class="full-cal" id="bertahan-full-cal"></div>
-      </div>
-    </div>
-
-    <!-- ── RUANG TENANG ── -->
-    <div id="page-tenang" class="content-area page hidden">
-      <p class="page-title">ruang tenang.</p>
-      <div class="card">
-        <div class="calendar-title" style="margin-bottom:16px;">pilih aktiviti.</div>
-        <div class="tenang-grid">
-          <div class="tenang-tile" onclick="openTenang('nafas')">
-            <span class="tt-label">pernafasan.</span>
-          </div>
-          <div class="tenang-tile" onclick="openTenang('gratitud')">
-            <span class="tt-label">syukur.</span>
-          </div>
-          <div class="tenang-tile" onclick="openTenang('afirmasi')">
-            <span class="tt-label">afirmasi.</span>
-          </div>
-          <div class="tenang-tile" onclick="openTenang('sos')">
-            <span class="tt-label">talian bantuan.</span>
-          </div>
-          <div class="tenang-tile" onclick="openTenang('jurnal')">
-            <span class="tt-label">jurnal.</span>
-          </div>
+        <div class="section-lbl" style="margin-bottom:12px;">ruang tenang.</div>
+        <div style="font-size:0.82rem;color:var(--text-light);margin-bottom:14px;">pilih aktiviti:</div>
+        <div class="tenang-tiles">
+          <div class="tenang-tile" onclick="openTenang('nafas')">pernafasan.</div>
+          <div class="tenang-tile" onclick="openTenang('afirmasi')">afirmasi.</div>
+          <div class="tenang-tile" onclick="openTenang('sos')">talian bantuan.</div>
+          <div class="tenang-tile" onclick="openTenang('jurnal')">jurnal.</div>
+          <div class="tenang-tile wide" onclick="openTenang('gratitud')">rasa syukur hari ini.</div>
         </div>
       </div>
-      <div id="tenang-sub-content"></div>
     </div>
 
     <!-- ── NOTIFIKASI ── -->
     <div id="page-notifikasi" class="content-area page hidden">
-      <p class="page-title">notifikasi.</p>
+      <div class="page-label">notifikasi.</div>
       <div id="notif-list"><div class="spinner"></div></div>
     </div>
 
-    <!-- ── PROFILE ── -->
-    <div id="page-profile" class="content-area page hidden">
-      <p class="page-title" id="profile-page-title">profil.</p>
+    <!-- ── PROFIL ── -->
+    <div id="page-profil" class="content-area page hidden">
+      <div class="page-label" id="profil-page-label">profil.</div>
+      <div id="profil-back-btn"></div>
       <div class="card">
-        <div class="profile-header">
-          <div class="profile-avatar" id="prof-avatar"></div>
-          <div class="profile-info">
-            <div class="username">
-              <span id="prof-uname"></span>
-              <svg id="prof-badge" class="luahan-badge hidden" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-              <svg id="prof-ach-badge" class="achievement-badge-icon hidden" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5" fill="#c9a63e" stroke="#a68a2e" stroke-width="1"/><polygon points="12,3 14,7 18,7 15,10 16,14 12,11 8,14 9,10 6,7 10,7" fill="#fff"/></svg>
-            </div>
-            <div class="bio" id="prof-bio"></div>
-            <div class="profile-stats">
-              <div class="stat-item"><div class="stat-num" id="prof-luahan-count">0</div><div class="stat-lbl">luahan.</div></div>
-              <div class="stat-item"><div class="stat-num" id="prof-streak">0</div><div class="stat-lbl">streak.</div></div>
-              <div class="stat-item"><div class="stat-num" id="prof-total">0</div><div class="stat-lbl">bertahan.</div></div>
+        <div class="profile-top">
+          <div class="profile-avatar-wrap">
+            <div id="profil-avatar-border" class="profile-avatar-border shape-circle">
+              <div id="profil-avatar-inner" class="profile-avatar-inner shape-circle">
+                <span id="profil-avatar-initial"></span>
+              </div>
             </div>
           </div>
+          <div class="profile-info" style="flex:1;">
+            <div class="profile-stats">
+              <div class="p-stat">
+                <div class="p-stat-num" id="profil-luahan-count">0</div>
+                <div class="p-stat-lbl">luahan.</div>
+              </div>
+              <div class="p-stat">
+                <div class="p-stat-num" id="profil-streak">0</div>
+                <div class="p-stat-lbl">rentetan.</div>
+              </div>
+              <div class="p-stat">
+                <div class="p-stat-num" id="profil-total">0</div>
+                <div class="p-stat-lbl">bertahan.</div>
+              </div>
+            </div>
+            <div class="profile-uname">
+              <span id="profil-uname"></span>
+              <img src="verifiedbadge.png" class="verified-badge" id="profil-badge" alt="verified" style="display:none;" />
+            </div>
+            <div class="profile-bio" id="profil-bio"></div>
+            <div id="profil-action" style="margin-top:10px;"></div>
+          </div>
         </div>
-        <div id="profile-actions"></div>
       </div>
-      <div class="tabs">
+      <div class="tabs" id="profil-tabs">
         <button class="tab-btn active" onclick="switchTab('tab-luahan',this)">luahan saya.</button>
         <button class="tab-btn" onclick="switchTab('tab-rekod',this)">rekod bertahan.</button>
+        <button class="tab-btn" onclick="switchTab('tab-bintang',this)">bintang.</button>
       </div>
       <div id="tab-luahan" class="tab-panel active"><div id="my-luahan-list"></div></div>
       <div id="tab-rekod" class="tab-panel">
         <div class="card">
-          <div class="full-cal-header">
-            <button class="cal-nav" onclick="changeCalMonth(-1)">←</button>
-            <span class="month-name" id="full-cal-title"></span>
-            <button class="cal-nav" onclick="changeCalMonth(1)">→</button>
+          <div class="section-lbl" style="margin-bottom:10px;">hari lalu.</div>
+          <div class="dots-grid" id="profil-dots"></div>
+        </div>
+        <div class="card">
+          <div class="cal-nav-row">
+            <button class="cal-nav-btn" onclick="changeProfCal(-1)">←</button>
+            <span class="cal-month-name" id="profil-cal-month"></span>
+            <button class="cal-nav-btn" onclick="changeProfCal(1)">→</button>
           </div>
-          <div class="full-cal" id="full-cal"></div>
+          <div class="cal-grid" id="profil-cal"></div>
         </div>
       </div>
+      <div id="tab-bintang" class="tab-panel"><div id="bintang-list"></div></div>
     </div>
 
-    <!-- ── SETTINGS ── -->
-    <div id="page-settings" class="content-area page hidden">
-      <p class="page-title">tetapan.</p>
+    <!-- ── TETAPAN ── -->
+    <div id="page-tetapan" class="content-area page hidden">
+      <div class="page-label">tetapan.</div>
       <div class="card">
         <div class="settings-section">
           <h3>maklumat profil.</h3>
-          <div class="field"><label>nama pengguna.</label><input type="text" id="set-uname" placeholder="nama pengguna baru" /></div>
-          <div class="field"><label>bio.</label><input type="text" id="set-bio" placeholder="cerita ringkas tentang diri kamu" /></div>
-          <div class="field"><label>pautan gambar profil (url).</label><input type="url" id="set-photo" placeholder="https://..." /></div>
-          <button class="btn-primary" onclick="saveProfile()">simpan perubahan.</button>
+          <div class="settings-preview-wrap">
+            <div class="settings-preview-avatar" id="set-avatar-preview"></div>
+            <div style="font-size:0.78rem;color:var(--text-light);">gambar profil kamu.</div>
+          </div>
+          <div class="settings-field">
+            <label>@namapengguna.</label>
+            <div style="position:relative;">
+              <input type="text" class="settings-input" id="set-uname" placeholder="nama pengguna" />
+              <img src="verifiedbadge.png" id="set-verified-badge" alt="" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;display:none;" />
+            </div>
+          </div>
+          <div class="settings-field">
+            <label>biografi.</label>
+            <input type="text" class="settings-input" id="set-bio" placeholder="cerita ringkas tentang diri kamu" />
+          </div>
+          <div class="settings-field">
+            <label>alamat e-mel.</label>
+            <input type="email" class="settings-input" id="set-email" placeholder="alamat e-mel" readonly style="opacity:0.6;" />
+          </div>
+          <div class="settings-field">
+            <label>pautan gambar profil.</label>
+            <input type="url" class="settings-input" id="set-photo" placeholder="https://..." oninput="previewSetPhoto()" />
+          </div>
+          <button class="btn-settings-primary" onclick="saveProfile()">simpan perubahan.</button>
         </div>
-        <div class="settings-section">
+
+        <div class="settings-section" style="border-top:1.5px solid var(--border);padding-top:20px;">
           <h3>tukar kata laluan.</h3>
-          <div class="field"><label>kata laluan semasa.</label><div class="input-wrap"><input type="password" id="set-pw-old" placeholder="kata laluan semasa" /><button class="pw-toggle" onclick="togglePw('set-pw-old',this)">papar</button></div></div>
-          <div class="field"><label>kata laluan baharu.</label><div class="input-wrap"><input type="password" id="set-pw-new" placeholder="kata laluan baharu" /><button class="pw-toggle" onclick="togglePw('set-pw-new',this)">papar</button></div></div>
-          <button class="btn-primary" onclick="changePassword()">tukar kata laluan.</button>
+          <div class="settings-field">
+            <label>kata laluan semasa.</label>
+            <div style="position:relative;">
+              <input type="password" class="settings-input" id="set-pw-old" placeholder="kata laluan semasa." />
+              <button class="pw-toggle" onclick="togglePw('set-pw-old',this)">papar</button>
+            </div>
+          </div>
+          <div class="settings-field">
+            <label>kata laluan baru.</label>
+            <div style="position:relative;">
+              <input type="password" class="settings-input" id="set-pw-new" placeholder="kata laluan baru." />
+              <button class="pw-toggle" onclick="togglePw('set-pw-new',this)">papar</button>
+            </div>
+          </div>
+          <button class="btn-settings-primary" onclick="changePassword()">tukar kata laluan.</button>
         </div>
-        <div class="settings-section">
+
+        <div class="settings-section" style="border-top:1.5px solid var(--border);padding-top:20px;">
           <h3>akaun.</h3>
-          <button class="btn-logout" onclick="doLogout()">log keluar.</button>
-          <button class="btn-danger" style="margin-top:10px;" onclick="openDeleteModal()">padam akaun.</button>
+          <button class="btn-settings-delete" onclick="openDeleteModal()">padam akaun.</button>
+          <button class="btn-logout-text" onclick="doLogout()">log keluar.</button>
         </div>
       </div>
     </div>
-  </main>
-</div>
 
-<!-- Delete modal -->
-<div class="modal-overlay" id="delete-modal">
-  <div class="modal">
-    <h3>padam akaun.</h3>
-    <p>tindakan ini tidak boleh dibatalkan. semua data kamu akan dipadam selama-lamanya.</p>
-    <div class="field"><label>masukkan kata laluan untuk pengesahan.</label><div class="input-wrap"><input type="password" id="del-pw" placeholder="kata laluan" /><button class="pw-toggle" onclick="togglePw('del-pw',this)">papar</button></div></div>
-    <div class="modal-actions"><button class="btn-edit" onclick="closeDeleteModal()">batal.</button><button class="btn-danger" onclick="doDeleteAccount()">padam.</button></div>
+    <!-- Bottom Nav -->
+    <nav id="bottom-nav">
+      <button class="bnav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        papan muka.
+      </button>
+      <button class="bnav-item" data-page="bertahan" onclick="navigate('bertahan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        bertahan.
+      </button>
+      <button class="bnav-item" data-page="luahan" onclick="navigate('luahan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+        luahan.
+      </button>
+      <button class="bnav-item" data-page="profil" onclick="navigate('profil')">
+        <div class="bnav-avatar" id="bnav-avatar"></div>
+        profil.
+      </button>
+      <button class="bnav-item" data-page="tetapan" onclick="navigate('tetapan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        tetapan.
+      </button>
+    </nav>
   </div>
 </div>
 
-<!-- Tenang modal -->
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+
+<!-- Tenang Modal -->
 <div class="modal-overlay" id="tenang-modal">
-  <div class="modal" id="tenang-modal-box">
-    <h3 id="tenang-modal-title"></h3>
-    <div id="tenang-modal-body"></div>
-    <div class="modal-actions" style="margin-top:16px;"><button class="btn-edit" onclick="closeTenangModal()">tutup.</button></div>
+  <div class="modal-box" id="tenang-modal-box">
+    <div class="modal-title" id="tenang-title"></div>
+    <div id="tenang-body"></div>
+    <div class="modal-footer">
+      <button class="modal-close" onclick="closeTenang()">tutup.</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Post Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-title">sunting luahan.</div>
+    <textarea class="post-textarea" id="edit-text" style="min-height:120px;margin-top:8px;"></textarea>
+    <div class="char-count" style="text-align:right;margin-top:4px;"><span id="edit-char">0</span>/1000 aksara.</div>
+    <div class="modal-footer">
+      <button class="modal-close" onclick="closeEdit()">batal.</button>
+      <button class="btn-primary" style="padding:11px;" onclick="saveEdit()">simpan.</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Post Modal -->
+<div class="modal-overlay" id="del-post-modal">
+  <div class="modal-box">
+    <div class="modal-title">padam luahan.</div>
+    <div class="modal-body">adakah anda pasti untuk memadam luahan ini? tindakan ini tidak boleh dibatalkan.</div>
+    <div class="modal-footer">
+      <button class="modal-close" onclick="document.getElementById('del-post-modal').classList.remove('open')">batal.</button>
+      <button class="btn-primary" style="padding:11px;background:#d94f4f;" onclick="confirmDeletePost()">padam.</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal-overlay" id="del-acc-modal">
+  <div class="modal-box">
+    <div class="modal-title">padam akaun.</div>
+    <div class="modal-body">tindakan ini tidak boleh dibatalkan. semua data kamu akan dipadam selama-lamanya.</div>
+    <div style="position:relative;">
+      <input type="password" class="settings-input" id="del-pw" placeholder="masukkan kata laluan untuk pengesahan." />
+      <button class="pw-toggle" onclick="togglePw('del-pw',this)">papar</button>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-close" onclick="document.getElementById('del-acc-modal').classList.remove('open')">batal.</button>
+      <button class="btn-primary" style="padding:11px;background:#d94f4f;" onclick="doDeleteAccount()">padam.</button>
+    </div>
+  </div>
+</div>
+
+<!-- System Popup (admin-controlled) -->
+<div id="system-popup">
+  <div class="system-popup-box">
+    <div class="system-popup-title" id="sys-popup-title"></div>
+    <div class="system-popup-body" id="sys-popup-body"></div>
+    <button class="btn-primary" id="sys-popup-btn" onclick="closeSystemPopup()">ok.</button>
   </div>
 </div>
 
@@ -1002,7 +1833,7 @@ import {
 import {
   getFirestore, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc,
   collection, query, where, orderBy, limit, serverTimestamp,
-  updateDoc, writeBatch, onSnapshot
+  updateDoc, writeBatch, onSnapshot, increment
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1011,28 +1842,48 @@ const firebaseConfig = {
   projectId: "crash-out-burn-out-turn-out-d",
   storageBucket: "crash-out-burn-out-turn-out-d.firebasestorage.app",
   messagingSenderId: "280103809790",
-  appId: "1:280103809790:web:514756e3aa0bf6a69cabaf",
-  measurementId: "G-FVFZJ1D6GK"
+  appId: "1:280103809790:web:514756e3aa0bf6a69cabaf"
 };
+
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
 /* ─── STATE ─── */
-let currentUser  = null;
-let userData     = null;
-let isAnon       = false;
-let calViewMonth = null;
-let bertahanCalMonth = null;
-let feedUnsub    = null;
-let notifUnsub   = null;
-let tickedDays   = {};
-let viewingUserId = null;
+let currentUser   = null;
+let userData      = null;
+let tickedDays    = {};
+let calViewMonth  = null;
+let profCalMonth  = null;
+let feedUnsub     = null;
+let notifUnsub    = null;
+let viewingUid    = null;
+let viewingDays   = {};
+let isAnon        = false;
+let editingPostId = null;
+let deletingPostId= null;
 
-/* ─── ACHIEVEMENT BADGE SVG ─── */
-function achievementBadgeSVG(size = '') {
-  const cls = size === 'small' ? 'achievement-badge-icon small' : 'achievement-badge-icon';
-  return `<svg class="${cls}" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5" fill="#c9a63e" stroke="#a68a2e" stroke-width="1"/><polygon points="12,3 14,7 18,7 15,10 16,14 12,11 8,14 9,10 6,7 10,7" fill="#fff"/></svg>`;
+/* ─── SNOW ─── */
+function makeSnow(wrapId) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement('div');
+    const isStar = Math.random() > 0.6;
+    el.className = isStar ? 'snow-star' : 'snow-dot';
+    el.textContent = isStar ? '❄' : '';
+    const size = Math.random() * 5 + 3;
+    el.style.cssText = `
+      left:${Math.random()*100}%;
+      width:${size}px; height:${size}px;
+      animation-duration:${Math.random()*8+5}s;
+      animation-delay:${Math.random()*6}s;
+      opacity:${Math.random()*0.5+0.3};
+      font-size:${size*2}px;
+    `;
+    wrap.appendChild(el);
+  }
 }
 
 /* ─── HELPERS ─── */
@@ -1057,23 +1908,48 @@ function formatTime(ts) {
   return d.toLocaleDateString('ms-MY') + '.';
 }
 
-function verifiedBadgeSVG() {
-  return `<svg class="luahan-badge" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" stroke="currentColor" stroke-width="2" fill="none"/></svg>`;
-}
-
 function escapeHTML(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 
 function makeDefaultAvatar(uname) {
   return `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(uname||'user')}`;
 }
 
-function renderAvatar(container, photourl, uname) {
+function formatCount(n) {
+  n = n || 0;
+  if (n >= 1000) return (n/1000).toFixed(1).replace('.0','') + 'k';
+  return String(n);
+}
+
+const MONTHS = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+
+/* ─── FRAME SHAPE ─── */
+function getFrameShape(totalDays, frameOverride) {
+  if (frameOverride) return frameOverride;
+  if (totalDays >= 365) return 'square';
+  if (totalDays >= 180) return 'octagon';
+  if (totalDays >= 90)  return 'hexagon';
+  if (totalDays >= 30)  return 'pentagon';
+  return 'circle';
+}
+
+function applyFrameShape(borderEl, innerEl, shape) {
+  const shapes = ['circle','pentagon','hexagon','octagon','square'];
+  shapes.forEach(s => {
+    borderEl.classList.remove(`shape-${s}`);
+    innerEl.classList.remove(`shape-${s}`);
+  });
+  borderEl.classList.add(`shape-${shape}`);
+  innerEl.classList.add(`shape-${shape}`);
+}
+
+/* ─── AVATAR RENDER ─── */
+function renderAvatarEl(el, photourl, uname, initColor) {
   if (photourl) {
-    container.innerHTML = `<img src="${photourl}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(uname||'?')[0].toUpperCase()}'">`;
+    el.innerHTML = `<img src="${photourl}" alt="" onerror="this.style.display='none'">`;
   } else {
-    container.innerHTML = `<img src="${makeDefaultAvatar(uname)}" alt="${(uname||'?')[0].toUpperCase()}" onerror="this.style.display='none';this.parentNode.textContent='${(uname||'?')[0].toUpperCase()}'">`;
+    el.innerHTML = `<img src="${makeDefaultAvatar(uname)}" alt="" onerror="this.parentNode.innerHTML='${(uname||'?')[0].toUpperCase()}'">`;
   }
 }
 
@@ -1081,80 +1957,132 @@ function updateSidebarUser() {
   if (!userData) return;
   const uname = userData.namapengguna || '';
   document.getElementById('sidebar-uname').textContent = '@' + uname;
-  const sav = document.getElementById('sidebar-avatar-wrap');
-  renderAvatar(sav, userData.photourl, uname);
-  const bav = document.getElementById('bnav-avatar-wrap');
-  renderAvatar(bav, userData.photourl, uname);
+  renderAvatarEl(document.getElementById('sidebar-avatar'), userData.photourl, uname);
+  renderAvatarEl(document.getElementById('bnav-avatar'), userData.photourl, uname);
+  renderAvatarEl(document.getElementById('header-avatar'), userData.photourl, uname);
+
+  const greetEl = document.getElementById('header-uname-display');
+  if (greetEl) {
+    greetEl.innerHTML = `@${escapeHTML(uname)} ${userData.verified ? '<img src="verifiedbadge.png" class="verified-badge" alt="verified">' : ''}`;
+  }
+  const dashUname = document.getElementById('dash-uname');
+  if (dashUname) {
+    dashUname.innerHTML = `@${escapeHTML(uname)} ${userData.verified ? '<img src="verifiedbadge.png" class="verified-badge" alt="verified">' : ''}`;
+  }
 }
 
-/* ─── MONTHS ─── */
-const MONTHS = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+/* ─── SYSTEM SETTINGS (admin-ready) ─── */
+async function loadSystemSettings() {
+  try {
+    const snap = await getDoc(doc(db, 'settings', 'system'));
+    if (!snap.exists()) return;
+    const s = snap.data();
+    if (s.bgUrl) {
+      document.body.style.backgroundImage = `url('${s.bgUrl}')`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundAttachment = 'fixed';
+    } else if (s.bgColor) {
+      document.documentElement.style.setProperty('--bg', s.bgColor);
+    }
+    if (s.popupEnabled && s.popupTitle) {
+      const seen = sessionStorage.getItem('popup_seen_' + (s.popupId || 'default'));
+      if (!seen) {
+        document.getElementById('sys-popup-title').textContent = s.popupTitle;
+        document.getElementById('sys-popup-body').textContent = s.popupBody || '';
+        const btn = document.getElementById('sys-popup-btn');
+        btn.textContent = s.popupBtnText || 'ok.';
+        document.getElementById('system-popup').classList.add('open');
+        sessionStorage.setItem('popup_seen_' + (s.popupId || 'default'), '1');
+      }
+    }
+  } catch(e) {}
+}
+
+window.closeSystemPopup = () => {
+  document.getElementById('system-popup').classList.remove('open');
+};
 
 /* ─── AUTH ─── */
 window.togglePw = (id, btn) => {
   const el = document.getElementById(id);
-  if (el.type === 'password') { el.type = 'text'; btn.textContent = 'sembunyi.'; }
+  if (el.type === 'password') { el.type = 'text'; btn.textContent = 'sembunyi'; }
   else { el.type = 'password'; btn.textContent = 'papar'; }
 };
 
-window.toggleAuthMode = () => {
-  const isLogin = !document.getElementById('form-register').classList.contains('hidden');
-  document.getElementById('form-login').classList.toggle('hidden', !isLogin);
-  document.getElementById('form-register').classList.toggle('hidden', isLogin);
-  document.getElementById('auth-title').textContent = isLogin ? 'log masuk.' : 'pendaftaran.';
-  document.getElementById('auth-switch-text').textContent = isLogin ? 'belum ada akaun?' : 'sudah ada akaun?';
-  document.getElementById('auth-switch-btn').textContent = isLogin ? 'daftar.' : 'log masuk.';
-  document.getElementById('auth-error').classList.add('hidden');
+window.showAuth = () => {
+  document.getElementById('page-splash').style.display = 'none';
+  document.getElementById('page-auth').classList.add('show');
+  switchAuth('login');
+  makeSnow('snow-auth');
 };
 
-function showAuthError(msg) {
-  const el = document.getElementById('auth-error');
-  el.textContent = msg; el.classList.remove('hidden');
+window.backToSplash = () => {
+  document.getElementById('page-auth').classList.remove('show');
+  document.getElementById('page-splash').style.display = 'flex';
+};
+
+window.switchAuth = (mode) => {
+  document.getElementById('auth-login').classList.toggle('hidden', mode !== 'login');
+  document.getElementById('auth-register').classList.toggle('hidden', mode !== 'register');
+  document.getElementById('login-error').classList.add('hidden');
+  document.getElementById('reg-error').classList.add('hidden');
+};
+
+function showAuthErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.remove('hidden');
 }
 
 window.doLogin = async () => {
   const id = document.getElementById('login-id').value.trim().toLowerCase();
   const pw = document.getElementById('login-pw').value;
-  if (!id || !pw) return showAuthError('sila isi semua medan.');
-  document.getElementById('btn-login').disabled = true;
-  document.getElementById('auth-error').classList.add('hidden');
+  if (!id || !pw) return showAuthErr('login-error', 'sila isi semua medan.');
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true;
+  document.getElementById('login-error').classList.add('hidden');
   try {
     let email = id;
-    if (!id.includes('@')) {
-      const q = query(collection(db, 'users'), where('namapengguna', '==', id));
-      const snap = await getDocs(q);
-      if (snap.empty) throw new Error('nama pengguna tidak dijumpai.');
-      email = snap.docs[0].data().emel;
+    if (!id.includes('@') || id.startsWith('@')) {
+      const uname = id.startsWith('@') ? id.slice(1) : id;
+      const q = query(collection(db, 'users'), where('namapengguna', '==', uname));
+      const s = await getDocs(q);
+      if (s.empty) throw new Error('nama pengguna tidak dijumpai.');
+      email = s.docs[0].data().emel;
     }
     await signInWithEmailAndPassword(auth, email, pw);
   } catch(e) {
-    showAuthError(friendlyError(e));
-    document.getElementById('btn-login').disabled = false;
+    showAuthErr('login-error', friendlyError(e));
+    btn.disabled = false;
   }
 };
 
 window.doRegister = async () => {
-  const uname = document.getElementById('reg-uname').value.trim().toLowerCase();
+  const uname = document.getElementById('reg-uname').value.trim().toLowerCase().replace(/^@/, '');
   const email = document.getElementById('reg-email').value.trim().toLowerCase();
   const pw    = document.getElementById('reg-pw').value;
-  if (!uname || !email || !pw) return showAuthError('sila isi semua medan.');
-  if (uname.length < 3) return showAuthError('nama pengguna terlalu pendek (min 3 aksara).');
-  if (pw.length < 6) return showAuthError('kata laluan terlalu pendek (min 6 aksara).');
-  if (/[A-Z]/.test(uname)) return showAuthError('nama pengguna hanya huruf kecil dibenarkan.');
-  document.getElementById('btn-register').disabled = true;
-  document.getElementById('auth-error').classList.add('hidden');
+  const pw2   = document.getElementById('reg-pw2').value;
+  if (!uname || !email || !pw || !pw2) return showAuthErr('reg-error', 'sila isi semua medan.');
+  if (uname.length < 3) return showAuthErr('reg-error', 'nama pengguna terlalu pendek (min 3 aksara).');
+  if (/[A-Z\s]/.test(uname)) return showAuthErr('reg-error', 'nama pengguna hanya huruf kecil tanpa ruang.');
+  if (pw.length < 6) return showAuthErr('reg-error', 'kata laluan terlalu pendek (min 6 aksara).');
+  if (pw !== pw2) return showAuthErr('reg-error', 'kata laluan tidak sepadan.');
+  const btn = document.getElementById('btn-register');
+  btn.disabled = true;
+  document.getElementById('reg-error').classList.add('hidden');
   try {
     const uq = query(collection(db, 'users'), where('namapengguna', '==', uname));
     const us  = await getDocs(uq);
     if (!us.empty) throw new Error('nama pengguna sudah digunakan.');
     const cred = await createUserWithEmailAndPassword(auth, email, pw);
     await setDoc(doc(db, 'users', cred.user.uid), {
-      namapengguna: uname, emel: email, bio: '', photourl: '',
-      verified: false, createdat: serverTimestamp()
+      namapengguna: uname, emel: email, bio: '',
+      photourl: '', verified: false,
+      frameOverride: '', createdat: serverTimestamp()
     });
   } catch(e) {
-    showAuthError(friendlyError(e));
-    document.getElementById('btn-register').disabled = false;
+    showAuthErr('reg-error', friendlyError(e));
+    btn.disabled = false;
   }
 };
 
@@ -1180,134 +2108,79 @@ onAuthStateChanged(auth, async user => {
     currentUser = user;
     const snap = await getDoc(doc(db, 'users', user.uid));
     userData = snap.exists() ? snap.data() : {};
-    showApp();
+    document.getElementById('page-auth').classList.remove('show');
+    document.getElementById('page-splash').style.display = 'none';
+    document.getElementById('app').classList.add('active');
+    updateSidebarUser();
+    await loadSystemSettings();
+    startNotifListener();
     navigate('dashboard');
   } else {
     currentUser = null; userData = null;
-    hideApp();
+    document.getElementById('app').classList.remove('active');
+    document.getElementById('page-auth').classList.remove('show');
+    document.getElementById('page-splash').style.display = 'flex';
+    makeSnow('snow-wrap');
   }
 });
-
-function showApp() {
-  document.getElementById('page-auth').style.display = 'none';
-  document.getElementById('app').classList.add('active');
-  updateSidebarUser();
-}
-
-function hideApp() {
-  document.getElementById('page-auth').style.display = 'flex';
-  document.getElementById('app').classList.remove('active');
-}
 
 /* ─── NAVIGATION ─── */
-const pages = ['dashboard','post','bertahan','tenang','notifikasi','profile','settings'];
+const PAGES = ['dashboard','bertahan','luahan','notifikasi','profil','tetapan'];
+const PAGE_LABELS = {
+  dashboard: 'papan muka.', bertahan: 'bertahan.',
+  luahan: 'luahan.', notifikasi: 'notifikasi.',
+  profil: 'profil.', tetapan: 'tetapan.'
+};
 
 window.navigate = (page) => {
-  viewingUserId = null;
-  pages.forEach(p => document.getElementById(`page-${p}`).classList.add('hidden'));
-  document.getElementById(`page-${page}`).classList.remove('hidden');
-  document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.page === page));
-  if (page === 'dashboard')  loadDashboard();
-  if (page === 'profile')    loadProfile();
-  if (page === 'settings')   loadSettings();
-  if (page === 'bertahan')   loadBertahanPage();
-  if (page === 'notifikasi') loadNotifikasi();
-};
+  if (page !== 'profil') viewingUid = null;
+  PAGES.forEach(p => {
+    const el = document.getElementById(`page-${p}`);
+    if (el) el.classList.add('hidden');
+  });
+  const target = document.getElementById(`page-${page}`);
+  if (target) target.classList.remove('hidden');
 
-document.querySelectorAll('.nav-link').forEach(a => {
-  a.addEventListener('click', e => { e.preventDefault(); navigate(a.dataset.page); });
-});
+  document.querySelectorAll('.bnav-item, .sidebar-link').forEach(a => {
+    a.classList.toggle('active', a.dataset.page === page);
+  });
+
+  const ht = document.getElementById('header-page-title');
+  const hd = document.getElementById('header-dashboard-greet');
+  if (page === 'dashboard') {
+    if (ht) ht.style.display = 'none';
+    if (hd) hd.classList.remove('hidden');
+  } else {
+    if (ht) { ht.style.display = ''; ht.textContent = PAGE_LABELS[page] || page; }
+    if (hd) hd.classList.add('hidden');
+  }
+
+  if (page === 'dashboard')  loadDashboard();
+  if (page === 'bertahan')   loadBertahan();
+  if (page === 'profil')     loadProfil();
+  if (page === 'tetapan')    loadTetapan();
+  if (page === 'notifikasi') loadNotifikasi();
+  if (page === 'luahan')     { /* static page */ }
+};
 
 window.viewProfile = async (uid) => {
-  viewingUserId = uid;
-  navigate('profile');
+  viewingUid = uid;
+  navigate('profil');
 };
 
-/* ─── DASHBOARD ─── */
-async function loadDashboard() {
-  if (!currentUser) return;
-  await loadTickedDays();
-  renderDailyTick();
-  renderMiniCalendar();
-  loadFeed();
+/* ─── LOAD TICKED DAYS ─── */
+async function loadTickedDays(uid) {
+  uid = uid || currentUser.uid;
+  try {
+    const ref = doc(db, 'users', uid, 'bertahan', 'data');
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const d = snap.data();
+      return { days: d.days || {}, streak: d.currentstreak || 0 };
+    }
+  } catch(e) {}
+  return { days: {}, streak: 0 };
 }
-
-async function loadTickedDays(uid = null) {
-  const targetUid = uid || currentUser.uid;
-  const ref = doc(db, 'users', targetUid, 'bertahan', 'data');
-  const snap = await getDoc(ref);
-  if (snap.exists()) {
-    const d = snap.data();
-    tickedDays = d.days || {};
-    const streak = d.currentstreak || 0;
-    const total = Object.keys(tickedDays).length;
-    ['streak-num','streak-num-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = streak; });
-    ['total-ticked','total-ticked-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = total; });
-    return { streak, total };
-  } else {
-    tickedDays = {};
-    ['streak-num','total-ticked','streak-num-b','total-ticked-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = 0; });
-    return { streak: 0, total: 0 };
-  }
-}
-
-function renderDailyTick() {
-  const already = !!tickedDays[todayKey()];
-  ['tick-btn','tick-btn-b'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    btn.disabled = already;
-    btn.classList.toggle('ticked', already);
-  });
-  ['tick-icon','tick-icon-b'].forEach(id => {
-    const icon = document.getElementById(id);
-    if (!icon) return;
-    icon.setAttribute('stroke', already ? '#d7eaf6' : '#3a6b85');
-  });
-  const status = document.getElementById('bertahan-status');
-  if (status) status.textContent = already ? 'kamu sudah tandakan hari ini.' : 'belum ditandakan hari ini.';
-}
-
-function renderMiniCalendar() {
-  const now = new Date();
-  const year = now.getFullYear(), month = now.getMonth();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const todayD = now.getDate();
-  document.getElementById('mini-cal-title').textContent = `${MONTHS[month]} ${year}.`;
-  const cal = document.getElementById('mini-cal');
-  cal.innerHTML = '';
-  const firstDay = new Date(year, month, 1).getDay();
-  for (let i = 0; i < firstDay; i++) cal.appendChild(document.createElement('div'));
-  for (let d = 1; d <= daysInMonth; d++) {
-    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const el = document.createElement('div');
-    el.className = 'cal-day';
-    el.textContent = d;
-    if (tickedDays[key]) el.classList.add('ticked');
-    if (d === todayD) el.classList.add('today');
-    if (d > todayD) el.classList.add('future');
-    cal.appendChild(el);
-  }
-}
-
-window.doTick = async () => {
-  if (!currentUser) return;
-  const key = todayKey();
-  if (tickedDays[key]) return;
-  ['tick-btn','tick-btn-b'].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = true; });
-  tickedDays[key] = true;
-  const streak = computeStreak(tickedDays);
-  const total = Object.keys(tickedDays).length;
-  const ref = doc(db, 'users', currentUser.uid, 'bertahan', 'data');
-  await setDoc(ref, { days: tickedDays, currentstreak: streak, laststreak: serverTimestamp() }, { merge: true });
-  ['streak-num','streak-num-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = streak; });
-  ['total-ticked','total-ticked-b'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = total; });
-  renderDailyTick();
-  renderMiniCalendar();
-  if (document.getElementById('bertahan-30dots')) renderBertahan30Dots();
-  if (document.getElementById('achievement-row')) renderAchievements(total);
-  showToast('kamu masih di sini. terima kasih.');
-};
 
 function computeStreak(days) {
   let streak = 0;
@@ -1321,6 +2194,44 @@ function computeStreak(days) {
   return streak;
 }
 
+/* ─── DASHBOARD ─── */
+async function loadDashboard() {
+  if (!currentUser) return;
+  const { days, streak } = await loadTickedDays();
+  tickedDays = days;
+  const total = Object.keys(tickedDays).length;
+  const el1 = document.getElementById('dash-streak');
+  const el2 = document.getElementById('dash-total');
+  if (el1) el1.textContent = streak;
+  if (el2) el2.textContent = total;
+  renderMiniCal();
+  loadFeed();
+}
+
+function renderMiniCal() {
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  const days = new Date(y, m+1, 0).getDate();
+  const today = now.getDate();
+  const title = document.getElementById('mini-cal-title');
+  const cal   = document.getElementById('mini-cal');
+  if (!title || !cal) return;
+  title.textContent = `${MONTHS[m]} ${y}.`;
+  cal.innerHTML = '';
+  const first = new Date(y, m, 1).getDay();
+  for (let i = 0; i < first; i++) cal.appendChild(document.createElement('div'));
+  for (let d = 1; d <= days; d++) {
+    const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el = document.createElement('div');
+    el.className = 'mini-cal-day';
+    el.textContent = d;
+    if (tickedDays[key]) el.classList.add('ticked');
+    if (d === today) el.classList.add('today');
+    if (d > today) el.classList.add('future');
+    cal.appendChild(el);
+  }
+}
+
 /* ─── FEED ─── */
 function loadFeed() {
   if (feedUnsub) feedUnsub();
@@ -1331,42 +2242,97 @@ function loadFeed() {
     if (snap.empty) { list.innerHTML = '<div class="empty-feed">tiada luahan lagi. jadilah yang pertama.</div>'; return; }
     const uids = [...new Set(snap.docs.map(d => d.data().authorid))];
     const userMap = {};
-    const bertahanMap = {};
     await Promise.all(uids.map(async uid => {
       const u = await getDoc(doc(db, 'users', uid));
       if (u.exists()) userMap[uid] = u.data();
-      const b = await getDoc(doc(db, 'users', uid, 'bertahan', 'data'));
-      if (b.exists()) bertahanMap[uid] = Object.keys(b.data().days || {}).length;
     }));
-    list.innerHTML = snap.docs.map(d => {
+
+    // Get user's starred posts
+    const starSnap = await getDocs(collection(db, 'users', currentUser.uid, 'stars'));
+    const myStars = new Set(starSnap.docs.map(d => d.id));
+
+    list.innerHTML = '';
+    for (const d of snap.docs) {
       const data = d.data();
       const author = userMap[data.authorid] || {};
       const showAnon = data.anon;
       const uname = showAnon ? null : (author.namapengguna || 'tanpa nama');
-      const photo = showAnon ? null : (author.photourl || '');
+      const photo  = showAnon ? null : (author.photourl || '');
       const verified = !showAnon && author.verified;
-      const totalBertahan = bertahanMap[data.authorid] || 0;
-      const hasAchievement = totalBertahan >= 365;
+      const isOwn = data.authorid === currentUser.uid;
+      const isStarred = myStars.has(d.id);
+      const starCount = data.starCount || 0;
       const avatarSrc = photo || makeDefaultAvatar(uname);
-      const uid = data.authorid;
-      const achBadge = hasAchievement ? achievementBadgeSVG('small') : '';
-      
-      return `<div class="luahan-item">
-        <div class="luahan-header">
-          ${showAnon ? '' : `<div class="luahan-avatar" onclick="viewProfile('${uid}')"><img src="${avatarSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(uname||'?')[0].toUpperCase()}'"></div>`}
-          ${showAnon
-            ? `<span class="luahan-anon">tanpa nama.</span>`
-            : `<span class="luahan-user" onclick="viewProfile('${uid}')">${escapeHTML(uname)}${verified ? verifiedBadgeSVG() : ''}${achBadge}</span>`}
+
+      const item = document.createElement('div');
+      item.className = 'feed-item';
+      item.innerHTML = `
+        <div class="feed-header">
+          ${showAnon ? '' : `
+            <div class="feed-avatar" onclick="viewProfile('${data.authorid}')">
+              <img src="${avatarSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(uname||'?')[0].toUpperCase()}'">
+            </div>
+          `}
+          <div class="feed-user-wrap">
+            ${showAnon
+              ? '<span class="feed-anon">tanpa nama.</span>'
+              : `<span class="feed-user" onclick="viewProfile('${data.authorid}')">
+                  @${escapeHTML(uname)}
+                  ${verified ? '<img src="verifiedbadge.png" class="verified-badge" alt="✓">' : ''}
+                </span>`
+            }
+            <span class="feed-time">${formatTime(data.createdat)}${data.edited ? ' • disunting.' : ''}</span>
+          </div>
         </div>
-        <div class="luahan-text">${escapeHTML(data.text)}</div>
-        <div class="luahan-time">${formatTime(data.createdat)}</div>
-      </div>`;
-    }).join('');
+        <div class="feed-text">${escapeHTML(data.text)}</div>
+        <div class="feed-actions">
+          <button class="feed-star-btn ${isStarred ? 'starred' : ''}" onclick="toggleStar('${d.id}', this)">
+            <svg viewBox="0 0 24 24" fill="${isStarred ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            ${formatCount(starCount)}
+          </button>
+          ${isOwn ? `
+            <div class="feed-edit-btns">
+              <button onclick="openEdit('${d.id}', this)" data-text="${escapeHTML(data.text).replace(/"/g,'&quot;')}">sunting.</button>
+              <button onclick="openDelPost('${d.id}')">padam.</button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      list.appendChild(item);
+    }
   });
 }
 
+/* ─── STAR ─── */
+window.toggleStar = async (postId, btn) => {
+  if (!currentUser) return;
+  const starRef = doc(db, 'users', currentUser.uid, 'stars', postId);
+  const isNowStarred = btn.classList.contains('starred');
+  try {
+    if (isNowStarred) {
+      await deleteDoc(starRef);
+      await updateDoc(doc(db, 'luahan', postId), { starCount: increment(-1) });
+      btn.classList.remove('starred');
+      btn.querySelector('svg').setAttribute('fill', 'none');
+    } else {
+      await setDoc(starRef, { postId, at: serverTimestamp() });
+      await updateDoc(doc(db, 'luahan', postId), { starCount: increment(1) });
+      btn.classList.add('starred');
+      btn.querySelector('svg').setAttribute('fill', 'currentColor');
+    }
+    // Update count
+    const snap = await getDoc(doc(db, 'luahan', postId));
+    if (snap.exists()) {
+      const countEl = btn.lastChild;
+      if (countEl.nodeType === 3) btn.lastChild.textContent = ' ' + formatCount(snap.data().starCount || 0);
+    }
+  } catch(e) { showToast('gagal. cuba semula.'); }
+};
+
 /* ─── POST ─── */
-window.updateCharCount = () => {
+window.updateChar = () => {
   document.getElementById('char-count').textContent = document.getElementById('post-text').value.length;
 };
 
@@ -1383,7 +2349,9 @@ window.doPost = async () => {
   btn.disabled = true;
   try {
     await addDoc(collection(db, 'luahan'), {
-      authorid: currentUser.uid, text, anon: isAnon, createdat: serverTimestamp()
+      authorid: currentUser.uid, text, anon: isAnon,
+      starCount: 0, edited: false,
+      createdat: serverTimestamp()
     });
     document.getElementById('post-text').value = '';
     document.getElementById('char-count').textContent = '0';
@@ -1396,74 +2364,170 @@ window.doPost = async () => {
   btn.disabled = false;
 };
 
+/* ─── EDIT POST ─── */
+window.openEdit = (id, btn) => {
+  editingPostId = id;
+  const rawText = btn.getAttribute('data-text')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/<br>/g,'\n');
+  document.getElementById('edit-text').value = rawText;
+  document.getElementById('edit-char').textContent = rawText.length;
+  document.getElementById('edit-modal').classList.add('open');
+};
+
+document.getElementById('edit-text').addEventListener('input', function() {
+  document.getElementById('edit-char').textContent = this.value.length;
+});
+
+window.closeEdit = () => {
+  document.getElementById('edit-modal').classList.remove('open');
+  editingPostId = null;
+};
+
+window.saveEdit = async () => {
+  if (!editingPostId) return;
+  const text = document.getElementById('edit-text').value.trim();
+  if (!text) return showToast('luahan tidak boleh kosong.');
+  try {
+    await updateDoc(doc(db, 'luahan', editingPostId), { text, edited: true, editedAt: serverTimestamp() });
+    showToast('luahan dikemas kini.');
+    closeEdit();
+  } catch(e) { showToast('gagal menyimpan.'); }
+};
+
+/* ─── DELETE POST ─── */
+window.openDelPost = (id) => {
+  deletingPostId = id;
+  document.getElementById('del-post-modal').classList.add('open');
+};
+
+window.confirmDeletePost = async () => {
+  if (!deletingPostId) return;
+  try {
+    await deleteDoc(doc(db, 'luahan', deletingPostId));
+    showToast('luahan dipadam.');
+    document.getElementById('del-post-modal').classList.remove('open');
+    deletingPostId = null;
+  } catch(e) { showToast('gagal memadam.'); }
+};
+
 /* ─── BERTAHAN PAGE ─── */
-async function loadBertahanPage() {
+async function loadBertahan() {
   if (!currentUser) return;
-  const { total } = await loadTickedDays();
-  renderDailyTick();
-  renderBertahan30Dots();
+  const { days, streak } = await loadTickedDays();
+  tickedDays = days;
+  const total = Object.keys(tickedDays).length;
+
+  // Update streak / total
+  document.getElementById('streak-num').textContent = streak;
+  document.getElementById('total-num').textContent = total;
+
+  // Tick button
+  const already = !!tickedDays[todayKey()];
+  const btn = document.getElementById('tick-btn');
+  const icon = document.getElementById('tick-icon');
+  btn.disabled = already;
+  btn.classList.toggle('ticked', already);
+  icon.setAttribute('stroke', already ? '#d7eaf6' : '#3a6b85');
+  document.getElementById('bertahan-status').textContent =
+    already ? 'kamu sudah tandakan hari ini.' : 'belum ditandakan hari ini.';
+
+  render30Dots('dots-grid', tickedDays);
   renderAchievements(total);
+
   const now = new Date();
-  bertahanCalMonth = { year: now.getFullYear(), month: now.getMonth() };
-  renderBertahanFullCal();
+  calViewMonth = { y: now.getFullYear(), m: now.getMonth() };
+  renderBertahanCal();
 }
 
-function renderBertahan30Dots() {
-  const el = document.getElementById('bertahan-30dots');
+function render30Dots(gridId, days) {
+  const el = document.getElementById(gridId);
   if (!el) return;
   el.innerHTML = '';
   for (let i = 29; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const dot = document.createElement('div');
-    dot.className = 'day-dot' + (tickedDays[key] ? ' done' : '') + (i === 0 ? ' today-dot' : '');
-    dot.title = key; el.appendChild(dot);
+    dot.className = 'day-dot' + (days[key] ? ' done' : '') + (i === 0 ? ' today' : '');
+    dot.title = key;
+    el.appendChild(dot);
   }
 }
 
-const ACHIEVEMENTS = [
-  { min:1,   icon:'1', label:'1 hari.' },
-  { min:3,   icon:'3', label:'3 hari.' },
-  { min:7,   icon:'7', label:'7 hari.' },
-  { min:14,  icon:'14', label:'2 minggu.' },
-  { min:30,  icon:'30', label:'30 hari.' },
-  { min:60,  icon:'60', label:'60 hari.' },
-  { min:100, icon:'100', label:'100 hari.' },
-  { min:365, icon:'365', label:'1 tahun.' },
+const ACHLIST = [
+  { min:1,  num:'1',  unit:'hari.',  shape:'circle' },
+  { min:3,  num:'3',  unit:'hari.',  shape:'circle' },
+  { min:7,  num:'7',  unit:'hari.',  shape:'circle' },
+  { min:14, num:'14', unit:'hari.',  shape:'circle' },
+  { min:30, num:'1',  unit:'bulan.', shape:'pentagon' },
+  { min:90, num:'3',  unit:'bulan.', shape:'hexagon' },
+  { min:180,num:'6',  unit:'bulan.', shape:'octagon' },
+  { min:270,num:'9',  unit:'bulan.', shape:'octagon' },
+  { min:365,num:'1',  unit:'tahun.', shape:'square' },
 ];
 
 function renderAchievements(total) {
-  const el = document.getElementById('achievement-row');
+  const el = document.getElementById('ach-grid');
   if (!el) return;
-  el.innerHTML = ACHIEVEMENTS.map(b => `
-    <div class="achievement-badge ${total >= b.min ? 'earned' : 'locked'}">
-      <span class="badge-icon">${b.icon}</span>
-      <span>${b.label}</span>
-    </div>`).join('');
+  el.innerHTML = ACHLIST.map(b => `
+    <div class="ach-badge ${b.shape} ${total >= b.min ? 'earned' : ''}">
+      <div class="ach-num">${b.num}</div>
+      <div class="ach-unit">${b.unit}</div>
+    </div>
+  `).join('');
 }
 
-window.changeBertahanMonth = (dir) => {
-  bertahanCalMonth.month += dir;
-  if (bertahanCalMonth.month > 11) { bertahanCalMonth.month = 0; bertahanCalMonth.year++; }
-  if (bertahanCalMonth.month < 0)  { bertahanCalMonth.month = 11; bertahanCalMonth.year--; }
-  renderBertahanFullCal();
+window.doTick = async () => {
+  if (!currentUser) return;
+  const key = todayKey();
+  if (tickedDays[key]) return;
+  tickedDays[key] = true;
+  const streak = computeStreak(tickedDays);
+  const total  = Object.keys(tickedDays).length;
+  await setDoc(doc(db, 'users', currentUser.uid, 'bertahan', 'data'),
+    { days: tickedDays, currentstreak: streak, laststreak: serverTimestamp() }, { merge: true });
+  ['streak-num','dash-streak'].forEach(id => { const e = document.getElementById(id); if(e) e.textContent = streak; });
+  ['total-num','dash-total'].forEach(id => { const e = document.getElementById(id); if(e) e.textContent = total; });
+  const btn = document.getElementById('tick-btn');
+  const icon = document.getElementById('tick-icon');
+  if (btn) { btn.disabled = true; btn.classList.add('ticked'); }
+  if (icon) icon.setAttribute('stroke', '#d7eaf6');
+  const status = document.getElementById('bertahan-status');
+  if (status) status.textContent = 'kamu sudah tandakan hari ini.';
+  render30Dots('dots-grid', tickedDays);
+  renderAchievements(total);
+  renderBertahanCal();
+  renderMiniCal();
+  showToast('kamu masih di sini. terima kasih.');
 };
 
-function renderBertahanFullCal() {
-  const { year, month } = bertahanCalMonth;
-  document.getElementById('bertahan-month-name').textContent = `${MONTHS[month]} ${year}.`;
-  const cal = document.getElementById('bertahan-full-cal');
-  const days = ['Ahd','Isn','Sel','Rab','Kha','Jum','Sab'];
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const firstDay = new Date(year, month, 1).getDay();
+window.changeCal = (dir) => {
+  calViewMonth.m += dir;
+  if (calViewMonth.m > 11) { calViewMonth.m = 0; calViewMonth.y++; }
+  if (calViewMonth.m < 0)  { calViewMonth.m = 11; calViewMonth.y--; }
+  renderBertahanCal();
+};
+
+function renderBertahanCal() {
+  const { y, m } = calViewMonth;
+  document.getElementById('cal-month-name').textContent = `${MONTHS[m]} ${y}.`;
+  renderCalGrid('bertahan-cal', y, m, tickedDays);
+}
+
+function renderCalGrid(gridId, y, m, days) {
+  const cal = document.getElementById(gridId);
+  if (!cal) return;
+  const DAY_LABELS = ['Ahd','Isn','Sel','Rab','Kha','Jum','Sab'];
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const firstDay = new Date(y, m, 1).getDay();
   const todayStr = todayKey();
-  cal.innerHTML = days.map(d=>`<div class="day-label">${d}</div>`).join('');
-  for (let i=0;i<firstDay;i++) cal.innerHTML += '<div></div>';
-  for (let d=1;d<=daysInMonth;d++) {
-    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  cal.innerHTML = DAY_LABELS.map(d => `<div class="cal-day-lbl">${d}</div>`).join('');
+  for (let i = 0; i < firstDay; i++) cal.innerHTML += '<div></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const el = document.createElement('div');
-    el.className = 'cal-day'; el.textContent = d;
-    if (tickedDays[key]) el.classList.add('ticked');
+    el.className = 'cal-day';
+    el.textContent = d;
+    if (days[key]) el.classList.add('ticked');
     if (key === todayStr) el.classList.add('today');
     cal.appendChild(el);
   }
@@ -1471,210 +2535,157 @@ function renderBertahanFullCal() {
 
 /* ─── RUANG TENANG ─── */
 window.openTenang = async (type) => {
-  const modalBox = document.getElementById('tenang-modal-box');
-  modalBox.classList.remove('wide');
-  
+  const box = document.getElementById('tenang-modal-box');
+  box.classList.remove('wide');
   const configs = {
-    nafas: {
-      title: 'latihan pernafasan.',
-      body: `<p style="font-size:0.85rem;color:var(--text-light);margin-bottom:14px;line-height:1.7;">ikut kaedah 4-7-8 untuk menenangkan minda.</p>
-        <div class="tenang-steps">
-          <div class="tenang-step"><strong>tarik nafas</strong> perlahan selama <strong>4 saat.</strong></div>
-          <div class="tenang-step"><strong>tahan nafas</strong> selama <strong>7 saat.</strong></div>
-          <div class="tenang-step"><strong>hembus perlahan</strong> selama <strong>8 saat.</strong></div>
-        </div>
-        <p style="margin-top:14px;font-size:0.78rem;color:var(--text-light);">ulang 3 hingga 4 kali. biarkan bahu kamu rileks.</p>`
-    },
-    gratitud: {
-      title: 'rasa syukur hari ini.',
-      body: `<div id="gratitud-content"></div>`
-    },
-    afirmasi: {
-      title: 'afirmasi harian.',
-      body: `<div id="afirmasi-content"></div>`
-    },
-    sos: {
-      title: 'talian bantuan.',
-      body: `<div class="sos-list">
-        <div class="sos-item"><strong>befrienders kl.</strong><div class="sos-num">03-7627 2929</div><div class="sos-desc">24 jam sehari, percuma, sulit.</div></div>
-        <div class="sos-item"><strong>talian kasih.</strong><div class="sos-num">15999</div><div class="sos-desc">perkhidmatan kaunseling 24 jam.</div></div>
-        <div class="sos-item"><strong>miasa helpline.</strong><div class="sos-num">1-800-819-819</div><div class="sos-desc">kesihatan mental malaysia.</div></div>
-        <div class="sos-item"><strong>hospital terdekat.</strong><div class="sos-num">999</div><div class="sos-desc">kecemasan perubatan.</div></div>
-      </div>
-      <p style="margin-top:14px;font-size:0.78rem;color:var(--text-light);text-align:center;">kamu tidak perlu hadapi ini sorang-sorang.</p>`,
-      wide: true
-    },
-    jurnal: {
-      title: 'jurnal peribadi.',
-      body: `<div id="jurnal-content"></div>`
-    }
+    nafas: { title: 'pernafasan.', load: loadNafas },
+    gratitud: { title: 'rasa syukur hari ini.', load: loadGratitud },
+    afirmasi: { title: 'afirmasi harian.', load: loadAfirmasi },
+    sos: { title: 'talian bantuan.', load: loadSOS, wide: true },
+    jurnal: { title: 'jurnal peribadi.', load: loadJurnal },
   };
-  
   const cfg = configs[type];
-  document.getElementById('tenang-modal-title').textContent = cfg.title;
-  document.getElementById('tenang-modal-body').innerHTML = cfg.body;
-  
-  if (cfg.wide) modalBox.classList.add('wide');
-  
+  if (!cfg) return;
+  document.getElementById('tenang-title').textContent = cfg.title;
+  document.getElementById('tenang-body').innerHTML = '<div class="spinner"></div>';
+  if (cfg.wide) box.classList.add('wide');
   document.getElementById('tenang-modal').classList.add('open');
-  
-  if (type === 'gratitud') await loadGratitudSlides();
-  if (type === 'afirmasi') await loadAfirmasi();
-  if (type === 'jurnal') await loadJurnalSlides();
+  await cfg.load();
 };
 
-window.closeTenangModal = () => document.getElementById('tenang-modal').classList.remove('open');
+window.closeTenang = () => document.getElementById('tenang-modal').classList.remove('open');
 
-/* ─── GRATITUD SLIDES ─── */
-async function loadGratitudSlides() {
-  const container = document.getElementById('gratitud-content');
-  if (!container) return;
-  
-  // Get last 14 days of gratitud entries
-  const entries = [];
-  for (let i = 0; i < 14; i++) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const ref = doc(db, 'users', currentUser.uid, 'gratitud', key);
-    const snap = await getDoc(ref);
-    const formattedDate = d.toLocaleDateString('ms-MY', { day:'numeric', month:'short' });
-    entries.push({
-      key, date: formattedDate,
-      text: snap.exists() ? snap.data().text : '',
-      isToday: i === 0
-    });
-  }
-  
-  container.innerHTML = `
-    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:10px;">tulis 3 perkara yang kamu bersyukur. setiap hari adalah slide baharu.</p>
-    <div class="slide-container" id="gratitud-slides">
-      ${entries.map((e, idx) => `
-        <div class="slide-card ${e.isToday ? 'today-slide' : ''} ${!e.text ? 'empty-slide' : ''}" 
-             onclick="openGratitudSlide('${e.key}', '${e.date}', this)" data-key="${e.key}">
-          <div class="slide-date">${e.date}</div>
-          ${e.text ? `<div class="slide-text">${escapeHTML(e.text)}</div>` : '<span>hari ini belum diisi.</span>'}
-        </div>
-      `).join('')}
+async function loadNafas() {
+  let steps = [
+    { t:'tarik nafas', d:'perlahan selama <strong>4 saat.</strong>' },
+    { t:'tahan nafas', d:'selama <strong>7 saat.</strong>' },
+    { t:'hembus perlahan', d:'selama <strong>8 saat.</strong>' }
+  ];
+  try {
+    const snap = await getDoc(doc(db, 'settings', 'pernafasan'));
+    if (snap.exists() && snap.data().steps?.length) steps = snap.data().steps;
+  } catch(e) {}
+  document.getElementById('tenang-body').innerHTML = `
+    <p style="font-size:0.82rem;color:var(--text-light);margin-bottom:12px;line-height:1.6;">
+      ikut kaedah 4-7-8 untuk menenangkan minda.
+    </p>
+    <div class="tenang-steps">
+      ${steps.map(s=>`<div class="tenang-step"><strong>${s.t}</strong> ${s.d}</div>`).join('')}
     </div>
-    <div id="gratitud-editor" style="margin-top:14px;">
-      <textarea class="tenang-textarea" id="gratitud-text" placeholder="1. ...\n2. ...\n3. ..."></textarea>
-      <button class="btn-primary" style="margin-top:10px;" onclick="saveGratitud()">simpan syukur hari ini.</button>
-    </div>
+    <p style="margin-top:12px;font-size:0.75rem;color:var(--text-light);">ulang 3 hingga 4 kali. biarkan bahu kamu rileks.</p>
   `;
-  
-  // Load today's text if exists
-  const todayEntry = entries.find(e => e.isToday);
-  if (todayEntry && todayEntry.text) {
-    document.getElementById('gratitud-text').value = todayEntry.text;
-  }
 }
 
-window.openGratitudSlide = (key, date, el) => {
-  const text = el.querySelector('.slide-text')?.textContent || '';
-  document.getElementById('gratitud-text').value = text.replace(/<br>/g, '\n');
-  // Highlight selected slide
-  document.querySelectorAll('#gratitud-slides .slide-card').forEach(s => s.style.borderColor = 'var(--border)');
-  el.style.borderColor = 'var(--text)';
-  el.style.borderWidth = '2px';
-};
-
-window.saveGratitud = async () => {
-  const text = document.getElementById('gratitud-text')?.value?.trim();
-  if (!text) return;
-  const key = todayKey();
-  await setDoc(doc(db, 'users', currentUser.uid, 'gratitud', key), { text, createdat: serverTimestamp() });
-  showToast('syukur disimpan.');
-  // Reload slides
-  await loadGratitudSlides();
-};
-
-/* ─── JURNAL SLIDES ─── */
-async function loadJurnalSlides() {
-  const container = document.getElementById('jurnal-content');
-  if (!container) return;
-  
-  const entries = [];
-  for (let i = 0; i < 14; i++) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const ref = doc(db, 'users', currentUser.uid, 'jurnal', key);
-    const snap = await getDoc(ref);
-    const formattedDate = d.toLocaleDateString('ms-MY', { day:'numeric', month:'short' });
-    entries.push({
-      key, date: formattedDate,
-      text: snap.exists() ? snap.data().text : '',
-      isToday: i === 0
-    });
-  }
-  
-  container.innerHTML = `
-    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:10px;">ruangan peribadi untuk kamu luahkan apa yang dirasa. setiap hari adalah halaman baharu.</p>
-    <div class="slide-container" id="jurnal-slides">
-      ${entries.map((e, idx) => `
-        <div class="slide-card ${e.isToday ? 'today-slide' : ''} ${!e.text ? 'empty-slide' : ''}" 
-             onclick="openJurnalSlide('${e.key}', '${e.date}', this)" data-key="${e.key}">
-          <div class="slide-date">${e.date}</div>
-          ${e.text ? `<div class="slide-text">${escapeHTML(e.text)}</div>` : '<span>hari ini belum diisi.</span>'}
-        </div>
-      `).join('')}
-    </div>
-    <div id="jurnal-editor" style="margin-top:14px;">
-      <textarea class="tenang-textarea" id="jurnal-text" placeholder="hari ini saya rasa..."></textarea>
-      <button class="btn-primary" style="margin-top:10px;" onclick="saveJurnal()">simpan jurnal hari ini.</button>
-    </div>
-  `;
-  
-  const todayEntry = entries.find(e => e.isToday);
-  if (todayEntry && todayEntry.text) {
-    document.getElementById('jurnal-text').value = todayEntry.text;
-  }
-}
-
-window.openJurnalSlide = (key, date, el) => {
-  const text = el.querySelector('.slide-text')?.textContent || '';
-  document.getElementById('jurnal-text').value = text.replace(/<br>/g, '\n');
-  document.querySelectorAll('#jurnal-slides .slide-card').forEach(s => s.style.borderColor = 'var(--border)');
-  el.style.borderColor = 'var(--text)';
-  el.style.borderWidth = '2px';
-};
-
-window.saveJurnal = async () => {
-  const text = document.getElementById('jurnal-text')?.value?.trim();
-  if (!text) return;
-  const key = todayKey();
-  await setDoc(doc(db, 'users', currentUser.uid, 'jurnal', key), { text, createdat: serverTimestamp() });
-  showToast('jurnal disimpan.');
-  await loadJurnalSlides();
-};
-
-/* ─── AFIRMASI (from firestore, editable by admin) ─── */
 async function loadAfirmasi() {
-  const container = document.getElementById('afirmasi-content');
-  if (!container) return;
-  
-  // Try to load from Firestore, fallback to default
-  const ref = doc(db, 'settings', 'afirmasi');
-  const snap = await getDoc(ref);
-  let items = [];
-  if (snap.exists() && snap.data().items && snap.data().items.length > 0) {
-    items = snap.data().items;
-  } else {
-    items = [
-      'saya layak untuk gembira.',
-      'saya sedang mencuba dengan sepenuh daya.',
-      'perasaan saya adalah sah.',
-      'saya tidak perlu sempurna untuk dicintai.',
-      'saya pilih untuk terus mencuba hari ini.',
-      'hari ini, saya cukup.',
-      'saya kuat walaupun tidak selalu nampak begitu.'
-    ];
-  }
-  
-  container.innerHTML = `
+  let items = [
+    'saya layak untuk gembira.',
+    'saya sedang mencuba dengan sepenuh daya.',
+    'perasaan saya adalah sah.',
+    'saya tidak perlu sempurna untuk dicintai.',
+    'saya pilih untuk terus mencuba hari ini.',
+    'hari ini, saya cukup.',
+    'saya kuat walaupun tidak selalu nampak begitu.'
+  ];
+  try {
+    const snap = await getDoc(doc(db, 'settings', 'afirmasi'));
+    if (snap.exists() && snap.data().items?.length) items = snap.data().items;
+  } catch(e) {}
+  document.getElementById('tenang-body').innerHTML = `
     <div class="affirmation-list">
-      ${items.map(item => `<div class="affirmation-item">${escapeHTML(item)}</div>`).join('')}
-    </div>`;
+      ${items.map(i=>`<div class="affirmation-item">${escapeHTML(i)}</div>`).join('')}
+    </div>
+  `;
 }
+
+async function loadSOS() {
+  let items = [
+    { name:'befrienders kl.', num:'03-7627 2929', desc:'24 jam sehari, percuma, sulit.' },
+    { name:'talian kasih.', num:'15999', desc:'perkhidmatan kaunseling 24 jam.' },
+    { name:'miasa helpline.', num:'1-800-819-819', desc:'kesihatan mental malaysia.' },
+    { name:'hospital terdekat.', num:'999', desc:'kecemasan perubatan.' }
+  ];
+  try {
+    const snap = await getDoc(doc(db, 'settings', 'talian_bantuan'));
+    if (snap.exists() && snap.data().items?.length) items = snap.data().items;
+  } catch(e) {}
+  document.getElementById('tenang-body').innerHTML = `
+    <div class="sos-grid">
+      ${items.map(i=>`
+        <div class="sos-card">
+          <strong>${escapeHTML(i.name)}</strong>
+          <div class="sos-num">${escapeHTML(i.num)}</div>
+          <div class="sos-desc">${escapeHTML(i.desc)}</div>
+        </div>
+      `).join('')}
+    </div>
+    <p style="margin-top:14px;font-size:0.75rem;color:var(--text-light);text-align:center;">kamu tidak perlu hadapi ini sorang-sorang.</p>
+  `;
+}
+
+async function loadGratitud() {
+  const entries = await loadDailyEntries('gratitud', 14);
+  renderSlideEditor('gratitud', entries, 'gratitud-text', '1. ...\n2. ...\n3. ...');
+}
+
+async function loadJurnal() {
+  const entries = await loadDailyEntries('jurnal', 14);
+  renderSlideEditor('jurnal', entries, 'jurnal-text', 'hari ini saya rasa...');
+}
+
+async function loadDailyEntries(type, count) {
+  const entries = [];
+  for (let i = 0; i < count; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const ref = doc(db, 'users', currentUser.uid, type, key);
+    const snap = await getDoc(ref);
+    entries.push({
+      key, isToday: i === 0, text: snap.exists() ? snap.data().text : '',
+      date: d.toLocaleDateString('ms-MY', { day:'numeric', month:'short' })
+    });
+  }
+  return entries;
+}
+
+function renderSlideEditor(type, entries, textareaId, placeholder) {
+  const slides = entries.map((e,i) => `
+    <div class="slide-card ${e.isToday ? 'today-card' : ''}" 
+         onclick="selectSlide('${textareaId}', this, '${e.key}')">
+      <div class="s-date">${e.date}</div>
+      ${e.text
+        ? `<div class="s-text">${escapeHTML(e.text)}</div>`
+        : `<div class="slide-empty">belum diisi.</div>`}
+    </div>
+  `).join('');
+
+  document.getElementById('tenang-body').innerHTML = `
+    <div class="slide-row">${slides}</div>
+    <textarea class="tenang-textarea" id="${textareaId}" placeholder="${placeholder}"></textarea>
+    <button class="btn-primary" style="margin-top:10px;" onclick="saveDailyEntry('${type}','${textareaId}')">simpan.</button>
+  `;
+
+  const todayEntry = entries.find(e => e.isToday);
+  if (todayEntry?.text) document.getElementById(textareaId).value = todayEntry.text;
+}
+
+window.selectSlide = (textareaId, el, key) => {
+  const text = el.querySelector('.s-text')?.textContent || '';
+  const ta = document.getElementById(textareaId);
+  if (ta) ta.value = text.replace(/<br>/g, '\n');
+  document.querySelectorAll('.slide-card').forEach(s => s.style.borderColor = 'var(--border)');
+  el.style.borderColor = 'var(--text)';
+};
+
+window.saveDailyEntry = async (type, textareaId) => {
+  const ta = document.getElementById(textareaId);
+  const text = ta?.value?.trim();
+  if (!text) return;
+  const key = todayKey();
+  await setDoc(doc(db, 'users', currentUser.uid, type, key), { text, createdat: serverTimestamp() });
+  showToast('tersimpan.');
+  if (type === 'gratitud') await loadGratitud();
+  if (type === 'jurnal') await loadJurnal();
+};
 
 /* ─── NOTIFIKASI ─── */
 async function loadNotifikasi() {
@@ -1688,18 +2699,19 @@ async function loadNotifikasi() {
     if (snap.empty) { el.innerHTML = '<div class="notif-empty">tiada notifikasi buat masa ini.</div>'; return; }
     el.innerHTML = snap.docs.map(d => {
       const n = d.data();
-      const unread = !n.read;
-      return `<div class="notif-item ${unread ? 'unread' : ''}" onclick="markNotifRead('${d.id}',this)">
-        <div class="notif-body">
+      return `
+        <div class="notif-item ${!n.read ? 'unread' : ''}" onclick="markNotifRead('${d.id}',this)">
           <div class="notif-title">${escapeHTML(n.title || 'notifikasi.')}</div>
           <div class="notif-msg">${escapeHTML(n.message || '')}</div>
           <div class="notif-time">${formatTime(n.createdat)}</div>
         </div>
-      </div>`;
+      `;
     }).join('');
-    snap.docs.forEach(async d => {
-      if (!d.data().read) await updateDoc(doc(db, 'users', currentUser.uid, 'notifikasi', d.id), { read: true });
-    });
+    for (const d of snap.docs) {
+      if (!d.data().read) {
+        await updateDoc(doc(db, 'users', currentUser.uid, 'notifikasi', d.id), { read: true });
+      }
+    }
   });
 }
 
@@ -1709,99 +2721,205 @@ window.markNotifRead = async (id, el) => {
 };
 
 function updateNotifBadge(snap) {
-  const unreadCount = snap.docs.filter(d => !d.data().read).length;
-  [document.getElementById('sidebar-notif-dot'), document.getElementById('bnav-notif-dot')].forEach(dot => {
-    if (dot) dot.classList.toggle('show', unreadCount > 0);
+  const count = snap.docs.filter(d => !d.data().read).length;
+  const countStr = count > 0 ? String(count) : '';
+  [
+    document.getElementById('bell-badge'),
+    document.getElementById('dash-notif-count'),
+    document.getElementById('sidebar-notif-dot')
+  ].forEach(el => {
+    if (!el) return;
+    if (el.id === 'sidebar-notif-dot') {
+      el.classList.toggle('show', count > 0);
+    } else {
+      el.textContent = countStr;
+      el.classList.toggle('show', count > 0);
+    }
   });
 }
 
-async function startNotifListener() {
+function startNotifListener() {
   if (!currentUser) return;
   const q = query(collection(db, 'users', currentUser.uid, 'notifikasi'), orderBy('createdat', 'desc'), limit(30));
   onSnapshot(q, snap => updateNotifBadge(snap));
 }
 
-/* ─── PROFILE ─── */
-async function loadProfile() {
-  const uid = viewingUserId || currentUser.uid;
-  const isOwnProfile = uid === currentUser.uid;
+/* ─── PROFIL ─── */
+async function loadProfil() {
+  if (!currentUser) return;
+  const uid = viewingUid || currentUser.uid;
+  const isOwn = uid === currentUser.uid;
+
   const snap = await getDoc(doc(db, 'users', uid));
-  if (!snap.exists()) {
-    if (!isOwnProfile) { showToast('pengguna tidak dijumpai.'); navigate('dashboard'); }
-    return;
-  }
+  if (!snap.exists()) { if (!isOwn) { showToast('pengguna tidak dijumpai.'); navigate('dashboard'); } return; }
   const d = snap.data();
-  
-  document.getElementById('profile-page-title').textContent = isOwnProfile ? 'profil.' : `profil @${d.namapengguna}.`;
-  
-  const avatarEl = document.getElementById('prof-avatar');
-  const photoSrc = d.photourl || makeDefaultAvatar(d.namapengguna);
-  avatarEl.innerHTML = `<img src="${photoSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(d.namapengguna||'?')[0].toUpperCase()}'">`;
-  
-  // Get bertahan data for achievement badge
-  let totalBertahan = 0;
-  if (isOwnProfile) {
-    const { total } = await loadTickedDays();
-    totalBertahan = total;
+
+  document.getElementById('profil-page-label').textContent = isOwn ? 'profil.' : `profil @${d.namapengguna}.`;
+
+  const backEl = document.getElementById('profil-back-btn');
+  if (!isOwn) {
+    backEl.innerHTML = `<button class="back-btn" onclick="navigate('dashboard')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      kembali.
+    </button>`;
   } else {
-    const bs = await getDoc(doc(db, 'users', uid, 'bertahan', 'data'));
-    if (bs.exists()) totalBertahan = Object.keys(bs.data().days || {}).length;
+    backEl.innerHTML = '';
   }
-  
-  const hasAchievement = totalBertahan >= 365;
-  
-  document.getElementById('prof-uname').textContent = d.namapengguna || '';
-  document.getElementById('prof-badge').classList.toggle('hidden', !d.verified);
-  document.getElementById('prof-ach-badge').classList.toggle('hidden', !hasAchievement);
-  document.getElementById('prof-bio').textContent = d.bio || '';
-  
-  const actionsEl = document.getElementById('profile-actions');
-  if (isOwnProfile) {
-    actionsEl.innerHTML = '<button class="btn-edit" onclick="navigate(\'settings\')">sunting profil.</button>';
+
+  // Get bertahan data
+  const { days, streak } = await loadTickedDays(uid);
+  const totalBertahan = Object.keys(days).length;
+  if (isOwn) tickedDays = days;
+
+  // Frame shape
+  const shape = getFrameShape(totalBertahan, d.frameOverride || '');
+  const borderEl = document.getElementById('profil-avatar-border');
+  const innerEl  = document.getElementById('profil-avatar-inner');
+  applyFrameShape(borderEl, innerEl, shape);
+
+  // Avatar
+  const initEl = document.getElementById('profil-avatar-initial');
+  if (d.photourl) {
+    innerEl.innerHTML = `<img src="${d.photourl}" alt="" onerror="this.style.display='none'">`;
   } else {
-    actionsEl.innerHTML = '<button class="back-btn" onclick="navigate(\'dashboard\')">kembali ke papan muka.</button>';
+    innerEl.innerHTML = `<img src="${makeDefaultAvatar(d.namapengguna)}" alt="" onerror="this.parentNode.innerHTML='${(d.namapengguna||'?')[0].toUpperCase()}'">`;
   }
-  
+
+  // Stats
   const lq = query(collection(db, 'luahan'), where('authorid', '==', uid));
   const ls = await getDocs(lq);
-  document.getElementById('prof-luahan-count').textContent = ls.size;
-  
-  if (isOwnProfile) {
-    document.getElementById('prof-streak').textContent = computeStreak(tickedDays);
-    document.getElementById('prof-total').textContent = totalBertahan;
+  document.getElementById('profil-luahan-count').textContent = ls.size;
+  document.getElementById('profil-streak').textContent = computeStreak(days);
+  document.getElementById('profil-total').textContent = totalBertahan;
+
+  // Name + verified
+  document.getElementById('profil-uname').textContent = '@' + (d.namapengguna || '');
+  const badge = document.getElementById('profil-badge');
+  if (d.verified) badge.style.display = 'inline';
+  else badge.style.display = 'none';
+  document.getElementById('profil-bio').textContent = d.bio || '';
+
+  const actionEl = document.getElementById('profil-action');
+  if (isOwn) {
+    actionEl.innerHTML = `<button class="btn-sm" onclick="navigate('tetapan')">sunting.</button>`;
   } else {
-    const bs = await getDoc(doc(db, 'users', uid, 'bertahan', 'data'));
-    if (bs.exists()) {
-      const bd = bs.data().days || {};
-      document.getElementById('prof-streak').textContent = computeStreak(bd);
-      document.getElementById('prof-total').textContent = Object.keys(bd).length;
-    }
+    actionEl.innerHTML = '';
   }
-  
+
+  // Tabs visibility
+  document.getElementById('profil-tabs').style.display = isOwn ? 'flex' : 'flex';
+
+  // Luahan tab
   const myList = document.getElementById('my-luahan-list');
-  if (ls.empty) {
+  const docs = ls.docs.sort((a,b) => (b.data().createdat?.seconds||0)-(a.data().createdat?.seconds||0));
+  if (docs.length === 0) {
     myList.innerHTML = '<div class="empty-feed">tiada luahan lagi.</div>';
   } else {
-    const docs = ls.docs.sort((a,b) => (b.data().createdat?.seconds||0)-(a.data().createdat?.seconds||0));
-    myList.innerHTML = docs.map(doc => {
-      const data = doc.data();
-      const avatarSrc = d.photourl || makeDefaultAvatar(d.namapengguna);
-      return `<div class="luahan-item">
-        <div class="luahan-header">
-          ${data.anon
-            ? '<span class="luahan-anon">tanpa nama.</span>'
-            : `<div class="luahan-avatar"><img src="${avatarSrc}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${(d.namapengguna||'?')[0].toUpperCase()}'"></div>
-               <span class="luahan-user">${escapeHTML(d.namapengguna||'')}${d.verified?verifiedBadgeSVG():''}${hasAchievement?achievementBadgeSVG('small'):''}</span>`}
+    const starSnap = isOwn ? await getDocs(collection(db, 'users', currentUser.uid, 'stars')) : { docs: [] };
+    const myStars = new Set(starSnap.docs.map(s => s.id));
+    myList.innerHTML = docs.map(docSnap => {
+      const data = docSnap.data();
+      const isStarred = myStars.has(docSnap.id);
+      return `
+        <div class="feed-item">
+          <div class="feed-header">
+            ${data.anon
+              ? '<span class="feed-anon">tanpa nama.</span>'
+              : `<div class="feed-user-wrap">
+                  <span class="feed-user">@${escapeHTML(d.namapengguna||'')} ${d.verified ? '<img src="verifiedbadge.png" class="verified-badge" alt="">' : ''}</span>
+                  <span class="feed-time">${formatTime(data.createdat)}${data.edited ? ' • disunting.' : ''}</span>
+                 </div>`
+            }
+          </div>
+          <div class="feed-text">${escapeHTML(data.text)}</div>
+          <div class="feed-actions">
+            <button class="feed-star-btn ${isStarred ? 'starred' : ''}" onclick="toggleStar('${docSnap.id}', this)">
+              <svg viewBox="0 0 24 24" fill="${isStarred?'currentColor':'none'}" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+              ${formatCount(data.starCount)}
+            </button>
+            ${isOwn ? `<div class="feed-edit-btns">
+              <button onclick="openEdit('${docSnap.id}', this)" data-text="${escapeHTML(data.text).replace(/"/g,'&quot;')}">sunting.</button>
+              <button onclick="openDelPost('${docSnap.id}')">padam.</button>
+            </div>` : ''}
+          </div>
         </div>
-        <div class="luahan-text">${escapeHTML(data.text)}</div>
-        <div class="luahan-time">${formatTime(data.createdat)}</div>
-      </div>`;
+      `;
     }).join('');
   }
-  
-  const now = new Date();
-  calViewMonth = { year: now.getFullYear(), month: now.getMonth() };
-  renderFullCal();
+
+  // Rekod tab
+  render30Dots('profil-dots', days);
+  profCalMonth = { y: new Date().getFullYear(), m: new Date().getMonth() };
+  renderProfCal();
+
+  // Bintang tab
+  if (isOwn) {
+    await loadBintangTab();
+  } else {
+    document.getElementById('bintang-list').innerHTML = '';
+  }
+}
+
+async function loadBintangTab() {
+  const listEl = document.getElementById('bintang-list');
+  listEl.innerHTML = '<div class="spinner"></div>';
+  try {
+    const starSnap = await getDocs(collection(db, 'users', currentUser.uid, 'stars'));
+    if (starSnap.empty) { listEl.innerHTML = '<div class="empty-feed">tiada luahan berbintang lagi.</div>'; return; }
+    const posts = [];
+    for (const s of starSnap.docs) {
+      try {
+        const pSnap = await getDoc(doc(db, 'luahan', s.id));
+        if (pSnap.exists()) posts.push({ id: s.id, ...pSnap.data() });
+      } catch(e) {}
+    }
+    if (posts.length === 0) { listEl.innerHTML = '<div class="empty-feed">tiada luahan berbintang lagi.</div>'; return; }
+    const uids = [...new Set(posts.map(p => p.authorid))];
+    const userMap = {};
+    await Promise.all(uids.map(async uid => {
+      const u = await getDoc(doc(db, 'users', uid));
+      if (u.exists()) userMap[uid] = u.data();
+    }));
+    listEl.innerHTML = posts.map(p => {
+      const author = userMap[p.authorid] || {};
+      return `
+        <div class="feed-item">
+          <div class="feed-header">
+            ${p.anon
+              ? '<span class="feed-anon">tanpa nama.</span>'
+              : `<div class="feed-user-wrap">
+                  <span class="feed-user" onclick="viewProfile('${p.authorid}')">@${escapeHTML(author.namapengguna||'')} ${author.verified?'<img src="verifiedbadge.png" class="verified-badge" alt="">':''}</span>
+                  <span class="feed-time">${formatTime(p.createdat)}</span>
+                 </div>`}
+          </div>
+          <div class="feed-text">${escapeHTML(p.text)}</div>
+          <div class="feed-actions">
+            <button class="feed-star-btn starred" onclick="toggleStar('${p.id}', this)">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+              ${formatCount(p.starCount)}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch(e) { listEl.innerHTML = '<div class="empty-feed">gagal memuatkan.</div>'; }
+}
+
+window.changeProfCal = (dir) => {
+  profCalMonth.m += dir;
+  if (profCalMonth.m > 11) { profCalMonth.m = 0; profCalMonth.y++; }
+  if (profCalMonth.m < 0)  { profCalMonth.m = 11; profCalMonth.y--; }
+  renderProfCal();
+};
+
+function renderProfCal() {
+  const { y, m } = profCalMonth;
+  document.getElementById('profil-cal-month').textContent = `${MONTHS[m]} ${y}.`;
+  renderCalGrid('profil-cal', y, m, viewingUid ? viewingDays : tickedDays);
 }
 
 window.switchTab = (tabId, btn) => {
@@ -1811,50 +2929,40 @@ window.switchTab = (tabId, btn) => {
   btn.classList.add('active');
 };
 
-window.changeCalMonth = (dir) => {
-  calViewMonth.month += dir;
-  if (calViewMonth.month > 11) { calViewMonth.month = 0; calViewMonth.year++; }
-  if (calViewMonth.month < 0)  { calViewMonth.month = 11; calViewMonth.year--; }
-  renderFullCal();
-};
-
-function renderFullCal() {
-  const { year, month } = calViewMonth;
-  document.getElementById('full-cal-title').textContent = `${MONTHS[month]} ${year}.`;
-  const cal = document.getElementById('full-cal');
-  const days = ['Ahd','Isn','Sel','Rab','Kha','Jum','Sab'];
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const firstDay = new Date(year, month, 1).getDay();
-  const todayStr = todayKey();
-  cal.innerHTML = days.map(d=>`<div class="day-label">${d}</div>`).join('');
-  for (let i=0;i<firstDay;i++) cal.innerHTML += '<div></div>';
-  for (let d=1;d<=daysInMonth;d++) {
-    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const el = document.createElement('div');
-    el.className = 'cal-day'; el.textContent = d;
-    if (tickedDays[key]) el.classList.add('ticked');
-    if (key === todayStr) el.classList.add('today');
-    cal.appendChild(el);
-  }
-}
-
-/* ─── SETTINGS ─── */
-async function loadSettings() {
+/* ─── TETAPAN ─── */
+async function loadTetapan() {
   if (!currentUser) return;
   const snap = await getDoc(doc(db, 'users', currentUser.uid));
   if (!snap.exists()) return;
   const d = snap.data();
   document.getElementById('set-uname').value = d.namapengguna || '';
   document.getElementById('set-bio').value   = d.bio || '';
+  document.getElementById('set-email').value = d.emel || currentUser.email || '';
   document.getElementById('set-photo').value = d.photourl || '';
+  const badge = document.getElementById('set-verified-badge');
+  if (d.verified) badge.style.display = 'block';
+  else badge.style.display = 'none';
+  previewSetPhoto();
 }
+
+window.previewSetPhoto = () => {
+  const url = document.getElementById('set-photo')?.value?.trim();
+  const prev = document.getElementById('set-avatar-preview');
+  if (!prev) return;
+  if (url) {
+    prev.innerHTML = `<img src="${url}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`;
+  } else {
+    const uname = document.getElementById('set-uname')?.value || '';
+    prev.innerHTML = `<img src="${makeDefaultAvatar(uname)}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+  }
+};
 
 window.saveProfile = async () => {
   const uname = document.getElementById('set-uname').value.trim().toLowerCase();
   const bio   = document.getElementById('set-bio').value.trim();
   const photo = document.getElementById('set-photo').value.trim();
   if (!uname) return showToast('nama pengguna tidak boleh kosong.');
-  if (/[A-Z]/.test(uname)) return showToast('nama pengguna hanya huruf kecil dibenarkan.');
+  if (/[A-Z\s]/.test(uname)) return showToast('nama pengguna hanya huruf kecil tanpa ruang.');
   try {
     if (uname !== userData?.namapengguna) {
       const uq = query(collection(db, 'users'), where('namapengguna', '==', uname));
@@ -1865,14 +2973,14 @@ window.saveProfile = async () => {
     userData = { ...userData, namapengguna: uname, bio, photourl: photo };
     updateSidebarUser();
     showToast('profil berjaya dikemas kini.');
-  } catch(e) { showToast('gagal menyimpan.'); }
+  } catch(e) { showToast('gagal menyimpan. cuba semula.'); }
 };
 
 window.changePassword = async () => {
   const oldPw = document.getElementById('set-pw-old').value;
   const newPw = document.getElementById('set-pw-new').value;
-  if (!oldPw || !newPw) return showToast('sila isi kedua-dua medan kata laluan.');
-  if (newPw.length < 6) return showToast('kata laluan baharu terlalu pendek.');
+  if (!oldPw || !newPw) return showToast('sila isi kedua-dua medan.');
+  if (newPw.length < 6) return showToast('kata laluan baru terlalu pendek.');
   try {
     const cred = EmailAuthProvider.credential(currentUser.email, oldPw);
     await reauthenticateWithCredential(currentUser, cred);
@@ -1885,8 +2993,7 @@ window.changePassword = async () => {
   }
 };
 
-window.openDeleteModal  = () => document.getElementById('delete-modal').classList.add('open');
-window.closeDeleteModal = () => { document.getElementById('delete-modal').classList.remove('open'); document.getElementById('del-pw').value=''; };
+window.openDeleteModal = () => document.getElementById('del-acc-modal').classList.add('open');
 
 window.doDeleteAccount = async () => {
   const pw = document.getElementById('del-pw').value;
@@ -1901,13 +3008,14 @@ window.doDeleteAccount = async () => {
     batch.delete(doc(db, 'users', currentUser.uid));
     await batch.commit();
     await deleteUser(currentUser);
-    closeDeleteModal();
+    document.getElementById('del-acc-modal').classList.remove('open');
   } catch(e) {
     showToast(e.code === 'auth/wrong-password' ? 'kata laluan salah.' : 'gagal memadam akaun.');
   }
 };
 
-onAuthStateChanged(auth, user => { if (user) startNotifListener(); });
+/* ─── INIT ─── */
+makeSnow('snow-wrap');
 </script>
 </body>
 </html>
