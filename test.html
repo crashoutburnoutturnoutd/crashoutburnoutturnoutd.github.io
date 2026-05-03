@@ -1,818 +1,1858 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>crash out, burn out, turn out d</title>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>crash out, burn out, turn out d.</title>
+<link rel="icon" href="logo.png" type="image/png"/>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--g:#74a12e;--p:#fc9fb1;--grad:linear-gradient(135deg,#74a12e,#fc9fb1);--grad-h:linear-gradient(90deg,#74a12e,#fc9fb1);--grad-v:linear-gradient(180deg,#74a12e,#fc9fb1);--grad-rev:linear-gradient(135deg,#fc9fb1,#74a12e);}
+html,body{height:100%;min-height:100dvh;font-family:'Open Sans',sans-serif;font-size:16px;line-height:1.5;overflow-x:hidden;}
+*{text-transform:lowercase;}
+input::placeholder,textarea::placeholder{text-transform:lowercase;}
+.hidden{display:none!important;}
+body{background:linear-gradient(160deg,#c8df8c 0%,#e8f4c0 20%,#f8e8ec 65%,#fcc8d4 100%);background-attachment:fixed;}
+body.theme-dark{background:#000!important;}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f5f5f5;
-            padding-bottom: 70px;
-        }
+/* TOAST */
+#toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--grad-h);color:#fff;padding:10px 22px;font-size:0.84rem;font-weight:700;opacity:0;pointer-events:none;transition:opacity 0.3s;z-index:9999;white-space:nowrap;}
+#toast.show{opacity:1;}
+.spinner{width:28px;height:28px;border:3px solid rgba(116,161,46,0.25);border-top-color:#74a12e;border-radius:50%;animation:spin 0.7s linear infinite;margin:32px auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-        :root {
-            --primary: #fc9fb1;
-            --secondary: #74a12e;
-            --primary-dark: #e07f91;
-            --secondary-dark: #5a8720;
-            --white: #ffffff;
-            --dark: #333333;
-            --gray: #888888;
-            --light-gray: #eeeeee;
-        }
+/* ===== SPLASH ===== */
+#pg-splash{position:fixed;inset:0;z-index:1000;overflow:hidden;}
+.splash-bg{position:absolute;inset:0;background-image:url('splashbg.png');background-size:cover;background-position:center;}
+.splash-inner{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  min-height:100dvh;width:100%;
+  padding:60px 36px;
+  gap:32px;
+}
+.splash-logo{width:190px;height:190px;object-fit:contain;}
+.splash-text-area{text-align:center;}
+.splash-title{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:14px;text-shadow:0 2px 10px rgba(0,0,0,0.2);}
+.splash-desc{font-size:0.95rem;color:rgba(255,255,255,0.92);line-height:1.9;font-style:italic;}
+.btn-splash{width:100%;max-width:340px;padding:17px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;}
+body.theme-dark .btn-splash{background:#545454;color:#a6a6a6;}
 
-        .header {
-            background: var(--primary);
-            padding: 15px 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+/* ===== AUTH ===== */
+#pg-auth{position:fixed;inset:0;z-index:900;display:none;flex-direction:column;overflow-y:auto;min-height:100dvh;align-items:center;justify-content:center;}
+#pg-auth.show{display:flex;}
+.auth-screen{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:20px;min-height:100dvh;
+  width:100%;
+}
+.auth-screen-inner{width:100%;max-width:400px;}
+.auth-topbar{display:flex;align-items:center;gap:12px;padding:18px 0 14px;border-bottom:1.5px solid rgba(255,255,255,0.3);margin-bottom:0;}
+.auth-back{font-size:1.4rem;font-weight:800;color:#fff;background:none;border:none;cursor:pointer;line-height:1;font-family:'Open Sans',sans-serif;}
+.auth-topbar-title{font-size:1.5rem;font-weight:800;color:#fff;}
+.auth-logo-center{display:flex;justify-content:center;padding:30px 0 24px;}
+.auth-logo{width:145px;height:145px;object-fit:contain;}
+.auth-subhead{font-size:1.4rem;font-weight:800;color:#fff;text-align:center;margin:26px 0 22px;}
+.auth-err{background:rgba(255,255,255,0.2);padding:10px 14px;font-size:0.84rem;color:#fff;margin-bottom:12px;font-weight:600;}
+.auth-inp{width:100%;padding:17px 18px;background:var(--grad-h);border:none;color:#fff;font-family:'Open Sans',sans-serif;font-size:0.95rem;outline:none;margin-bottom:10px;border-radius:0;}
+.auth-inp::placeholder{color:rgba(255,255,255,0.7);}
+.inp-wrap{position:relative;margin-bottom:10px;}
+.inp-wrap .auth-inp{margin-bottom:0;}
+.pw-btn{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.85);font-size:0.76rem;font-weight:700;font-family:'Open Sans',sans-serif;}
+.btn-auth{width:100%;padding:17px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;border-radius:0;}
+.btn-auth:disabled{opacity:0.5;cursor:not-allowed;}
+.auth-switch{text-align:center;margin-top:18px;font-size:0.9rem;color:rgba(255,255,255,0.8);}
+.auth-switch button{background:none;border:none;cursor:pointer;color:#fff;font-weight:700;font-family:'Open Sans',sans-serif;font-size:0.9rem;text-decoration:underline;}
+body.theme-dark .auth-inp{background:#545454;color:#a6a6a6;}
+body.theme-dark .auth-inp::placeholder{color:#777;}
+body.theme-dark .btn-auth{background:#545454;color:#a6a6a6;}
+body.theme-dark .auth-topbar-title{color:#a6a6a6;}
+body.theme-dark .auth-topbar{border-bottom-color:#333;}
+body.theme-dark .auth-back{color:#a6a6a6;}
+body.theme-dark .auth-subhead{color:#a6a6a6;}
+body.theme-dark .auth-switch{color:#a6a6a6;}
+body.theme-dark .auth-switch button{color:#a6a6a6;}
+body.theme-dark .pw-btn{color:#a6a6a6;}
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+/* ===== APP ===== */
+#app{display:none;}
+#app.active{display:block;min-height:100dvh;}
 
-        .logo {
-            width: 40px;
-            height: 40px;
-            background: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 20px;
-        }
+/* TOP BAR */
+#top-bar{position:fixed;top:0;left:0;right:0;height:60px;background:var(--grad-h);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:300;}
+.tb-uname-row{display:flex;align-items:center;gap:5px;font-size:0.98rem;font-weight:800;color:#fff;}
+.tb-badge{width:14px;height:14px;}
+.tb-notif{position:relative;width:38px;height:38px;border:none;background:rgba(255,255,255,0.22);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;}
+.tb-notif svg{width:19px;height:19px;}
+.nbc{position:absolute;top:-2px;right:-2px;min-width:18px;height:18px;border-radius:50%;background:var(--p);color:#fff;font-size:0.63rem;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 3px;}
+.nbc.show{display:flex;}
+.tb-av{width:38px;height:38px;background:var(--grad);overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.9rem;color:#fff;cursor:pointer;flex-shrink:0;}
+.tb-av img{width:100%;height:100%;object-fit:cover;}
+/* SHAPE: default = circle */
+.tb-av{border-radius:50%;}
+.tb-av.shape-rect{border-radius:0;}
+.tb-av.shape-patterned{border-radius:0;outline:2px solid var(--p);}
+.tb-right{display:flex;align-items:center;gap:8px;}
+body.theme-dark #top-bar{background:#000;border-bottom:1px solid #222;}
+body.theme-dark .tb-uname-row{color:#a6a6a6;}
+body.theme-dark .tb-notif{background:#222;}
 
-        .logo img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+/* BOTTOM NAV */
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--g);display:flex;align-items:center;z-index:300;}
+#bottom-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.56rem;font-weight:700;transition:color 0.18s;padding:8px 0;}
+#bottom-nav a svg{width:19px;height:19px;}
+#bottom-nav a.active{color:#fff;}
+/* bnav avatar - default circle */
+.bnav-av{width:22px;height:22px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.68rem;color:#fff;background:var(--grad);flex-shrink:0;}
+.bnav-av img{width:100%;height:100%;object-fit:cover;}
+.bnav-av.shape-rect{border-radius:0;}
+.bnav-av.shape-patterned{border-radius:0;outline:1.5px solid var(--p);}
+.bnav-dot{display:none;width:7px;height:7px;border-radius:50%;background:var(--p);position:absolute;top:-2px;right:-3px;}
+.bnav-dot.show{display:block;}
+.bnav-nw{position:relative;}
+body.theme-dark #bottom-nav{background:#1a1a1a;border-top:1px solid #333;}
+body.theme-dark #bottom-nav a{color:#333;}
+body.theme-dark #bottom-nav a.active{color:#a6a6a6;}
 
-        .app-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--white);
-        }
+/* PAGE AREA */
+#page-area{padding-top:60px;padding-bottom:68px;min-height:100dvh;}
+.pg{animation:fadeUp 0.2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+.pad{padding:18px 16px;max-width:520px;margin:0 auto;}
+.page-h{font-size:1.4rem;font-weight:800;color:#fff;margin-bottom:16px;}
+.sec-h{font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:12px;}
+body.theme-dark .page-h,body.theme-dark .sec-h{color:#a6a6a6;}
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+/* GRADIENT BOXES */
+.box-grad{background:var(--grad-h);padding:16px;margin-bottom:12px;}
+body.theme-dark .box-grad{background:#545454;}
 
-        .username-display {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--white);
-            background: rgba(0,0,0,0.2);
-            padding: 6px 12px;
-            border-radius: 30px;
-        }
+/* DASHBOARD */
+.dash-card{background:var(--grad-h);padding:17px;margin-bottom:16px;position:relative;min-height:100px;}
+.dash-label{font-size:0.92rem;color:#fff;margin-bottom:14px;}
+.dash-stats{display:flex;gap:22px;}
+.ds-num{font-size:2.7rem;font-weight:800;line-height:1;color:#fff;}
+.ds-lbl{font-size:0.76rem;color:rgba(255,255,255,0.85);margin-top:2px;}
+.dash-arrow{position:absolute;right:17px;top:50%;transform:translateY(-50%);font-size:1.9rem;color:rgba(255,255,255,0.8);cursor:pointer;font-weight:300;line-height:1;background:none;border:none;}
+body.theme-dark .dash-card{background:#545454;}
+body.theme-dark .dash-label,body.theme-dark .ds-num,body.theme-dark .ds-lbl,body.theme-dark .dash-arrow{color:#a6a6a6;}
 
-        .logout-btn {
-            background: transparent;
-            border: 1px solid var(--white);
-            color: var(--white);
-            padding: 6px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            cursor: pointer;
-        }
+.btn-luah-cta{width:100%;padding:14px 18px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:12px;}
+.btn-luah-cta svg{width:15px;height:15px;}
+body.theme-dark .btn-luah-cta{background:#545454;color:#a6a6a6;}
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 16px;
-        }
+/* POSTS */
+.post-item{background:var(--grad);padding:14px;margin-bottom:10px;}
+body.theme-dark .post-item{background:#545454;}
+.post-hdr{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+/* post avatar - default circle */
+.post-av{width:35px;height:35px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.88rem;color:#fff;background:var(--grad-rev);}
+.post-av img{width:100%;height:100%;object-fit:cover;}
+.post-av.shape-rect{border-radius:0;}
+.post-av.shape-patterned{border-radius:0;outline:2px solid #fff;}
+.post-meta{flex:1;min-width:0;}
+.post-uname{font-size:0.9rem;font-weight:700;color:#fff;display:inline-flex;align-items:center;gap:3px;cursor:pointer;}
+.post-uname img{width:12px;height:12px;}
+.post-anon{font-size:0.85rem;color:rgba(255,255,255,0.7);font-style:italic;}
+.post-time{font-size:0.7rem;color:rgba(255,255,255,0.6);margin-top:1px;}
+/* FIX 5: text-align:justify */
+.post-txt{font-size:0.89rem;line-height:1.7;color:#fff;margin-bottom:8px;text-align:justify;}
+.post-actions{display:flex;align-items:center;gap:12px;}
+.star-btn{display:flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;font-family:'Open Sans',sans-serif;font-size:0.84rem;font-weight:700;color:rgba(255,255,255,0.65);padding:0;}
+.star-btn svg{width:15px;height:15px;fill:rgba(255,255,255,0.4);transition:fill 0.2s;}
+/* FIX 16-2: gradient star when starred */
+.star-btn.starred svg{fill:url(#starGrad);}
+.star-btn.starred{color:var(--p);}
+.post-act{font-size:0.75rem;color:rgba(255,255,255,0.5);font-style:italic;background:none;border:none;cursor:pointer;font-family:'Open Sans',sans-serif;}
+.feed-empty{text-align:center;color:rgba(255,255,255,0.55);font-size:0.88rem;padding:32px 0;font-style:italic;}
+body.theme-dark .post-uname,body.theme-dark .post-txt{color:#a6a6a6;}
+body.theme-dark .post-time,body.theme-dark .post-anon{color:#777;}
+body.theme-dark .star-btn{color:#545454;}
+body.theme-dark .star-btn svg{fill:#545454;}
+.star-btn.starred svg{fill:url(#starGrad)!important;}
+body.theme-dark .star-btn.starred{color:#a6a6a6;}
+body.theme-dark .star-btn.starred svg{fill:url(#starGrad)!important;}
+body.theme-dark .post-act{color:#545454;}
+body.theme-dark .feed-empty{color:#333;}
 
-        .auth-card {
-            background: var(--white);
-            border-radius: 24px;
-            padding: 28px 20px;
-            margin-top: 40px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
+/* BERTAHAN */
+.pp-card{background:var(--grad-h);padding:17px;margin-bottom:16px;position:relative;min-height:110px;}
+body.theme-dark .pp-card{background:#545454;}
+.pp-label{font-size:0.9rem;color:#fff;margin-bottom:14px;}
+.pp-stats{display:flex;gap:24px;}
+.pp-num{font-size:2.9rem;font-weight:800;line-height:1;color:#fff;}
+.pp-lbl{font-size:0.75rem;color:rgba(255,255,255,0.85);margin-top:2px;}
+body.theme-dark .pp-label,body.theme-dark .pp-num,body.theme-dark .pp-lbl{color:#a6a6a6;}
+.heart-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0;width:72px;height:72px;display:flex;align-items:center;justify-content:center;}
+.heart-btn:disabled{cursor:default;}
+.heart-svg{width:68px;height:68px;}
 
-        .auth-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 8px;
-            text-align: center;
-        }
+/* dots */
+.dots-row{display:flex;flex-wrap:wrap;gap:4px;}
+.d-dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.2);}
+body.theme-dark .d-dot{background:#222;}
+.d-dot.done{background:var(--g);}
+body.theme-dark .d-dot.done{background:#545454;}
+.d-dot.today-dot{background:var(--p);}
 
-        .auth-sub {
-            text-align: center;
-            color: var(--gray);
-            margin-bottom: 28px;
-            font-size: 14px;
-        }
+/* Calendar */
+.glass-box{background:rgba(255,255,255,0.14);padding:14px;margin-bottom:12px;}
+body.theme-dark .glass-box{background:#111;border:1px solid #2a2a2a;}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-month-txt{font-size:1.05rem;font-weight:800;color:#fff;}
+body.theme-dark .cal-month-txt{color:#a6a6a6;}
+.cal-btn{width:28px;height:28px;border:none;background:rgba(255,255,255,0.18);cursor:pointer;color:#fff;font-size:0.88rem;display:flex;align-items:center;justify-content:center;}
+body.theme-dark .cal-btn{background:#333;color:#a6a6a6;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cal-dlbl{font-size:0.56rem;font-weight:700;text-align:center;color:rgba(255,255,255,0.5);padding-bottom:3px;}
+body.theme-dark .cal-dlbl{color:#545454;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:rgba(255,255,255,0.55);}
+body.theme-dark .cal-day{color:#545454;}
+.cal-day.ticked{background:var(--g);color:#fff;}
+body.theme-dark .cal-day.ticked{background:#545454;color:#a6a6a6;}
+.cal-day.today{background:var(--p);color:#fff;font-weight:700;}
+body.theme-dark .cal-day.today{background:#333;color:#a6a6a6;}
+.cal-day.future{opacity:0.2;}
 
-        .input-group {
-            margin-bottom: 16px;
-        }
+/* Achievements */
+.ach-outer{background:rgba(255,255,255,0.12);padding:12px;margin-bottom:12px;}
+body.theme-dark .ach-outer{background:#111;border:1px solid #2a2a2a;}
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.ach-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0.3;}
+.ach-badge.earned{opacity:1;}
+.ach-inner{width:68px;height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ach-num{font-size:1.75rem;font-weight:800;color:#fff;line-height:1;}
+.ach-lbl{font-size:0.68rem;font-weight:700;color:#fff;margin-top:2px;}
+body.theme-dark .ach-num,body.theme-dark .ach-lbl{color:#a6a6a6;}
+/* circle type */
+.type-circle .ach-inner{border-radius:50%;background:rgba(255,255,255,0.2);}
+.type-circle.earned .ach-inner{background:var(--grad);}
+body.theme-dark .type-circle.earned .ach-inner{background:#545454;}
+body.theme-dark .type-circle:not(.earned) .ach-inner{background:#222;}
+/* rect type */
+.type-rect .ach-inner{border-radius:0;border:2px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);}
+.type-rect.earned .ach-inner{background:var(--grad);border:2px solid var(--p);}
+body.theme-dark .type-rect.earned .ach-inner{background:#545454;border-color:#545454;}
+body.theme-dark .type-rect:not(.earned) .ach-inner{background:#111;border-color:#333;}
+/* patterned type */
+.type-patterned .ach-inner{border-radius:0;background:rgba(255,255,255,0.1);outline:2px solid rgba(255,255,255,0.2);outline-offset:3px;}
+.type-patterned.earned .ach-inner{background:var(--grad);outline:2px solid var(--p);outline-offset:3px;}
+body.theme-dark .type-patterned.earned .ach-inner{background:#545454;outline-color:#a6a6a6;}
+/* FIX 16-3: patterned in dark explanation */
+body.theme-dark .type-patterned:not(.earned) .ach-inner{outline-color:#333;}
 
-        .input-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1.5px solid var(--light-gray);
-            border-radius: 30px;
-            font-size: 16px;
-            transition: all 0.2s;
-            background: var(--white);
-        }
+/* penerangan */
+.pen-box{background:rgba(255,255,255,0.12);padding:12px;margin-top:6px;}
+body.theme-dark .pen-box{background:#111;border:1px solid #2a2a2a;}
+.pen-txt{font-size:0.8rem;color:#fff;line-height:1.6;margin-bottom:10px;}
+body.theme-dark .pen-txt{color:#a6a6a6;}
+.pen-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
+/* pen avatar - default circle */
+.pen-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--grad);font-weight:800;color:#fff;font-size:0.8rem;}
+.pen-av img{width:100%;height:100%;object-fit:cover;}
+.pen-av.shape-rect{border-radius:0;}
+/* FIX 16-3: patterned pen-av in dark */
+.pen-av.shape-patterned{border-radius:0;outline:2px solid var(--p);}
+body.theme-dark .pen-av{background:#545454;}
+body.theme-dark .pen-av.shape-patterned{outline-color:#a6a6a6;}
+.pen-desc{font-size:0.78rem;color:#fff;line-height:1.55;flex:1;}
+body.theme-dark .pen-desc{color:#a6a6a6;}
 
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+/* LUAHAN PAGE */
+.write-box{background:var(--grad-h);padding:15px;margin-bottom:12px;}
+body.theme-dark .write-box{background:#545454;}
+.write-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.write-top svg{width:15px;height:15px;stroke:#fff;opacity:0.7;}
+body.theme-dark .write-top svg{stroke:#a6a6a6;}
+.write-ta{width:100%;min-height:115px;background:none;border:none;outline:none;font-family:'Open Sans',sans-serif;font-size:0.9rem;color:#fff;line-height:1.75;resize:vertical;}
+.write-ta::placeholder{color:rgba(255,255,255,0.55);}
+body.theme-dark .write-ta{color:#a6a6a6;}
+body.theme-dark .write-ta::placeholder{color:#666;}
+.write-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,0.18);flex-wrap:wrap;gap:7px;}
+body.theme-dark .write-bottom{border-top-color:#333;}
+.toggle-row{display:flex;align-items:center;gap:8px;}
+.toggle-sw{width:42px;height:23px;background:rgba(255,255,255,0.25);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;border:none;}
+.toggle-sw::after{content:'';position:absolute;width:17px;height:17px;background:var(--p);top:3px;left:3px;transition:left 0.2s;}
+.toggle-sw.on{background:rgba(255,255,255,0.35);}
+.toggle-sw.on::after{left:22px;background:#fff;}
+.toggle-lbl{font-size:0.84rem;color:#fff;}
+.char-c{font-size:0.74rem;color:rgba(255,255,255,0.55);}
+body.theme-dark .toggle-sw{background:#333;}
+body.theme-dark .toggle-sw.on{background:#545454;}
+body.theme-dark .toggle-lbl{color:#a6a6a6;}
+body.theme-dark .char-c{color:#545454;}
+.btn-luahkan{width:100%;padding:15px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.98rem;font-weight:700;cursor:pointer;margin-top:4px;}
+.btn-luahkan:disabled{opacity:0.5;cursor:not-allowed;}
+body.theme-dark .btn-luahkan{background:#545454;color:#a6a6a6;}
+.tenang-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.btn-tenang{padding:13px 8px;background:var(--grad);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer;font-style:italic;}
+.btn-tenang.fw{width:100%;margin-top:7px;}
+body.theme-dark .btn-tenang{background:#545454;color:#a6a6a6;}
 
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+/* TETAPAN */
+.set-sec-h{font-size:1rem;font-weight:800;color:#fff;margin:16px 0 10px;}
+body.theme-dark .set-sec-h{color:#a6a6a6;}
+.set-inp{width:100%;padding:15px 16px;background:var(--grad-h);border:none;color:#fff;font-family:'Open Sans',sans-serif;font-size:0.92rem;outline:none;margin-bottom:9px;border-radius:0;}
+.set-inp::placeholder{color:rgba(255,255,255,0.6);}
+.set-inp:read-only{opacity:0.45;cursor:not-allowed;}
+.set-inp-wrap{position:relative;margin-bottom:9px;}
+.set-inp-wrap .set-inp{margin-bottom:0;}
+.set-inline{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+/* set-av-prev default circle */
+.set-av-prev{width:44px;height:44px;border-radius:50%;background:var(--grad);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;color:#fff;}
+.set-av-prev img{width:100%;height:100%;object-fit:cover;}
+.set-av-prev.shape-rect{border-radius:0;}
+.set-av-prev.shape-patterned{border-radius:0;outline:2px solid var(--p);}
+.btn-save{width:100%;padding:15px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;margin-bottom:7px;}
+.btn-outline-del{width:100%;padding:15px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.4);font-family:'Open Sans',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;margin-bottom:7px;}
+/* FIX 13: logout button centered */
+.btn-txt{background:none;border:none;color:rgba(255,255,255,0.7);font-family:'Open Sans',sans-serif;font-size:0.88rem;cursor:pointer;text-decoration:underline;font-weight:600;}
+.theme-toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:5px;}
+body.theme-dark .set-inp{background:#545454;color:#a6a6a6;}
+body.theme-dark .set-inp::placeholder{color:#666;}
+body.theme-dark .btn-save{background:#545454;color:#a6a6a6;}
+body.theme-dark .btn-outline-del{border-color:#545454;color:#a6a6a6;}
+body.theme-dark .btn-txt{color:#545454;}
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
+/* PROFIL */
+.prof-top{display:flex;align-items:flex-start;gap:13px;margin-bottom:13px;}
+/* prof-av default circle */
+.prof-av{width:108px;height:108px;border-radius:50%;background:var(--grad);overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2.4rem;color:#fff;flex-shrink:0;}
+.prof-av img{width:100%;height:100%;object-fit:cover;}
+.prof-av.shape-rect{border-radius:0;}
+.prof-av.shape-patterned{border-radius:0;outline:3px solid var(--p);outline-offset:2px;}
+.prof-right{flex:1;}
+.prof-uname-row{display:flex;align-items:center;gap:4px;margin-bottom:4px;}
+.prof-uname{font-size:1.02rem;font-weight:800;color:#fff;}
+.prof-uname img{width:14px;height:14px;}
+.prof-stats-row{display:flex;gap:12px;margin-bottom:8px;}
+.pst{text-align:left;}
+.pst-num{font-size:1.7rem;font-weight:800;color:#fff;line-height:1;}
+.pst-lbl{font-size:0.62rem;font-weight:700;color:rgba(255,255,255,0.6);}
+/* FIX 10: limit bio display */
+.prof-bio{font-size:0.84rem;color:rgba(255,255,255,0.7);margin-bottom:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
+.btn-sunting{width:100%;padding:11px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.45);font-family:'Open Sans',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;}
+.prof-tabs{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;}
+.ptab{padding:9px 12px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.35);font-family:'Open Sans',sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.ptab.active{background:var(--p);border-color:var(--p);}
+.ptab-panel{display:none;}
+.ptab-panel.active{display:block;}
+body.theme-dark .prof-uname,body.theme-dark .pst-num{color:#a6a6a6;}
+body.theme-dark .pst-lbl,body.theme-dark .prof-bio{color:#545454;}
+body.theme-dark .btn-sunting{color:#a6a6a6;border-color:#545454;}
+body.theme-dark .ptab{color:#a6a6a6;border-color:#545454;}
+body.theme-dark .ptab.active{background:#545454;border-color:#545454;color:#a6a6a6;}
 
-        .btn-primary:active {
-            background: var(--primary-dark);
-            transform: scale(0.98);
-        }
+/* NOTIFIKASI */
+.notif-item{background:var(--grad);padding:13px;margin-bottom:9px;}
+body.theme-dark .notif-item{background:#545454;}
+.notif-top{display:flex;align-items:flex-start;gap:9px;margin-bottom:7px;}
+.notif-av{width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--grad-rev);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:0.86rem;}
+.notif-av img{width:100%;height:100%;object-fit:cover;}
+.notif-meta{flex:1;min-width:0;}
+.notif-title-txt{font-size:0.9rem;font-weight:800;color:#fff;margin-bottom:2px;}
+.notif-sender-row{font-size:0.76rem;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:3px;flex-wrap:wrap;}
+.notif-sender-row img{width:12px;height:12px;}
+.notif-ts{font-size:0.7rem;color:rgba(255,255,255,0.5);white-space:nowrap;}
+.notif-preview{font-size:0.82rem;color:rgba(255,255,255,0.82);line-height:1.5;margin-bottom:9px;}
+/* FIX 3: btn-buka opens modal */
+.btn-buka{width:100%;padding:11px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.86rem;font-weight:700;cursor:pointer;}
+.notif-empty{text-align:center;color:rgba(255,255,255,0.45);font-size:0.88rem;padding:32px 0;font-style:italic;}
+body.theme-dark .notif-title-txt{color:#a6a6a6;}
+body.theme-dark .notif-sender-row{color:#666;}
+body.theme-dark .notif-preview{color:#a6a6a6;}
+body.theme-dark .notif-ts{color:#444;}
+body.theme-dark .btn-buka{background:#333;color:#a6a6a6;}
+body.theme-dark .notif-empty{color:#333;}
 
-        .btn-secondary {
-            background: var(--secondary);
-            color: white;
-            margin-top: 12px;
-        }
+/* POPUP MODALS */
+.modal-ov{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;padding:18px;}
+.modal-ov.open{display:flex;}
+.popup-text-box{width:100%;max-width:460px;max-height:86dvh;overflow-y:auto;padding:26px 22px 22px;}
+.popup-title{font-size:1.35rem;font-weight:800;color:#fff;text-align:center;margin-bottom:16px;}
+.popup-body-txt{font-size:0.94rem;color:#fff;line-height:1.75;text-align:center;margin-bottom:18px;}
+.popup-close-btn{width:100%;padding:13px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:12px;}
+.popup-url-btn{width:100%;padding:13px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:12px;display:none;}
+.popup-sender{font-size:0.76rem;color:rgba(255,255,255,0.75);text-align:center;display:flex;align-items:center;justify-content:center;gap:4px;}
+.popup-sender img{width:12px;height:12px;}
+.popup-photo-box{width:100%;max-width:460px;max-height:88dvh;overflow:hidden;}
+.popup-photo-img{width:100%;display:block;max-height:48dvh;object-fit:cover;}
+.popup-photo-content{padding:16px 18px 20px;}
+.popup-photo-txt{font-size:0.92rem;color:#fff;line-height:1.65;text-align:center;margin-bottom:6px;}
+body.theme-dark .popup-close-btn,body.theme-dark .popup-url-btn{background:#333;color:#a6a6a6;}
 
-        .switch-auth {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: var(--gray);
-        }
+/* TENANG MODALS */
+.tn-modal-inner{background:var(--grad);width:100%;max-width:460px;max-height:84dvh;overflow-y:auto;padding:20px 18px 18px;}
+body.theme-dark .tn-modal-inner{background:#545454;}
+.tn-modal-h{font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:11px;}
+body.theme-dark .tn-modal-h{color:#a6a6a6;}
+.tn-step{background:rgba(0,0,0,0.15);padding:11px 13px;margin-bottom:7px;font-size:0.88rem;color:#fff;line-height:1.6;}
+body.theme-dark .tn-step{background:#333;color:#a6a6a6;}
+.tn-affir{font-size:1.02rem;font-weight:600;color:#fff;text-align:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.14);}
+body.theme-dark .tn-affir{color:#a6a6a6;border-bottom-color:#333;}
+.tn-sos{background:rgba(0,0,0,0.15);padding:11px 13px;margin-bottom:7px;}
+body.theme-dark .tn-sos{background:#333;}
+/* FIX 7: sos text proper colors for both modes */
+.tn-sos-name{font-size:0.84rem;font-weight:700;color:#fff;margin-bottom:2px;}
+.tn-sos-num{font-size:1.45rem;font-weight:800;color:#fff;}
+.tn-sos-desc{font-size:0.72rem;color:rgba(255,255,255,0.85);}
+body.theme-dark .tn-sos-name{color:#a6a6a6!important;}
+body.theme-dark .tn-sos-num{color:#a6a6a6!important;}
+body.theme-dark .tn-sos-desc{color:#a6a6a6!important;}
+.tn-ta{width:100%;min-height:95px;background:rgba(0,0,0,0.18);border:none;color:#fff;font-family:'Open Sans',sans-serif;font-size:0.88rem;line-height:1.7;padding:10px 12px;resize:vertical;outline:none;margin-top:7px;}
+.tn-ta::placeholder{color:rgba(255,255,255,0.42);}
+body.theme-dark .tn-ta{background:#333;color:#a6a6a6;}
+.btn-tn-save{width:100%;padding:13px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-top:8px;}
+body.theme-dark .btn-tn-save{background:#333;color:#a6a6a6;}
+.btn-tn-close{width:100%;padding:12px;background:rgba(0,0,0,0.18);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;margin-top:7px;}
+body.theme-dark .btn-tn-close{background:#333;color:#a6a6a6;}
+/* FIX 1 & desktop-4: slide-scroll must scroll horizontally */
+.slide-scroll{display:flex;gap:7px;overflow-x:auto;padding:4px 0 7px;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.slide-scroll::-webkit-scrollbar{display:none;}
+.slide-c{flex:0 0 125px;min-height:122px;background:rgba(0,0,0,0.18);padding:9px;scroll-snap-align:start;cursor:pointer;display:flex;flex-direction:column;}
+body.theme-dark .slide-c{background:#333;}
+.slide-c.today-s{outline:2px solid #fff;}
+.slide-date{font-size:0.63rem;font-weight:700;color:rgba(255,255,255,0.55);margin-bottom:3px;}
+.slide-prev{font-size:0.76rem;line-height:1.5;color:#fff;overflow:hidden;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;}
+.slide-empty{font-style:italic;color:rgba(255,255,255,0.38);font-size:0.76rem;}
+body.theme-dark .slide-date{color:#666;}
+body.theme-dark .slide-prev{color:#a6a6a6;}
 
-        .switch-auth span {
-            color: var(--secondary);
-            font-weight: 600;
-            cursor: pointer;
-        }
+/* DELETE MODAL */
+.del-modal-inner{background:var(--grad);width:100%;max-width:450px;padding:22px 18px;}
+body.theme-dark .del-modal-inner{background:#545454;}
+.del-h{font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:9px;}
+.del-p{font-size:0.84rem;color:rgba(255,255,255,0.8);margin-bottom:12px;line-height:1.6;}
+body.theme-dark .del-h{color:#a6a6a6;}
+body.theme-dark .del-p{color:#a6a6a6;}
+.del-btns{display:flex;gap:8px;margin-top:10px;}
+.del-btns button{flex:1;}
 
-        .error-msg {
-            color: #e74c3c;
-            font-size: 13px;
-            margin-top: 8px;
-            text-align: center;
-        }
+/* back btn */
+.back-btn{display:inline-flex;align-items:center;gap:5px;margin-bottom:11px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.75);font-family:'Open Sans',sans-serif;font-size:0.85rem;font-weight:700;padding:0;}
+body.theme-dark .back-btn{color:#545454;}
 
-        .success-msg {
-            color: var(--secondary);
-            font-size: 13px;
-            margin-top: 8px;
-            text-align: center;
-        }
+/* SVG grad def hidden */
+.svg-defs{position:absolute;width:0;height:0;overflow:hidden;}
 
-        .feed-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
+/* ===== DARK THEME GLOBAL RULES ===== */
+/* FIX 16-1: No white in dark mode - only #000, #1a1a1a, #222, #333, #545454, #a6a6a6 */
+body.theme-dark{color:#a6a6a6;}
 
-        .feed-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-        }
+/* ===== DESKTOP ===== */
+@media(min-width:768px){
+  #top-bar{display:none;}
+  #bottom-nav{display:none;}
+  #page-area{padding-top:0;padding-bottom:0;min-height:100dvh;display:flex;}
 
-        .new-post-btn {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-        }
+  /* FIX desktop-1: sidebar */
+  #dt-sidebar{width:236px;flex-shrink:0;background:var(--grad-v);position:fixed;left:0;top:0;bottom:0;overflow-y:auto;z-index:300;display:flex;flex-direction:column;}
+  body.theme-dark #dt-sidebar{background:#111;border-right:1px solid #222;}
+  .dt-logo-area{padding:28px 20px 22px;border-bottom:1px solid rgba(255,255,255,0.14);margin-bottom:16px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;}
+  .dt-logo{width:48px;height:48px;object-fit:cover;}
+  .dt-brand{font-size:0.9rem;font-weight:800;color:#fff;line-height:1.3;}
+  body.theme-dark .dt-brand{color:#a6a6a6;}
+  #dt-sidebar nav{flex:1;padding:0 10px;}
+  /* FIX desktop-2: no emoji in nav */
+  .dt-nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.6);font-family:'Open Sans',sans-serif;font-size:0.88rem;font-weight:700;text-align:left;transition:all 0.15s;margin-bottom:2px;}
+  body.theme-dark .dt-nav-btn{color:#333;}
+  .dt-nav-btn svg{width:17px;height:17px;flex-shrink:0;}
+  .dt-nav-btn:hover{color:#fff;background:rgba(255,255,255,0.11);}
+  body.theme-dark .dt-nav-btn:hover{color:#a6a6a6;background:#222;}
+  .dt-nav-btn.active{color:#fff;background:rgba(255,255,255,0.18);}
+  body.theme-dark .dt-nav-btn.active{color:#a6a6a6;background:#222;}
+  .dt-nd-wrap{position:relative;}
+  .dt-nd{position:absolute;top:7px;right:13px;width:7px;height:7px;border-radius:50%;background:var(--p);display:none;}
+  .dt-nd.show{display:block;}
+  .dt-user-area{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.14);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.15s;}
+  body.theme-dark .dt-user-area{border-top-color:#222;}
+  .dt-user-area:hover{background:rgba(255,255,255,0.07);}
+  body.theme-dark .dt-user-area:hover{background:#1a1a1a;}
+  /* dt-user-av default circle */
+  .dt-user-av{width:38px;height:38px;border-radius:50%;background:var(--grad);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:0.9rem;}
+  .dt-user-av img{width:100%;height:100%;object-fit:cover;}
+  .dt-user-av.shape-rect{border-radius:0;}
+  .dt-user-av.shape-patterned{border-radius:0;outline:2px solid var(--p);}
+  .dt-uname-txt{font-weight:800;font-size:0.9rem;color:#fff;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  body.theme-dark .dt-uname-txt{color:#a6a6a6;}
+  .dt-sub-txt{font-size:0.66rem;color:rgba(255,255,255,0.5);}
+  body.theme-dark .dt-sub-txt{color:#333;}
 
-        .post-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
+  /* FIX desktop-1: dt-main and all pages fill full screen uniformly */
+  #dt-main{flex:1;margin-left:236px;min-height:100dvh;overflow-y:auto;}
+  
+  /* All pages: uniform full-width padding */
+  #dt-main .pad{
+    padding:30px 30px 38px;
+    max-width:none;
+    margin:0;
+  }
 
-        .post-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
+  /* Dashboard uses 2-col layout */
+  .dt-content{display:grid;grid-template-columns:1fr 300px;gap:22px;padding:30px 30px 38px;max-width:none;}
+  .dt-col{min-width:0;}
+  .dt-side{position:sticky;top:30px;}
+  .dt-heading{font-size:1.75rem;font-weight:800;color:#fff;margin-bottom:18px;}
+  body.theme-dark .dt-heading{color:#a6a6a6;}
+  .dt-stats-row{display:flex;gap:10px;margin-bottom:16px;}
+  .dt-stat{flex:1;background:var(--grad-h);padding:16px;}
+  body.theme-dark .dt-stat{background:#545454;}
+  .dt-stat:nth-child(2){background:var(--grad-rev);}
+  body.theme-dark .dt-stat:nth-child(2){background:#545454;}
+  .dt-stat:last-child{cursor:pointer;}
+  .dt-stat-num{font-size:2.3rem;font-weight:800;color:#fff;line-height:1;}
+  .dt-stat-lbl{font-size:0.74rem;color:rgba(255,255,255,0.8);margin-top:2px;}
+  body.theme-dark .dt-stat-num{color:#a6a6a6;}
+  body.theme-dark .dt-stat-lbl{color:#a6a6a6;}
+  .dt-stat-sub{font-size:0.8rem;color:rgba(255,255,255,0.85);margin-bottom:5px;}
+  body.theme-dark .dt-stat-sub{color:#a6a6a6;}
+  .dt-side-wgt{background:rgba(255,255,255,0.14);padding:16px;margin-bottom:14px;}
+  body.theme-dark .dt-side-wgt{background:#111;border:1px solid #222;}
+  .dt-side-h{font-size:0.9rem;font-weight:800;color:#fff;margin-bottom:11px;}
+  body.theme-dark .dt-side-h{color:#a6a6a6;}
+  .dt-feed-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
+  .btn-post-sm{padding:8px 15px;background:var(--p);color:#fff;border:none;font-family:'Open Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;}
+  body.theme-dark .btn-post-sm{background:#545454;color:#a6a6a6;}
+  .dt-ach-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:11px;}
+  .dt-tenang-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+  .dt-tenang-tile{background:var(--grad);padding:20px 8px;text-align:center;cursor:pointer;transition:opacity 0.18s;}
+  body.theme-dark .dt-tenang-tile{background:#545454;}
+  .dt-tenang-tile:hover{opacity:0.82;}
+  .dt-tile-lbl{font-size:0.84rem;font-weight:700;color:#fff;font-style:italic;}
+  body.theme-dark .dt-tile-lbl{color:#a6a6a6;}
+  .dt-prof-hdr{display:grid;grid-template-columns:116px 1fr;gap:18px;align-items:start;margin-bottom:20px;}
+  /* dt-prof-av default circle */
+  .dt-prof-av{width:116px;height:116px;border-radius:50%;background:var(--grad);overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2.8rem;color:#fff;}
+  .dt-prof-av img{width:100%;height:100%;object-fit:cover;}
+  .dt-prof-av.shape-rect{border-radius:0;}
+  .dt-prof-av.shape-patterned{border-radius:0;outline:3px solid var(--p);outline-offset:2px;}
+  @media(max-width:1024px){
+    .dt-content{grid-template-columns:1fr;padding:18px 18px 28px;}
+    .dt-side{position:static;}
+    #dt-sidebar{width:196px;}
+    #dt-main{margin-left:196px;}
+    #dt-main .pad{padding:18px 18px 28px;}
+  }
+}
+@media(min-width:768px){.m-only{display:none!important;}}
+@media(max-width:767px){.d-only{display:none!important;}#dt-sidebar{display:none;}#dt-main{margin-left:0!important;}}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);}
 
-        .post-avatar {
-            width: 48px;
-            height: 48px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .post-user {
-            flex: 1;
-        }
-
-        .post-username {
-            font-weight: 700;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .verified-badge {
-            width: 18px;
-            height: 18px;
-            display: inline-block;
-        }
-
-        .verified-badge img {
-            width: 100%;
-            height: 100%;
-        }
-
-        .post-time {
-            font-size: 12px;
-            color: var(--gray);
-            margin-top: 4px;
-        }
-
-        .post-content {
-            font-size: 15px;
-            line-height: 1.5;
-            color: var(--dark);
-            margin-bottom: 12px;
-            padding: 4px 0;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .post-actions {
-            display: flex;
-            gap: 20px;
-            padding-top: 8px;
-            border-top: 1px solid var(--light-gray);
-        }
-
-        .like-btn, .comment-btn, .delete-post-btn {
-            background: none;
-            border: none;
-            font-size: 14px;
-            color: var(--gray);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 0;
-        }
-
-        .liked {
-            color: var(--primary);
-            font-weight: 500;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s;
-        }
-
-        .modal.active {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 28px;
-            padding: 24px;
-        }
-
-        .modal-content textarea {
-            width: 100%;
-            padding: 14px;
-            border: 1.5px solid var(--light-gray);
-            border-radius: 20px;
-            font-size: 16px;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 120px;
-            margin: 16px 0;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-        }
-
-        .modal-buttons button {
-            flex: 1;
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 20px 20px;
-            border-top: 1px solid var(--light-gray);
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .bottom-nav .nav-item {
-            text-align: center;
-            color: var(--gray);
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-            padding: 8px 16px;
-            border-radius: 30px;
-        }
-
-        .nav-item.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--gray);
-        }
-
-        .empty {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray);
-        }
-    </style>
+/* FIX desktop-3: splash/auth not full screen on desktop */
+@media(min-width:768px){
+  #pg-splash .splash-inner{
+    min-height:100dvh;
+    padding:60px 36px;
+    justify-content:center;
+    align-items:center;
+  }
+  #pg-auth .auth-screen{
+    min-height:100dvh;
+    justify-content:center;
+    align-items:center;
+  }
+}
+</style>
 </head>
 <body>
 
-<div id="app"></div>
+<!-- SVG gradient defs -->
+<svg class="svg-defs" style="position:absolute;width:0;height:0"><defs>
+  <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#74a12e"/><stop offset="100%" style="stop-color:#fc9fb1"/></linearGradient>
+  <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#74a12e"/><stop offset="100%" style="stop-color:#fc9fb1"/></linearGradient>
+</defs></svg>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyB5Rzsr8YaGNb5E0I6hSQYbdOd1C2e54Gs",
-        authDomain: "crash-out-burn-out-turn-out-d.firebaseapp.com",
-        projectId: "crash-out-burn-out-turn-out-d",
-        storageBucket: "crash-out-burn-out-turn-out-d.firebasestorage.app",
-        messagingSenderId: "280103809790",
-        appId: "1:280103809790:web:514756e3aa0bf6a69cabaf",
-        measurementId: "G-FVFZJ1D6GK"
-    };
+<!-- SPLASH -->
+<div id="pg-splash">
+  <div class="splash-bg"></div>
+  <div class="splash-inner">
+    <img src="logowframe.png" alt="crash out burn out turn out d." class="splash-logo" onerror="this.style.display='none'">
+    <div class="splash-text-area">
+      <div class="splash-title">hai! selamat datang.</div>
+      <div class="splash-desc">kami berharap sistem ini dapat<br>menjadi ruang kecil untuk mengurus<br>kesihatan mental anda. luahlah apa<br>yang terbuku di hati.</div>
+    </div>
+    <button class="btn-splash" onclick="showAuth('login')">teruskan.</button>
+  </div>
+</div>
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const database = firebase.database();
+<!-- AUTH -->
+<div id="pg-auth">
+  <!-- LOGIN -->
+  <div id="auth-login" class="auth-screen">
+    <div class="auth-screen-inner">
+      <div class="auth-topbar">
+        <button class="auth-back" onclick="showSplash()">&#8249;</button>
+        <span class="auth-topbar-title">log masuk.</span>
+      </div>
+      <div class="auth-logo-center"><img src="logowframe.png" alt="logo" class="auth-logo" onerror="this.style.display='none'"></div>
+      <div id="login-err" class="auth-err hidden"></div>
+      <input class="auth-inp" type="text" id="login-id" placeholder="e-mel atau @namapengguna." autocomplete="username">
+      <div class="inp-wrap">
+        <input class="auth-inp" type="password" id="login-pw" placeholder="kata laluan." autocomplete="current-password">
+        <button class="pw-btn" onclick="tpw('login-pw',this)">papar.</button>
+      </div>
+      <button class="btn-auth" id="btn-login" onclick="doLogin()">log masuk.</button>
+      <div class="auth-switch">belum ada akaun? <button onclick="showAuth('register')">daftar.</button></div>
+    </div>
+  </div>
+  <!-- REGISTER -->
+  <div id="auth-register" class="auth-screen hidden">
+    <div class="auth-screen-inner">
+      <div class="auth-topbar">
+        <button class="auth-back" onclick="showAuth('login')">&#8249;</button>
+        <span class="auth-topbar-title">daftar.</span>
+      </div>
+      <div class="auth-subhead">cipta akaun baru.</div>
+      <div id="reg-err" class="auth-err hidden"></div>
+      <!-- FIX 10: maxlength for username -->
+      <input class="auth-inp" type="text" id="reg-un" placeholder="@namapengguna." autocomplete="username" maxlength="20">
+      <input class="auth-inp" type="email" id="reg-em" placeholder="alamat e-mel." autocomplete="email">
+      <div class="inp-wrap">
+        <input class="auth-inp" type="password" id="reg-pw" placeholder="kata laluan." autocomplete="new-password">
+        <button class="pw-btn" onclick="tpw('reg-pw',this)">papar.</button>
+      </div>
+      <div class="inp-wrap">
+        <input class="auth-inp" type="password" id="reg-pw2" placeholder="sah kata laluan." autocomplete="new-password">
+        <button class="pw-btn" onclick="tpw('reg-pw2',this)">papar.</button>
+      </div>
+      <button class="btn-auth" id="btn-reg" onclick="doRegister()">daftar.</button>
+      <div class="auth-switch">sudah ada akaun? <button onclick="showAuth('login')">log masuk.</button></div>
+    </div>
+  </div>
+</div>
 
-    let currentUser = null;
-    let currentView = 'feed';
+<!-- APP -->
+<div id="app">
 
-    function formatTime(timestamp) {
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diff = Math.floor((now - date) / 1000);
-        if (diff < 60) return 'baru sahaja';
-        if (diff < 3600) return `${Math.floor(diff/60)} minit lalu`;
-        if (diff < 86400) return `${Math.floor(diff/3600)} jam lalu`;
-        return date.toLocaleDateString('ms-MY');
-    }
+  <!-- TOP BAR (mobile only) -->
+  <div id="top-bar">
+    <div class="tb-uname-row">
+      <span id="tb-uname">@pengguna</span>
+      <img id="tb-badge" src="verifiedbadge.png" class="tb-badge hidden" alt="" onerror="this.style.display='none'">
+    </div>
+    <div class="tb-right">
+      <button class="tb-notif" onclick="nav('notifikasi')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="nbc" id="nbc">0</span>
+      </button>
+      <div class="tb-av" id="tb-av" onclick="nav('profil')"></div>
+    </div>
+  </div>
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
+  <!-- DESKTOP SIDEBAR -->
+  <div id="dt-sidebar" class="d-only">
+    <div class="dt-logo-area">
+      <img src="logo.png" class="dt-logo" alt="" onerror="this.style.display='none'">
+      <div class="dt-brand">crash out.<br>burn out.<br>turn out d.</div>
+    </div>
+    <nav>
+      <!-- FIX desktop-2: no emoji in nav buttons -->
+      <button class="dt-nav-btn active" data-p="utama" onclick="nav('utama')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>papan muka.
+      </button>
+      <button class="dt-nav-btn" data-p="bertahan" onclick="nav('bertahan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>bertahan.
+      </button>
+      <button class="dt-nav-btn" data-p="luahan" onclick="nav('luahan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>luahan.
+      </button>
+      <div class="dt-nd-wrap">
+        <button class="dt-nav-btn" data-p="notifikasi" onclick="nav('notifikasi')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>notifikasi.
+        </button>
+        <span class="dt-nd" id="dt-nd"></span>
+      </div>
+      <button class="dt-nav-btn" data-p="profil" onclick="nav('profil')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>profil.
+      </button>
+      <button class="dt-nav-btn" data-p="tetapan" onclick="nav('tetapan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>tetapan.
+      </button>
+    </nav>
+    <div class="dt-user-area" onclick="nav('tetapan')">
+      <div class="dt-user-av" id="dt-user-av"></div>
+      <div style="flex:1;min-width:0">
+        <span class="dt-uname-txt" id="dt-uname">@pengguna</span>
+        <span class="dt-sub-txt">log masuk sebagai.</span>
+      </div>
+    </div>
+  </div>
 
-    async function loadPosts(containerId) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        container.innerHTML = '<div class="loading">Memuatkan luahan...</div>';
-        try {
-            const snapshot = await database.ref('posts').orderByChild('createdAt').once('value');
-            const postsData = [];
-            snapshot.forEach(child => {
-                postsData.push({ id: child.key, ...child.val() });
-            });
-            postsData.reverse();
-            
-            if (postsData.length === 0) {
-                container.innerHTML = '<div class="empty">Tiada luahan. Jadi orang pertama luah perasaan ✨</div>';
-                return;
-            }
-            
-            container.innerHTML = postsData.map(post => `
-                <div class="post-card" data-id="${post.id}">
-                    <div class="post-header">
-                        <div class="post-avatar">${(post.username ? post.username[0] : 'U').toUpperCase()}</div>
-                        <div class="post-user">
-                            <div class="post-username">
-                                @${post.username || 'anonymous'}
-                                ${post.verified ? '<span class="verified-badge"><img src="verifiedbadge.png" onerror="this.style.display=\'none\'" alt="verified"></span>' : ''}
-                            </div>
-                            <div class="post-time">${formatTime(post.createdAt)}</div>
-                        </div>
-                        ${currentUser && post.userId === currentUser.uid ? `<button class="delete-post-btn" data-id="${post.id}">🗑️</button>` : ''}
-                    </div>
-                    <div class="post-content">${escapeHtml(post.content)}</div>
-                    <div class="post-actions">
-                        <button class="like-btn ${post.likes && post.likes[currentUser?.uid] ? 'liked' : ''}" data-id="${post.id}">
-                            ❤️ ${post.likeCount || 0}
-                        </button>
-                        <button class="comment-btn" data-id="${post.id}">💬 Balas</button>
-                    </div>
-                </div>
-            `).join('');
-            
-            document.querySelectorAll('.like-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    if (!currentUser) return;
-                    const postId = btn.dataset.id;
-                    const postRef = database.ref(`posts/${postId}`);
-                    const snap = await postRef.once('value');
-                    const post = snap.val();
-                    if (!post) return;
-                    const likes = post.likes || {};
-                    const uid = currentUser.uid;
-                    let likeCount = post.likeCount || 0;
-                    if (likes[uid]) {
-                        delete likes[uid];
-                        likeCount--;
-                    } else {
-                        likes[uid] = true;
-                        likeCount++;
-                    }
-                    await postRef.update({ likes, likeCount });
-                    loadPosts('postsList');
-                });
-            });
-            
-            document.querySelectorAll('.comment-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (!currentUser) return;
-                    const postId = btn.dataset.id;
-                    const content = prompt('Tulis balasan / komen anda:');
-                    if (content && content.trim()) {
-                        addComment(postId, content.trim());
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.delete-post-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    if (!currentUser) return;
-                    if (confirm('Padam luahan ini?')) {
-                        await database.ref(`posts/${btn.dataset.id}`).remove();
-                        loadPosts('postsList');
-                        if (currentView === 'profile') loadMyPosts();
-                    }
-                });
-            });
-        } catch(e) {
-            console.error(e);
-            container.innerHTML = '<div class="empty">Gagal muat naik. Cuba lagi nanti.</div>';
-        }
-    }
-    
-    async function addComment(parentId, content) {
-        const newPostRef = database.ref('posts').push();
-        await newPostRef.set({
-            content: `[Balasan] ${content}`,
-            username: currentUser.username || currentUser.email.split('@')[0],
-            userId: currentUser.uid,
-            createdAt: Date.now(),
-            likeCount: 0,
-            likes: {},
-            parentId: parentId,
-            verified: currentUser.verified || false
-        });
-        loadPosts('postsList');
-    }
-    
-    async function loadMyPosts() {
-        const container = document.getElementById('myPostsList');
-        if (!container) return;
-        const snapshot = await database.ref('posts').orderByChild('userId').equalTo(currentUser.uid).once('value');
-        const myPosts = [];
-        snapshot.forEach(child => myPosts.push({ id: child.key, ...child.val() }));
-        myPosts.reverse();
-        
-        if (myPosts.length === 0) {
-            container.innerHTML = '<div class="empty">Awak belum luah apa-apa</div>';
-            return;
-        }
-        
-        container.innerHTML = myPosts.map(post => `
-            <div class="post-card">
-                <div class="post-content">${escapeHtml(post.content)}</div>
-                <div class="post-time">${formatTime(post.createdAt)}</div>
-                <button class="delete-post-btn" data-id="${post.id}" style="background:#fc9fb1;border:none;padding:8px 16px;border-radius:20px;margin-top:8px;color:white;cursor:pointer">Padam</button>
+  <!-- MAIN -->
+  <div id="dt-main">
+  <div id="page-area">
+
+    <!-- UTAMA / DASHBOARD -->
+    <div id="pg-utama" class="pg hidden">
+      <!-- MOBILE -->
+      <div class="pad m-only">
+        <div class="page-h">papan muka.</div>
+        <div class="dash-card">
+          <div class="dash-label">saya masih bertahan hari ini.</div>
+          <div class="dash-stats">
+            <div><div class="ds-num" id="m-streak">0</div><div class="ds-lbl">hari berturut.</div></div>
+            <div><div class="ds-num" id="m-total">0</div><div class="ds-lbl">jumlah bertahan.</div></div>
+          </div>
+          <button class="dash-arrow" onclick="nav('bertahan')">&#8250;</button>
+        </div>
+        <div class="sec-h">semua luahan.</div>
+        <button class="btn-luah-cta" onclick="nav('luahan')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          luah.
+        </button>
+        <div id="feed-m"></div>
+      </div>
+      <!-- DESKTOP -->
+      <div class="d-only dt-content">
+        <div class="dt-col">
+          <div class="dt-heading" id="dt-greet">papan muka.</div>
+          <div class="dt-stats-row">
+            <div class="dt-stat"><div class="dt-stat-num" id="d-streak">0</div><div class="dt-stat-lbl">hari berturut.</div></div>
+            <div class="dt-stat"><div class="dt-stat-num" id="d-total">0</div><div class="dt-stat-lbl">jumlah bertahan.</div></div>
+            <div class="dt-stat" id="d-tick-card" onclick="doTick()"><div class="dt-stat-sub">saya masih bertahan hari ini.</div>
+              <svg id="d-heart-svg" viewBox="0 0 60 55" fill="none" style="width:50px;height:50px">
+                <path id="d-heart-path" d="M30 50 C30 50 5 35 5 18 C5 10 11 4 18 4 C22 4 26 6 30 11 C34 6 38 4 42 4 C49 4 55 10 55 18 C55 35 30 50 30 50Z" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" fill="none"/>
+              </svg>
             </div>
-        `).join('');
-        
-        document.querySelectorAll('#myPostsList .delete-post-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                if (confirm('Padam luahan ini?')) {
-                    await database.ref(`posts/${btn.dataset.id}`).remove();
-                    loadMyPosts();
-                    if (currentView === 'feed') loadPosts('postsList');
-                }
-            });
-        });
+          </div>
+          <div class="dt-feed-hdr">
+            <div class="sec-h" style="margin-bottom:0">semua luahan.</div>
+            <button class="btn-post-sm" onclick="nav('luahan')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M12 5v14M5 12h14"/></svg>luah.
+            </button>
+          </div>
+          <div id="feed-d"></div>
+        </div>
+        <div class="dt-side">
+          <div class="dt-side-wgt">
+            <div class="dt-side-h" id="d-cal-title"></div>
+            <div class="cal-grid" id="d-mini-cal"></div>
+          </div>
+          <div class="dt-side-wgt">
+            <div class="dt-side-h">ruang tenang.</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <button class="btn-tenang" onclick="openTenang('nafas')">pernafasan.</button>
+              <button class="btn-tenang" onclick="openTenang('afirmasi')">afirmasi.</button>
+              <button class="btn-tenang" onclick="openTenang('sos')">talian bantuan.</button>
+              <button class="btn-tenang" onclick="openTenang('buku')">buku nota.</button>
+              <button class="btn-tenang" onclick="openTenang('gratitud')">rasa syukur hari ini.</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BERTAHAN -->
+    <div id="pg-bertahan" class="pg hidden">
+      <div class="pad">
+        <div class="page-h">bertahan.</div>
+        <div class="sec-h">papan penanda.</div>
+        <div class="pp-card">
+          <div class="pp-label">saya masih bertahan hari ini.</div>
+          <div class="pp-stats">
+            <div><div class="pp-num" id="b-streak">0</div><div class="pp-lbl">hari berturut.</div></div>
+            <div><div class="pp-num" id="b-total">0</div><div class="pp-lbl">jumlah bertahan.</div></div>
+          </div>
+          <button class="heart-btn" id="heart-btn" onclick="doTick()">
+            <svg class="heart-svg" viewBox="0 0 80 75" fill="none">
+              <path id="heart-path" d="M40 65 C40 65 8 46 8 24 C8 14 16 6 26 6 C31 6 36 9 40 15 C44 9 49 6 54 6 C64 6 72 14 72 24 C72 46 40 65 40 65Z" stroke="rgba(255,255,255,0.8)" stroke-width="3" fill="none"/>
+            </svg>
+          </button>
+          <div id="b-status" style="margin-top:5px;font-size:0.75rem;color:rgba(255,255,255,0.65);font-style:italic"></div>
+        </div>
+
+        <!-- Desktop 2-col -->
+        <div class="d-only" style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+          <div>
+            <div class="sec-h">hari lalu.</div>
+            <div class="dots-row" id="d-dots" style="margin-bottom:12px"></div>
+            <div class="glass-box">
+              <div class="cal-nav">
+                <button class="cal-btn" onclick="chBCal(-1)">&#8592;</button>
+                <span class="cal-month-txt" id="d-cal-month"></span>
+                <button class="cal-btn" onclick="chBCal(1)">&#8594;</button>
+              </div>
+              <div class="cal-grid" id="d-cal"></div>
+            </div>
+          </div>
+          <div>
+            <div class="sec-h">pencapaian saya.</div>
+            <div class="ach-outer"><div class="ach-grid" id="d-ach"></div></div>
+            <div id="d-pen"></div>
+          </div>
+        </div>
+
+        <!-- Mobile -->
+        <div class="m-only">
+          <div class="sec-h">hari lalu.</div>
+          <div class="dots-row" id="m-dots" style="margin-bottom:12px"></div>
+          <div class="glass-box">
+            <div class="cal-nav">
+              <button class="cal-btn" onclick="chBCal(-1)">&#8592;</button>
+              <span class="cal-month-txt" id="m-cal-month"></span>
+              <button class="cal-btn" onclick="chBCal(1)">&#8594;</button>
+            </div>
+            <div class="cal-grid" id="m-cal"></div>
+          </div>
+          <div class="sec-h">pencapaian saya.</div>
+          <div class="ach-outer"><div class="ach-grid" id="m-ach"></div></div>
+          <div id="m-pen"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LUAHAN PAGE -->
+    <div id="pg-luahan" class="pg hidden">
+      <div class="pad">
+        <div class="page-h">luahan.</div>
+        <div class="sec-h">luah.</div>
+        <div class="write-box">
+          <div class="write-top">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <textarea class="write-ta" id="post-ta" placeholder="apa yang ingin diluahkan sekarang.." maxlength="1000" oninput="updCC()"></textarea>
+          <div class="write-bottom">
+            <div class="toggle-row">
+              <button class="toggle-sw on" id="anon-sw" onclick="togAnon()"></button>
+              <span class="toggle-lbl" id="anon-lbl">hantar dengan nama.</span>
+            </div>
+            <span class="char-c"><span id="cc">0</span>/1000 aksara.</span>
+          </div>
+        </div>
+        <button class="btn-luahkan" id="btn-post" onclick="doPost()">luahkan.</button>
+        <div style="margin-top:22px">
+          <div class="sec-h">ruang tenang.</div>
+          <div style="font-size:0.86rem;color:rgba(255,255,255,0.8);margin-bottom:10px">pilih aktiviti:</div>
+          <div class="tenang-grid">
+            <button class="btn-tenang" onclick="openTenang('nafas')">pernafasan.</button>
+            <button class="btn-tenang" onclick="openTenang('afirmasi')">afirmasi.</button>
+            <button class="btn-tenang" onclick="openTenang('sos')">talian bantuan.</button>
+            <button class="btn-tenang" onclick="openTenang('buku')">buku nota.</button>
+          </div>
+          <button class="btn-tenang fw" onclick="openTenang('gratitud')">rasa syukur hari ini.</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFIKASI -->
+    <div id="pg-notifikasi" class="pg hidden">
+      <div class="pad">
+        <div class="page-h">notifikasi.</div>
+        <div id="notif-list"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- PROFIL -->
+    <div id="pg-profil" class="pg hidden">
+      <div class="pad">
+        <div id="prof-back"></div>
+        <div class="page-h" id="prof-heading">profil.</div>
+        <!-- Desktop header -->
+        <div class="d-only dt-prof-hdr">
+          <div class="dt-prof-av" id="dt-prof-av"></div>
+          <div>
+            <div class="prof-uname-row" style="margin-bottom:6px">
+              <span class="prof-uname" id="d-prof-uname"></span>
+              <!-- FIX 15: badge shown where username is -->
+              <img id="d-prof-badge" src="verifiedbadge.png" class="hidden" style="width:14px;height:14px" alt="" onerror="this.style.display='none'">
+            </div>
+            <div class="prof-stats-row">
+              <div class="pst"><div class="pst-num" id="d-ps-luahan">0</div><div class="pst-lbl">luahan.</div></div>
+              <div class="pst"><div class="pst-num" id="d-ps-streak">0</div><div class="pst-lbl">berturut.</div></div>
+              <div class="pst"><div class="pst-num" id="d-ps-total">0</div><div class="pst-lbl">bertahan.</div></div>
+            </div>
+            <div class="prof-bio" id="d-prof-bio"></div>
+            <div id="d-prof-action"></div>
+          </div>
+        </div>
+        <!-- Mobile header -->
+        <div class="prof-top m-only">
+          <div class="prof-av" id="m-prof-av"></div>
+          <div class="prof-right">
+            <div class="prof-uname-row">
+              <span class="prof-uname" id="m-prof-uname"></span>
+              <!-- FIX 15: badge beside username -->
+              <img id="m-prof-badge" src="verifiedbadge.png" class="hidden" style="width:14px;height:14px" alt="" onerror="this.style.display='none'">
+            </div>
+            <div class="prof-stats-row">
+              <div class="pst"><div class="pst-num" id="m-ps-luahan">0</div><div class="pst-lbl">luahan.</div></div>
+              <div class="pst"><div class="pst-num" id="m-ps-streak">0</div><div class="pst-lbl">berturut.</div></div>
+              <div class="pst"><div class="pst-num" id="m-ps-total">0</div><div class="pst-lbl">bertahan.</div></div>
+            </div>
+            <div class="prof-bio" id="m-prof-bio"></div>
+            <div id="m-prof-action"></div>
+          </div>
+        </div>
+        <div class="prof-tabs">
+          <button class="ptab active" onclick="swPTab('pt-luahan',this)">luahan saya.</button>
+          <button class="ptab" onclick="swPTab('pt-rekod',this)">rekod bertahan.</button>
+          <button class="ptab" onclick="swPTab('pt-bintang',this)">bintang.</button>
+        </div>
+        <div id="pt-luahan" class="ptab-panel active"><div id="prof-luahan-list"></div></div>
+        <div id="pt-rekod" class="ptab-panel">
+          <div class="sec-h">hari lalu.</div>
+          <div class="dots-row" id="prof-dots" style="margin-bottom:12px"></div>
+          <div class="glass-box">
+            <div class="cal-nav">
+              <button class="cal-btn" onclick="chPCal(-1)">&#8592;</button>
+              <span class="cal-month-txt" id="prof-cal-month"></span>
+              <button class="cal-btn" onclick="chPCal(1)">&#8594;</button>
+            </div>
+            <div class="cal-grid" id="prof-cal"></div>
+          </div>
+        </div>
+        <div id="pt-bintang" class="ptab-panel"><div id="prof-bintang-list"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- TETAPAN -->
+    <div id="pg-tetapan" class="pg hidden">
+      <div class="pad">
+        <div class="page-h">tetapan.</div>
+        <div id="tetapan-content">
+          <div class="set-sec-h">maklumat profil.</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="set-av-prev" id="set-av-prev"></div>
+            <span style="font-size:0.8rem;color:rgba(255,255,255,0.65)">gambar profil.</span>
+          </div>
+          <div class="set-inp-wrap">
+            <!-- FIX 10: maxlength for username -->
+            <input class="set-inp" type="text" id="set-un" placeholder="@namapengguna" maxlength="20">
+            <img id="set-v-badge" src="verifiedbadge.png" class="hidden" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:17px;height:17px" alt="" onerror="this.style.display='none'">
+          </div>
+          <!-- FIX 10: maxlength for bio -->
+          <input class="set-inp" type="text" id="set-bio" placeholder="biografi." maxlength="60">
+          <input class="set-inp" type="email" id="set-em" placeholder="alamat e-mel" readonly>
+          <div class="set-inline">
+            <div class="set-av-prev" id="set-av-sm" style="width:38px;height:38px;font-size:0.85rem"></div>
+            <input class="set-inp" type="url" id="set-photo" placeholder="https://.." oninput="prevAv()" style="flex:1;margin-bottom:0">
+          </div>
+          <button class="btn-save" onclick="saveProf()">simpan perubahan.</button>
+
+          <div class="set-sec-h">tukar kata laluan.</div>
+          <div class="set-inp-wrap">
+            <input class="set-inp" type="password" id="set-pw-old" placeholder="kata laluan semasa.">
+            <button class="pw-btn" onclick="tpw('set-pw-old',this)" style="color:rgba(255,255,255,0.75)">papar.</button>
+          </div>
+          <div class="set-inp-wrap">
+            <input class="set-inp" type="password" id="set-pw-new" placeholder="kata laluan baru.">
+            <button class="pw-btn" onclick="tpw('set-pw-new',this)" style="color:rgba(255,255,255,0.75)">papar.</button>
+          </div>
+          <button class="btn-save" onclick="chgPw()">tukar kata laluan.</button>
+
+          <div class="set-sec-h">tema sistem.</div>
+          <div class="theme-toggle-row">
+            <button class="toggle-sw" id="theme-sw" onclick="togTheme()"></button>
+            <span class="toggle-lbl" id="theme-lbl">lalai/kelabu gelap.</span>
+          </div>
+
+          <div class="set-sec-h">akaun.</div>
+          <button class="btn-outline-del" onclick="oModal('del-modal')" style="margin-bottom:8px">padam akaun.</button>
+          <!-- FIX 13: logout centered -->
+          <div style="text-align:center;margin-top:8px">
+            <button class="btn-txt" onclick="doLogout()">log keluar.</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- page-area -->
+  </div><!-- dt-main -->
+
+  <!-- BOTTOM NAV (mobile) -->
+  <nav id="bottom-nav" class="m-only">
+    <a href="#" class="nav-l active" data-p="utama" onclick="en(event,'utama')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>utama.
+    </a>
+    <a href="#" class="nav-l" data-p="bertahan" onclick="en(event,'bertahan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>bertahan.
+    </a>
+    <a href="#" class="nav-l" data-p="luahan" onclick="en(event,'luahan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>luah.
+    </a>
+    <a href="#" class="nav-l bnav-nw" data-p="notifikasi" onclick="en(event,'notifikasi')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="bnav-dot" id="bnav-dot"></span>notifikasi.
+    </a>
+    <a href="#" class="nav-l" data-p="profil" onclick="en(event,'profil')">
+      <div class="bnav-av" id="bnav-av"></div>profil.
+    </a>
+    <a href="#" class="nav-l" data-p="tetapan" onclick="en(event,'tetapan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>tetapan.
+    </a>
+  </nav>
+</div><!-- app -->
+
+<!-- MODALS -->
+<!-- Tenang modal -->
+<div class="modal-ov" id="tn-modal">
+  <div class="tn-modal-inner">
+    <div class="tn-modal-h" id="tn-h"></div>
+    <div id="tn-body"></div>
+    <button class="btn-tn-close" onclick="cModal('tn-modal')">tutup.</button>
+  </div>
+</div>
+
+<!-- Popup text modal -->
+<div class="modal-ov" id="popup-text-modal">
+  <div class="popup-text-box" id="popup-text-box">
+    <div class="popup-title" id="popup-title"></div>
+    <div class="popup-body-txt" id="popup-body"></div>
+    <button class="popup-url-btn" id="popup-url-btn"></button>
+    <button class="popup-close-btn" id="popup-close-btn" onclick="cModal('popup-text-modal')">tutup tetingkap timbul.</button>
+    <div class="popup-sender" id="popup-sender"></div>
+  </div>
+</div>
+
+<!-- Popup photo modal -->
+<div class="modal-ov" id="popup-photo-modal">
+  <div class="popup-photo-box" id="popup-photo-box">
+    <img class="popup-photo-img" id="popup-photo-img" src="" alt="">
+    <div class="popup-photo-content" id="popup-photo-content">
+      <div class="popup-photo-txt" id="popup-photo-txt"></div>
+      <div class="popup-sender" id="popup-photo-sender" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete account modal -->
+<div class="modal-ov" id="del-modal">
+  <div class="del-modal-inner">
+    <div class="del-h">padam akaun.</div>
+    <div class="del-p">tindakan ini tidak boleh dibatalkan. semua data kamu akan dipadam selama-lamanya.</div>
+    <div class="set-inp-wrap">
+      <input class="set-inp" type="password" id="del-pw" placeholder="kata laluan untuk pengesahan.">
+      <button class="pw-btn" onclick="tpw('del-pw',this)" style="color:rgba(255,255,255,0.75)">papar.</button>
+    </div>
+    <div class="del-btns">
+      <button class="btn-outline-del" onclick="cModal('del-modal')">batal.</button>
+      <button class="btn-save" onclick="delAcc()">padam.</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Profile avatar lightbox -->
+<div class="modal-ov" id="av-lightbox" onclick="cModal('av-lightbox')" style="cursor:pointer">
+  <div id="av-lightbox-inner" style="max-width:300px;width:90%"></div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,updatePassword,reauthenticateWithCredential,EmailAuthProvider,deleteUser,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,setDoc,getDoc,getDocs,addDoc,deleteDoc,updateDoc,collection,query,where,orderBy,limit,serverTimestamp,writeBatch,onSnapshot,increment,arrayUnion,arrayRemove}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const FB={apiKey:"AIzaSyB5Rzsr8YaGNb5E0I6hSQYbdOd1C2e54Gs",authDomain:"crash-out-burn-out-turn-out-d.firebaseapp.com",projectId:"crash-out-burn-out-turn-out-d",storageBucket:"crash-out-burn-out-turn-out-d.firebasestorage.app",messagingSenderId:"280103809790",appId:"1:280103809790:web:514756e3aa0bf6a69cabaf"};
+const app=initializeApp(FB),auth=getAuth(app),db=getFirestore(app);
+setPersistence(auth,browserLocalPersistence).catch(()=>{});
+
+let CU=null,UD=null,isAnon=false,tDays={},feedUnsub=null,notifUnsub=null;
+let bCalVM=null,pCalVM=null,viewUID=null,profBDays={};
+const MO=['januari','februari','mac','april','mei','jun','julai','ogos','september','oktober','november','disember'];
+
+function w(n,f){window[n]=f;}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2700);}
+function todayK(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function fmtT(ts){if(!ts)return'';const d=ts.toDate?ts.toDate():new Date(ts),diff=Date.now()-d.getTime();if(diff<60000)return'baru sahaja.';if(diff<3600000)return`${Math.floor(diff/60000)} minit lalu.`;if(diff<86400000)return`${Math.floor(diff/3600000)} jam lalu.`;return d.toLocaleDateString('ms-MY')+'.';}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function mkAv(url,un){const src=url||(un?`https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(un)}`:'');const i=(un||'?')[0];return src?`<img src="${src}" alt="${i}" onerror="this.style.display='none';this.parentNode.textContent='${i}'">`:i;}
+function setEl(el,url,un){if(el)el.innerHTML=mkAv(url,un);}
+function fErr(e){const m=e.message||'';if(m.includes('email-already-in-use'))return'e-mel sudah didaftarkan.';if(m.includes('wrong-password')||m.includes('invalid-credential'))return'kata laluan atau e-mel salah.';if(m.includes('user-not-found'))return'pengguna tidak dijumpai.';if(m.includes('weak-password'))return'kata laluan terlalu lemah.';return e.message||'ralat tidak diketahui.';}
+function showE(id,msg){const el=document.getElementById(id);if(el){el.textContent=msg;el.classList.remove('hidden');}}
+
+/* FIX 6 & 12: Shape logic - admin can override, else auto by total days
+   Default circle, rect at 90 days, patterned at 365 days */
+function getShape(total,override){
+  if(override&&override!=='auto'){return override;}
+  if(total>=365)return'patterned';
+  if(total>=90)return'rect';
+  return'circle';// DEFAULT IS CIRCLE
+}
+
+// Apply shape to ALL avatar elements
+function applyShapes(total,override){
+  const sh=getShape(total,override);
+  const ids=['tb-av','bnav-av','dt-user-av','m-prof-av','dt-prof-av','set-av-prev','set-av-sm'];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.classList.remove('shape-rect','shape-patterned');
+    if(sh==='rect')el.classList.add('shape-rect');
+    else if(sh==='patterned')el.classList.add('shape-patterned');
+    // circle = no extra class (default border-radius:50% in CSS)
+  });
+}
+
+// Theme
+function applyTheme(dark){
+  document.body.classList.toggle('theme-dark',dark);
+  const sw=document.getElementById('theme-sw');const lbl=document.getElementById('theme-lbl');
+  if(sw)sw.classList.toggle('on',dark);
+  if(lbl)lbl.textContent=dark?'kelabu gelap/lalai.':'lalai/kelabu gelap.';
+  localStorage.setItem('theme',dark?'dark':'light');
+}
+w('togTheme',()=>{applyTheme(!document.body.classList.contains('theme-dark'));});
+
+// Apply saved theme on load
+const savedTheme=localStorage.getItem('theme');
+if(savedTheme==='dark')applyTheme(true);
+
+// FIX 2: Admin bg applies to ALL pages (body background)
+async function applyAdminBg(){
+  try{
+    const snap=await getDoc(doc(db,'settings','theme'));
+    if(snap.exists()&&snap.data().bgUrl&&!document.body.classList.contains('theme-dark')){
+      const url=snap.data().bgUrl;
+      document.body.style.backgroundImage=`url('${url}')`;
+      document.body.style.backgroundSize='cover';
+      document.body.style.backgroundAttachment='fixed';
+      document.body.style.backgroundPosition='center';
+      // Also apply to splash bg
+      const splashBg=document.querySelector('.splash-bg');
+      if(splashBg){splashBg.style.backgroundImage=`url('${url}')`;}
+      window._adminBgUrl=url;
     }
-    
-    function showPostModal() {
-        const modalDiv = document.createElement('div');
-        modalDiv.className = 'modal active';
-        modalDiv.innerHTML = `
-            <div class="modal-content">
-                <h3 style="color:var(--primary); margin-bottom:8px">Luah perasaan awak</h3>
-                <p style="color:var(--gray); font-size:14px; margin-bottom:12px">Apa yang terbuku di hati? Kongsi saja.</p>
-                <textarea id="postContent" placeholder="Contoh: Hari ini rasa kosong tapi saya masih cuba..."></textarea>
-                <div class="modal-buttons">
-                    <button class="btn btn-secondary" id="cancelModal">Batal</button>
-                    <button class="btn btn-primary" id="submitPost">Hantar Luahan</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modalDiv);
-        const closeModal = () => modalDiv.remove();
-        document.getElementById('cancelModal').addEventListener('click', closeModal);
-        document.getElementById('submitPost').addEventListener('click', async () => {
-            const content = document.getElementById('postContent').value.trim();
-            if (!content) {
-                alert('Sila tulis luahan anda');
-                return;
-            }
-            const newPostRef = database.ref('posts').push();
-            await newPostRef.set({
-                content: content,
-                username: currentUser.username || currentUser.email.split('@')[0],
-                userId: currentUser.uid,
-                createdAt: Date.now(),
-                likeCount: 0,
-                likes: {},
-                verified: currentUser.verified || false
-            });
-            closeModal();
-            if (currentView === 'feed') loadPosts('postsList');
-            else if (currentView === 'profile') loadMyPosts();
-        });
+  }catch(e){}
+}
+
+w('showSplash',()=>{document.getElementById('pg-splash').style.display='';document.getElementById('pg-auth').classList.remove('show');});
+w('showAuth',(m)=>{document.getElementById('pg-splash').style.display='none';document.getElementById('pg-auth').classList.add('show');document.getElementById('auth-login').classList.toggle('hidden',m!=='login');document.getElementById('auth-register').classList.toggle('hidden',m!=='register');});
+w('tpw',(id,btn)=>{const el=document.getElementById(id);if(!el)return;if(el.type==='password'){el.type='text';btn.textContent='sembunyi.';}else{el.type='password';btn.textContent='papar.';}});
+
+w('doLogin',async()=>{
+  const id=document.getElementById('login-id').value.trim().toLowerCase();
+  const pw=document.getElementById('login-pw').value;
+  if(!id||!pw)return showE('login-err','sila isi semua medan.');
+  document.getElementById('btn-login').disabled=true;
+  document.getElementById('login-err').classList.add('hidden');
+  try{
+    let email=id;
+    if(!id.includes('@')||!id.includes('.')){
+      const uname=id.replace('@','');
+      const snap=await getDocs(query(collection(db,'users'),where('namapengguna','==',uname)));
+      if(snap.empty)throw new Error('nama pengguna tidak dijumpai.');
+      email=snap.docs[0].data().emel;
     }
-    
-    function renderAuth() {
-        const app = document.getElementById('app');
-        app.innerHTML = `
-            <div class="container">
-                <div class="auth-card">
-                    <div class="logo-area" style="justify-content:center; margin-bottom:16px">
-                        <div class="logo"><img src="logo.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle fill=%22%23fc9fb1%22 cx=%2250%22 cy=%2250%22 r=%2250%22/%3E%3Ctext x=%2250%22 y=%2267%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3ECT%3C/text%3E%3C/svg%3E'" alt="logo"></div>
-                        <div class="app-title" style="color:var(--primary)">turn out d</div>
-                    </div>
-                    <div class="auth-title">crash out, burn out</div>
-                    <div class="auth-sub">luah perasaan • sembuh perlahan-lahan</div>
-                    <div id="authForm">
-                        <div class="input-group"><input type="text" id="regUsername" placeholder="Nama pengguna" autocomplete="off"></div>
-                        <div class="input-group"><input type="email" id="authEmail" placeholder="Email" autocomplete="off"></div>
-                        <div class="input-group"><input type="password" id="authPassword" placeholder="Kata laluan (min 6 huruf)"></div>
-                        <button class="btn btn-primary" id="loginBtn">Log Masuk</button>
-                        <button class="btn btn-secondary" id="registerBtn">Daftar Akaun Baru</button>
-                        <div class="switch-auth" id="switchAuthText"><span>Tak ada akaun? Daftar di sini</span></div>
-                        <div id="authMessage" class="error-msg"></div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        let isLoginMode = true;
-        const regUsername = document.getElementById('regUsername');
-        const authEmail = document.getElementById('authEmail');
-        const authPassword = document.getElementById('authPassword');
-        const loginBtn = document.getElementById('loginBtn');
-        const registerBtn = document.getElementById('registerBtn');
-        const switchText = document.getElementById('switchAuthText');
-        const authMessage = document.getElementById('authMessage');
-        
-        regUsername.style.display = 'none';
-        registerBtn.style.display = 'none';
-        
-        switchText.onclick = () => {
-            isLoginMode = !isLoginMode;
-            if (isLoginMode) {
-                regUsername.style.display = 'none';
-                loginBtn.style.display = 'block';
-                registerBtn.style.display = 'none';
-                switchText.innerHTML = '<span>Tak ada akaun? Daftar di sini</span>';
-                authMessage.innerHTML = '';
-            } else {
-                regUsername.style.display = 'block';
-                loginBtn.style.display = 'none';
-                registerBtn.style.display = 'block';
-                switchText.innerHTML = '<span>Sudah ada akaun? Log masuk</span>';
-                authMessage.innerHTML = '';
-            }
-        };
-        
-        loginBtn.onclick = async () => {
-            const email = authEmail.value.trim();
-            const password = authPassword.value;
-            if (!email || !password) {
-                authMessage.innerHTML = 'Isi email dan kata laluan';
-                return;
-            }
-            try {
-                const userCred = await auth.signInWithEmailAndPassword(email, password);
-                const userSnap = await database.ref(`users/${userCred.user.uid}`).once('value');
-                const userData = userSnap.val() || {};
-                currentUser = { uid: userCred.user.uid, email: userCred.user.email, ...userData };
-                renderMain();
-            } catch(e) {
-                authMessage.innerHTML = e.message;
-            }
-        };
-        
-        registerBtn.onclick = async () => {
-            const username = regUsername.value.trim();
-            const email = authEmail.value.trim();
-            const password = authPassword.value;
-            if (!username || !email || !password) {
-                authMessage.innerHTML = 'Isi semua ruangan';
-                return;
-            }
-            if (password.length < 6) {
-                authMessage.innerHTML = 'Kata laluan perlu sekurang-kurangnya 6 huruf';
-                return;
-            }
-            try {
-                const userCred = await auth.createUserWithEmailAndPassword(email, password);
-                await database.ref(`users/${userCred.user.uid}`).set({
-                    username: username,
-                    email: email,
-                    verified: false,
-                    createdAt: Date.now()
-                });
-                currentUser = { uid: userCred.user.uid, email, username, verified: false };
-                renderMain();
-            } catch(e) {
-                authMessage.innerHTML = e.message;
-            }
-        };
+    await signInWithEmailAndPassword(auth,email,pw);
+  }catch(e){showE('login-err',fErr(e));document.getElementById('btn-login').disabled=false;}
+});
+
+w('doRegister',async()=>{
+  let un=document.getElementById('reg-un').value.trim().toLowerCase().replace('@','');
+  const em=document.getElementById('reg-em').value.trim().toLowerCase();
+  const pw=document.getElementById('reg-pw').value,pw2=document.getElementById('reg-pw2').value;
+  document.getElementById('reg-err').classList.add('hidden');
+  if(!un||!em||!pw)return showE('reg-err','sila isi semua medan.');
+  if(un.length<3)return showE('reg-err','nama pengguna terlalu pendek.');
+  if(pw.length<6)return showE('reg-err','kata laluan min 6 aksara.');
+  if(pw!==pw2)return showE('reg-err','kata laluan tidak sepadan.');
+  if(/[^a-z0-9_.]/.test(un))return showE('reg-err','hanya huruf kecil, nombor, _ atau . sahaja.');
+  document.getElementById('btn-reg').disabled=true;
+  try{
+    const us=await getDocs(query(collection(db,'users'),where('namapengguna','==',un)));
+    if(!us.empty)throw new Error('nama pengguna sudah digunakan.');
+    const cred=await createUserWithEmailAndPassword(auth,em,pw);
+    await setDoc(doc(db,'users',cred.user.uid),{namapengguna:un,emel:em,bio:'',photourl:'',verified:false,frameShape:'auto',createdat:serverTimestamp()});
+  }catch(e){showE('reg-err',fErr(e));document.getElementById('btn-reg').disabled=false;}
+});
+
+w('doLogout',async()=>{if(feedUnsub)feedUnsub();if(notifUnsub)notifUnsub();await signOut(auth);});
+
+onAuthStateChanged(auth,async user=>{
+  if(user){
+    CU=user;
+    const snap=await getDoc(doc(db,'users',user.uid));
+    UD=snap.exists()?snap.data():{};
+    showApp();
+    // FIX 14: restore last page from sessionStorage so refresh stays on same page
+    const lastPage=sessionStorage.getItem('lastPage')||'utama';
+    nav(lastPage);
+    startNotifListener();applyAdminBg();loadPopups();
+  }else{CU=null;UD=null;hideApp();}
+});
+
+function showApp(){
+  document.getElementById('pg-splash').style.display='none';
+  document.getElementById('pg-auth').classList.remove('show');
+  document.getElementById('app').classList.add('active');
+  updUI();
+}
+function hideApp(){
+  document.getElementById('pg-splash').style.display='';
+  document.getElementById('app').classList.remove('active');
+  sessionStorage.removeItem('lastPage');
+}
+
+function updUI(){
+  if(!UD)return;
+  const un='@'+(UD.namapengguna||'');
+  const tb=document.getElementById('tb-uname');if(tb)tb.textContent=un;
+  // FIX 15: verified badge in topbar alongside username
+  const tbBadge=document.getElementById('tb-badge');
+  if(tbBadge)tbBadge.classList.toggle('hidden',!UD.verified);
+  const dtUname=document.getElementById('dt-uname');
+  if(dtUname)dtUname.textContent=un;
+  const{total}=cST(tDays);
+  setEl(document.getElementById('tb-av'),UD.photourl,UD.namapengguna);
+  setEl(document.getElementById('bnav-av'),UD.photourl,UD.namapengguna);
+  setEl(document.getElementById('dt-user-av'),UD.photourl,UD.namapengguna);
+  applyShapes(total,UD.frameShape);
+}
+
+// Load admin popups
+async function loadPopups(){
+  try{
+    const snap=await getDoc(doc(db,'settings','popup'));
+    if(!snap.exists()||!snap.data().active)return;
+    const d=snap.data();
+    if(d.type==='photo'){
+      document.getElementById('popup-photo-img').src=d.imageUrl||'';
+      document.getElementById('popup-photo-txt').innerHTML=esc(d.text||'');
+      document.getElementById('popup-photo-sender').innerHTML=buildSenderHTML(d.senderUname,d.senderVerified);
+      document.getElementById('popup-photo-box').style.background=d.bgColor||'var(--grad-h)';
+      oModal('popup-photo-modal');
+    }else{
+      document.getElementById('popup-title').textContent=d.title||'';
+      document.getElementById('popup-body').innerHTML=esc(d.body||'');
+      document.getElementById('popup-text-box').style.background=d.bgColor||'var(--grad-h)';
+      const urlBtn=document.getElementById('popup-url-btn');
+      if(d.btnText&&d.btnUrl){urlBtn.textContent=d.btnText;urlBtn.style.display='block';urlBtn.onclick=()=>window.open(d.btnUrl,'_blank');}
+      document.getElementById('popup-sender').innerHTML=buildSenderHTML(d.senderUname,d.senderVerified);
+      document.getElementById('popup-close-btn').textContent=d.closeText||'tutup tetingkap timbul.';
+      oModal('popup-text-modal');
     }
-    
-    async function renderMain() {
-        const app = document.getElementById('app');
-        app.innerHTML = `
-            <div class="header">
-                <div class="logo-area">
-                    <div class="logo"><img src="logo.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle fill=%22%23fc9fb1%22 cx=%2250%22 cy=%2250%22 r=%2250%22/%3E%3Ctext x=%2250%22 y=%2267%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3ECT%3C/text%3E%3C/svg%3E'" alt="logo"></div>
-                    <div class="app-title">crash out, burn out</div>
-                </div>
-                <div class="user-info">
-                    <span class="username-display">@${currentUser.username || currentUser.email.split('@')[0]}</span>
-                    <button class="logout-btn" id="logoutBtn">Keluar</button>
-                </div>
-            </div>
-            <div class="container" id="mainContainer">
-                <div id="viewContainer"></div>
-            </div>
-            <div class="bottom-nav">
-                <div class="nav-item ${currentView === 'feed' ? 'active' : ''}" data-view="feed">🏠 Feed</div>
-                <div class="nav-item ${currentView === 'profile' ? 'active' : ''}" data-view="profile">👤 Profil</div>
-            </div>
-        `;
-        
-        document.getElementById('logoutBtn').onclick = () => auth.signOut();
-        
-        document.querySelectorAll('.nav-item').forEach(el => {
-            el.onclick = () => {
-                currentView = el.dataset.view;
-                renderMain();
-            };
-        });
-        
-        const viewContainer = document.getElementById('viewContainer');
-        if (currentView === 'feed') {
-            viewContainer.innerHTML = `
-                <div class="feed-header">
-                    <div class="feed-title">🌱 Luahan Terkini</div>
-                    <button class="new-post-btn" id="newPostBtn">+ Luah</button>
-                </div>
-                <div id="postsList"></div>
-            `;
-            document.getElementById('newPostBtn')?.addEventListener('click', showPostModal);
-            await loadPosts('postsList');
-        } else if (currentView === 'profile') {
-            viewContainer.innerHTML = `
-                <div class="post-card" style="text-align:center">
-                    <div class="post-avatar" style="margin:0 auto 12px; width:80px;height:80px;font-size:32px">${(currentUser.username ? currentUser.username[0] : 'U').toUpperCase()}</div>
-                    <h3>@${currentUser.username || currentUser.email.split('@')[0]}</h3>
-                    <p style="color:var(--gray); margin-top:4px">${currentUser.email}</p>
-                    ${currentUser.verified ? '<div><img src="verifiedbadge.png" width="20" onerror="this.style.display=\'none\'"> Verified</div>' : ''}
-                    <button id="editUsernameBtn" class="btn btn-secondary" style="margin-top:16px; width:auto; padding:8px 24px">Tukar Nama</button>
-                </div>
-                <div class="feed-header" style="margin-top:20px">
-                    <div class="feed-title">📝 Luahan Saya</div>
-                    <button class="new-post-btn" id="newPostProfileBtn">+ Luah</button>
-                </div>
-                <div id="myPostsList"></div>
-            `;
-            document.getElementById('newPostProfileBtn')?.addEventListener('click', showPostModal);
-            document.getElementById('editUsernameBtn')?.addEventListener('click', async () => {
-                const newName = prompt('Masukkan nama pengguna baru:', currentUser.username);
-                if (newName && newName.trim()) {
-                    await database.ref(`users/${currentUser.uid}`).update({ username: newName.trim() });
-                    currentUser.username = newName.trim();
-                    renderMain();
-                }
-            });
-            await loadMyPosts();
-        }
+  }catch(e){}
+}
+
+// FIX 15: badge follows username everywhere
+function buildSenderHTML(uname,verified){
+  if(!uname)return'';
+  return`daripada @${esc(uname)}${verified?` <img src="verifiedbadge.png" style="width:12px;height:12px;vertical-align:middle" alt="" onerror="this.style.display='none'">`:''}.`;
+}
+
+const PGS=['utama','bertahan','luahan','notifikasi','profil','tetapan'];
+w('nav',(p)=>{
+  if(p!=='profil')viewUID=null;
+  PGS.forEach(x=>{document.getElementById(`pg-${x}`)?.classList.add('hidden');});
+  document.getElementById(`pg-${p}`)?.classList.remove('hidden');
+  document.querySelectorAll('.nav-l,.dt-nav-btn').forEach(a=>a.classList.toggle('active',a.dataset.p===p));
+  // FIX 14: save current page to sessionStorage
+  sessionStorage.setItem('lastPage',p);
+  if(p==='utama')ldDash();
+  if(p==='bertahan')ldBertahan();
+  if(p==='notifikasi')ldNotif();
+  if(p==='profil')ldProfil();
+  if(p==='tetapan')ldTetapan();
+  window.scrollTo(0,0);
+});
+w('en',(e,p)=>{e.preventDefault();nav(p);});
+
+// FIX 8: viewProf - clicking on another user's username goes to THEIR profile, not own
+w('viewProf',async(uid)=>{
+  viewUID=uid;
+  PGS.forEach(x=>{document.getElementById(`pg-${x}`)?.classList.add('hidden');});
+  document.getElementById('pg-profil')?.classList.remove('hidden');
+  document.querySelectorAll('.nav-l,.dt-nav-btn').forEach(a=>a.classList.toggle('active',a.dataset.p==='profil'));
+  sessionStorage.setItem('lastPage','profil');
+  await ldProfil();
+  window.scrollTo(0,0);
+});
+
+w('oModal',(id)=>document.getElementById(id)?.classList.add('open'));
+w('cModal',(id)=>document.getElementById(id)?.classList.remove('open'));
+
+// DASHBOARD
+async function ldDash(){
+  if(!CU)return;
+  await ldTDays();updUI();rdTick();rdMiniCal();ldFeed();
+  const un='@'+(UD?.namapengguna||'');
+  const dg=document.getElementById('dt-greet');if(dg)dg.textContent=`hai, ${un}.`;
+}
+
+async function ldTDays(uid){
+  const tid=uid||CU.uid;
+  const snap=await getDoc(doc(db,'users',tid,'bertahan','data'));
+  if(snap.exists()){
+    const d=snap.data();
+    if(!uid||uid===CU.uid)tDays=d.days||{};
+    const r=cST(d.days||{});
+    return{...r,days:d.days||{}};
+  }
+  if(!uid||uid===CU.uid)tDays={};
+  return{streak:0,total:0,days:{}};
+}
+
+function rdTick(){
+  const already=!!tDays[todayK()];
+  const{streak,total}=cST(tDays);
+  ['m-streak','d-streak','b-streak'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=streak;});
+  ['m-total','d-total','b-total'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=total;});
+  const hb=document.getElementById('heart-btn');
+  if(hb){
+    hb.disabled=already;
+    const hp=document.getElementById('heart-path');
+    if(hp){
+      if(already){hp.setAttribute('fill','url(#heartGrad)');hp.setAttribute('stroke','none');}
+      else{hp.setAttribute('fill','none');hp.setAttribute('stroke','rgba(255,255,255,0.8)');hp.setAttribute('stroke-width','3');}
     }
-    
-    auth.onAuthStateChanged(async (user) => {
-        if (user) {
-            const snap = await database.ref(`users/${user.uid}`).once('value');
-            const userData = snap.val() || {};
-            currentUser = { uid: user.uid, email: user.email, ...userData };
-            renderMain();
-        } else {
-            currentUser = null;
-            renderAuth();
-        }
-    });
+  }
+  const dhp=document.getElementById('d-heart-path');
+  if(dhp){
+    if(already){dhp.setAttribute('fill','url(#heartGrad)');dhp.setAttribute('stroke','none');}
+    else{dhp.setAttribute('fill','none');dhp.setAttribute('stroke','rgba(255,255,255,0.6)');dhp.setAttribute('stroke-width','2.5');}
+  }
+  const dtc=document.getElementById('d-tick-card');if(dtc)dtc.style.cursor=already?'default':'pointer';
+  const bs=document.getElementById('b-status');if(bs)bs.textContent=already?'kamu sudah tandakan hari ini.':'belum ditandakan hari ini.';
+  applyShapes(total,UD?.frameShape);
+}
+
+function cST(days){
+  const total=Object.keys(days).length;
+  let streak=0;
+  const d=new Date();
+  while(true){
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if(!days[k])break;streak++;d.setDate(d.getDate()-1);
+  }
+  return{streak,total};
+}
+
+function rdMiniCal(){
+  const now=new Date(),yr=now.getFullYear(),mo=now.getMonth();
+  const cal=document.getElementById('d-mini-cal'),tEl=document.getElementById('d-cal-title');
+  if(!cal)return;if(tEl)tEl.textContent=`${MO[mo]} ${yr}.`;
+  const DL=['ahd','isn','sel','rab','kha','jum','sab'],dim=new Date(yr,mo+1,0).getDate(),fd=new Date(yr,mo,1).getDay(),td=now.getDate();
+  cal.innerHTML=DL.map(d=>`<div class="cal-dlbl">${d}</div>`).join('');
+  for(let i=0;i<fd;i++)cal.innerHTML+='<div></div>';
+  for(let d=1;d<=dim;d++){
+    const k=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el=document.createElement('div');el.className='cal-day';el.textContent=d;
+    if(tDays[k])el.classList.add('ticked');
+    if(d===td)el.classList.add('today');
+    if(d>td)el.classList.add('future');
+    cal.appendChild(el);
+  }
+}
+
+w('doTick',async()=>{
+  if(!CU)return;const k=todayK();if(tDays[k])return;
+  tDays[k]=true;const{streak,total}=cST(tDays);
+  await setDoc(doc(db,'users',CU.uid,'bertahan','data'),{days:tDays,currentstreak:streak,lasttick:serverTimestamp()},{merge:true});
+  rdTick();rdMiniCal();
+  if(document.getElementById('m-dots'))rdDots();
+  rdAch();rdBCal();
+  toast('kamu masih di sini. terima kasih.');
+});
+
+// FEED
+function ldFeed(){
+  if(feedUnsub)feedUnsub();
+  const q=query(collection(db,'luahan'),orderBy('createdat','desc'),limit(50));
+  feedUnsub=onSnapshot(q,async snap=>{
+    const mEl=document.getElementById('feed-m'),dEl=document.getElementById('feed-d');
+    if(snap.empty){
+      const h='<div class="feed-empty">tiada luahan lagi. jadilah yang pertama.</div>';
+      if(mEl)mEl.innerHTML=h;if(dEl)dEl.innerHTML=h;return;
+    }
+    const uids=[...new Set(snap.docs.map(d=>d.data().authorid))];
+    const um={};
+    await Promise.all(uids.map(async uid=>{const u=await getDoc(doc(db,'users',uid));if(u.exists())um[uid]=u.data();}));
+    const html=snap.docs.map(d=>mkPost(d,um)).join('');
+    if(mEl)mEl.innerHTML=html;if(dEl)dEl.innerHTML=html;
+  });
+}
+
+// FIX 5: post text justify | FIX 6: correct shape per user | FIX 8: clicking username goes to that user's profile | FIX 15: verified badge beside username in posts | FIX 16-2: star gradient when starred
+function mkPost(d,um){
+  const data=d.data(),au=um[data.authorid]||{},anon=data.anon;
+  const un=anon?null:(au.namapengguna||'tanpa nama');
+  const photo=anon?null:(au.photourl||'');
+  const ver=!anon&&au.verified,uid=data.authorid;
+  const stars=data.stars||0,isOwn=uid===CU?.uid;
+  const strd=data.starredBy&&Array.isArray(data.starredBy)&&data.starredBy.includes(CU?.uid);
+  const src=photo||(un?`https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(un)}`:'');
+  // FIX 6: use author's own total days + frameShape for their avatar shape
+  const auDays=au.days||{};const{total:auTotal}=cST(auDays);
+  const sh=getShape(auTotal,au.frameShape);
+  const avCls=`post-av shape-${sh}`;
+  // FIX 15: verified badge inline with username
+  const badgeH=ver?` <img src="verifiedbadge.png" style="width:12px;height:12px;vertical-align:middle" alt="" onerror="this.style.display='none'">`:'';
+  const starsH=stars>0?(stars>=1000?Math.round(stars/1000)+'k':stars):'0';
+  const actH=isOwn?`<button class="post-act" onclick="delPost('${d.id}')">padam.</button>`:'';
+  // FIX 8: clicking username goes to THAT user's profile (viewProf with their uid)
+  const unameClick=anon?'':`onclick="viewProf('${uid}')" style="cursor:pointer"`;
+  return`<div class="post-item">
+    <div class="post-hdr">
+      ${anon?'':`<div class="${avCls}" onclick="viewProf('${uid}')" style="cursor:pointer">${mkAv(src,un)}</div>`}
+      <div class="post-meta">
+        ${anon?`<span class="post-anon">tanpa nama.</span>`:`<span class="post-uname" ${unameClick}>${esc(un)}${badgeH}</span>`}
+        <div class="post-time">${fmtT(data.createdat)}</div>
+      </div>
+    </div>
+    <div class="post-txt">${esc(data.text)}</div>
+    <div class="post-actions">
+      <button class="star-btn ${strd?'starred':''}" onclick="togStar('${d.id}',this)">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span class="star-count">${starsH}</span>
+      </button>
+      ${actH}
+    </div>
+  </div>`;
+}
+
+w('togStar',async(id,btn)=>{
+  if(!CU)return;
+  const snap=await getDoc(doc(db,'luahan',id));if(!snap.exists())return;
+  const starredBy=snap.data().starredBy||[];const alreadyStarred=starredBy.includes(CU.uid);
+  if(alreadyStarred){
+    await updateDoc(doc(db,'luahan',id),{stars:Math.max(0,(snap.data().stars||1)-1),starredBy:arrayRemove(CU.uid)});
+    btn.classList.remove('starred');
+    const sc=btn.querySelector('.star-count');if(sc)sc.textContent=Math.max(0,(snap.data().stars||1)-1);
+  }else{
+    await updateDoc(doc(db,'luahan',id),{stars:increment(1),starredBy:arrayUnion(CU.uid)});
+    btn.classList.add('starred');
+    const sc=btn.querySelector('.star-count');if(sc)sc.textContent=(snap.data().stars||0)+1;
+  }
+});
+w('delPost',async(id)=>{if(!confirm('padam luahan ini?'))return;await deleteDoc(doc(db,'luahan',id));toast('luahan dipadam.');});
+
+// POST
+w('updCC',()=>{document.getElementById('cc').textContent=document.getElementById('post-ta').value.length;});
+w('togAnon',()=>{isAnon=!isAnon;document.getElementById('anon-sw').classList.toggle('on',!isAnon);document.getElementById('anon-lbl').textContent=isAnon?'hantar tanpa nama.':'hantar dengan nama.';});
+w('doPost',async()=>{
+  const text=document.getElementById('post-ta').value.trim();if(!text)return toast('luahan tidak boleh kosong.');
+  const btn=document.getElementById('btn-post');btn.disabled=true;
+  try{
+    await addDoc(collection(db,'luahan'),{authorid:CU.uid,text,anon:isAnon,createdat:serverTimestamp(),stars:0,starredBy:[]});
+    document.getElementById('post-ta').value='';document.getElementById('cc').textContent='0';
+    isAnon=false;document.getElementById('anon-sw').classList.add('on');document.getElementById('anon-lbl').textContent='hantar dengan nama.';
+    toast('luahan berjaya dihantar.');nav('utama');
+  }catch(e){toast('gagal menghantar. cuba semula.');}
+  btn.disabled=false;
+});
+
+// BERTAHAN
+async function ldBertahan(){
+  if(!CU)return;
+  await ldTDays();rdTick();rdDots();
+  const now=new Date();bCalVM={year:now.getFullYear(),month:now.getMonth()};
+  rdBCal();rdAch();rdPen();
+}
+
+function rdDots(){
+  ['m-dots','d-dots'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;el.innerHTML='';
+    for(let i=29;i>=0;i--){
+      const d=new Date();d.setDate(d.getDate()-i);
+      const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const dot=document.createElement('div');
+      dot.className='d-dot'+(tDays[k]?' done':'')+(i===0?' today-dot':'');
+      el.appendChild(dot);
+    }
+  });
+}
+
+const ACHS=[
+  {min:1,l:'1',s:'hari.',t:'circle'},{min:3,l:'3',s:'hari.',t:'circle'},{min:7,l:'7',s:'hari.',t:'circle'},
+  {min:14,l:'14',s:'hari.',t:'circle'},{min:30,l:'1',s:'bulan.',t:'circle'},
+  {min:90,l:'3',s:'bulan.',t:'rect'},{min:180,l:'6',s:'bulan.',t:'rect'},{min:270,l:'9',s:'bulan.',t:'rect'},
+  {min:365,l:'1',s:'tahun.',t:'patterned'}
+];
+
+function rdAch(){
+  const{total}=cST(tDays);
+  const html=ACHS.map(b=>`<div class="ach-badge type-${b.t} ${total>=b.min?'earned':''}"><div class="ach-inner"><div class="ach-num">${b.l}</div><div class="ach-lbl">${b.s}</div></div></div>`).join('');
+  ['m-ach','d-ach'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
+}
+
+function rdPen(){
+  const{total}=cST(tDays);
+  // FIX 6 & 16-3: show correct shape including dark mode for penerangan
+  const sh1=getShape(0,'auto');   // circle
+  const sh2=getShape(90,'auto');  // rect
+  const sh3=getShape(365,'auto'); // patterned
+  const avUrl=UD?.photourl||'';const avUn=UD?.namapengguna||'';
+  const html=`
+    <div class="sec-h" style="margin-bottom:8px">penerangan.</div>
+    <div class="pen-box">
+      <div class="pen-txt">tandakan "saya masih bertahan harini" untuk dikira sebagai pencapaian.</div>
+      <div class="pen-row">
+        <div class="pen-av shape-${sh1}">${mkAv(avUrl,avUn)}</div>
+        <div class="pen-desc">hari pertama sehingga sehari sebelum genap 3 bulan, bentuk bingkai yang dipaparkan pada gambar profil ialah bulat dan digunakan di mana-mana sahaja yang terdapat gambar profil.</div>
+      </div>
+      <div class="pen-row">
+        <div class="pen-av shape-${sh2}">${mkAv(avUrl,avUn)}</div>
+        <div class="pen-desc">genap 3 bulan, bentuk bingkai yang dipaparkan pada gambar profil ialah segi empat tepat dan digunakan di mana-mana sahaja yang terdapat gambar profil.</div>
+      </div>
+      <div class="pen-row">
+        <div class="pen-av shape-${sh3}">${mkAv(avUrl,avUn)}</div>
+        <div class="pen-desc">setelah genap 1 tahun, satu bingkai bercorak akan dipaparkan pada keliling gambar profil segi empat tepat dan digunakan di mana-mana sahaja yang terdapat gambar profil.</div>
+      </div>
+    </div>`;
+  ['m-pen','d-pen'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
+}
+
+w('chBCal',(dir)=>{
+  bCalVM.month+=dir;
+  if(bCalVM.month>11){bCalVM.month=0;bCalVM.year++;}
+  if(bCalVM.month<0){bCalVM.month=11;bCalVM.year--;}
+  rdBCal();
+});
+
+function rdBCal(days){
+  const dd=days||tDays;const{year,month}=bCalVM||{year:new Date().getFullYear(),month:new Date().getMonth()};
+  ['m-cal','d-cal'].forEach(id=>{
+    const el=document.getElementById(id);
+    const mId=id==='m-cal'?'m-cal-month':'d-cal-month';
+    const mEl=document.getElementById(mId);
+    if(!el)return;if(mEl)mEl.textContent=`${MO[month]} ${year}.`;
+    const DL=['ahd','isn','sel','rab','kha','jum','sab'],dim=new Date(year,month+1,0).getDate(),fd=new Date(year,month,1).getDay(),ts=todayK();
+    el.innerHTML=DL.map(d=>`<div class="cal-dlbl">${d}</div>`).join('');
+    for(let i=0;i<fd;i++)el.innerHTML+='<div></div>';
+    for(let d=1;d<=dim;d++){
+      const k=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const e2=document.createElement('div');e2.className='cal-day';e2.textContent=d;
+      if(dd[k])e2.classList.add('ticked');if(k===ts)e2.classList.add('today');el.appendChild(e2);
+    }
+  });
+}
+
+// RUANG TENANG
+w('openTenang',async(type)=>{
+  const tnH=document.getElementById('tn-h'),tnB=document.getElementById('tn-body');
+  const tnames={nafas:'pernafasan.',afirmasi:'afirmasi harian.',sos:'talian bantuan.',buku:'buku nota.',gratitud:'rasa syukur hari ini.'};
+  tnH.textContent=tnames[type]||'';
+  if(type==='nafas'){
+    let steps=null;
+    try{const snap=await getDoc(doc(db,'settings','pernafasan'));if(snap.exists()&&snap.data().steps)steps=snap.data().steps;}catch(e){}
+    if(!steps)steps=[{title:'tarik nafas.',desc:'perlahan selama <strong>4 saat.</strong>'},{title:'tahan nafas.',desc:'selama <strong>7 saat.</strong>'},{title:'hembus perlahan.',desc:'selama <strong>8 saat.</strong>'}];
+    tnB.innerHTML=`<p style="font-size:0.86rem;color:rgba(255,255,255,0.78);margin-bottom:10px;font-style:italic">ikut kaedah 4-7-8 untuk menenangkan minda.</p>${steps.map(s=>`<div class="tn-step"><strong>${s.title}</strong> ${s.desc}</div>`).join('')}<p style="margin-top:10px;font-size:0.76rem;color:rgba(255,255,255,0.5)">ulang 3 hingga 4 kali. biarkan bahu kamu rileks.</p>`;
+  }else if(type==='afirmasi'){
+    let items=null;
+    try{const snap=await getDoc(doc(db,'settings','afirmasi'));if(snap.exists()&&snap.data().items?.length)items=snap.data().items;}catch(e){}
+    if(!items)items=['saya layak untuk gembira.','saya sedang mencuba dengan sepenuh daya.','perasaan saya adalah sah.','saya tidak perlu sempurna untuk dicintai.','saya pilih untuk terus mencuba hari ini.','hari ini, saya cukup.','saya kuat walaupun tidak selalu nampak begitu.'];
+    tnB.innerHTML=items.map(i=>`<div class="tn-affir">${esc(i)}</div>`).join('');
+  }else if(type==='sos'){
+    let contacts=null;
+    try{const snap=await getDoc(doc(db,'settings','talian'));if(snap.exists()&&snap.data().contacts?.length)contacts=snap.data().contacts;}catch(e){}
+    if(!contacts)contacts=[
+      {name:'befrienders kl.',num:'03-7627 2929',desc:'24 jam sehari, percuma, sulit.'},
+      {name:'talian kasih.',num:'15999',desc:'perkhidmatan kaunseling 24 jam.'},
+      {name:'miasa helpline.',num:'1-800-819-819',desc:'kesihatan mental malaysia.'},
+      {name:'hospital terdekat.',num:'999',desc:'kecemasan perubatan.'}
+    ];
+    // FIX 7: sos text correct - not greyed out in light mode
+    tnB.innerHTML=contacts.map(c=>`<div class="tn-sos"><div class="tn-sos-name">${esc(c.name)}</div><div class="tn-sos-num">${esc(c.num)}</div><div class="tn-sos-desc">${esc(c.desc)}</div></div>`).join('')+`<p style="margin-top:10px;font-size:0.79rem;text-align:center;color:rgba(255,255,255,0.6)">kamu tidak perlu hadapi ini sorang-sorang.</p>`;
+  }else if(type==='gratitud'){
+    // FIX 1 & desktop-4: show spinner then load, scrollable horizontally
+    tnB.innerHTML='<div class="spinner"></div>';oModal('tn-modal');await ldGratitud(tnB);return;
+  }else if(type==='buku'){
+    tnB.innerHTML='<div class="spinner"></div>';oModal('tn-modal');await ldBuku(tnB);return;
+  }
+  oModal('tn-modal');
+});
+
+// FIX 1: buku nota and gratitud load properly (was "loading memanjang")
+async function ldGratitud(bEl){
+  const entries=[];
+  for(let i=0;i<14;i++){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const snap=await getDoc(doc(db,'users',CU.uid,'gratitud',k));
+    entries.push({k,date:d.toLocaleDateString('ms-MY',{day:'numeric',month:'short'}),text:snap.exists()?snap.data().text:'',today:i===0});
+  }
+  // FIX desktop-4: slide-scroll is scrollable
+  bEl.innerHTML=`<p style="font-size:0.86rem;color:rgba(255,255,255,0.75);margin-bottom:10px">tulis 3 perkara yang kamu bersyukur hari ini.</p>
+  <div class="slide-scroll" id="grat-scroll">${entries.map((e,idx)=>`<div class="slide-c ${e.today?'today-s':''}" onclick="selSlide(this,'grat-ta',${idx})"><div class="slide-date">${e.date}</div>${e.text?`<div class="slide-prev">${esc(e.text)}</div>`:'<div class="slide-empty">kosong.</div>'}</div>`).join('')}</div>
+  <textarea class="tn-ta" id="grat-ta" placeholder="1. ...\n2. ...\n3. ..."></textarea>
+  <button class="btn-tn-save" onclick="saveGrat()">simpan syukur hari ini.</button>`;
+  // Store entries for selection
+  window._gratEntries=entries;
+  const t=entries.find(e=>e.today);
+  if(t?.text){const ta=document.getElementById('grat-ta');if(ta)ta.value=t.text;}
+}
+
+w('selSlide',(el,taId,idx)=>{
+  const entries=window._gratEntries||window._bukuEntries||[];
+  const entry=entries[idx];
+  const ta=document.getElementById(taId);
+  if(ta&&entry)ta.value=entry.text||'';
+  el.closest('.slide-scroll')?.querySelectorAll('.slide-c').forEach(s=>s.style.outline='none');
+  el.style.outline='2px solid #fff';
+});
+w('saveGrat',async()=>{
+  const text=document.getElementById('grat-ta')?.value?.trim();
+  if(!text)return;
+  await setDoc(doc(db,'users',CU.uid,'gratitud',todayK()),{text,createdat:serverTimestamp()});
+  toast('syukur disimpan.');
+});
+
+async function ldBuku(bEl){
+  const entries=[];
+  for(let i=0;i<14;i++){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const snap=await getDoc(doc(db,'users',CU.uid,'buku',k));
+    entries.push({k,date:d.toLocaleDateString('ms-MY',{day:'numeric',month:'short'}),text:snap.exists()?snap.data().text:'',today:i===0});
+  }
+  // FIX desktop-4: slide-scroll is scrollable
+  bEl.innerHTML=`<p style="font-size:0.86rem;color:rgba(255,255,255,0.75);margin-bottom:10px">ruangan peribadi untuk kamu luahkan apa yang dirasa.</p>
+  <div class="slide-scroll" id="buku-scroll">${entries.map((e,idx)=>`<div class="slide-c ${e.today?'today-s':''}" onclick="selSlide(this,'buku-ta',${idx})"><div class="slide-date">${e.date}</div>${e.text?`<div class="slide-prev">${esc(e.text)}</div>`:'<div class="slide-empty">kosong.</div>'}</div>`).join('')}</div>
+  <textarea class="tn-ta" id="buku-ta" placeholder="hari ini saya rasa..."></textarea>
+  <button class="btn-tn-save" onclick="saveBuku()">simpan buku nota hari ini.</button>`;
+  window._bukuEntries=entries;
+  const t=entries.find(e=>e.today);
+  if(t?.text){const ta=document.getElementById('buku-ta');if(ta)ta.value=t.text;}
+}
+
+w('saveBuku',async()=>{
+  const text=document.getElementById('buku-ta')?.value?.trim();
+  if(!text)return;
+  await setDoc(doc(db,'users',CU.uid,'buku',todayK()),{text,createdat:serverTimestamp()});
+  toast('buku nota disimpan.');
+});
+
+// NOTIFIKASI
+async function ldNotif(){
+  if(!CU)return;
+  const el=document.getElementById('notif-list');el.innerHTML='<div class="spinner"></div>';
+  if(notifUnsub)notifUnsub();
+  const q=query(collection(db,'users',CU.uid,'notifikasi'),orderBy('createdat','desc'),limit(30));
+  notifUnsub=onSnapshot(q,snap=>{
+    updNBadge(snap);
+    if(snap.empty){el.innerHTML='<div class="notif-empty">tiada notifikasi buat masa ini.</div>';return;}
+    el.innerHTML=snap.docs.map(d=>{
+      const n=d.data();
+      const senderPhotoHTML=n.senderPhotoUrl?`<img src="${esc(n.senderPhotoUrl)}" onerror="this.style.display='none'">`:'';
+      // FIX 3: btn-buka opens full message modal
+      const nJsonSafe=encodeURIComponent(JSON.stringify(n));
+      return`<div class="notif-item">
+        <div class="notif-top">
+          <div class="notif-av">${senderPhotoHTML||mkAv('','admin')}</div>
+          <div class="notif-meta">
+            <div class="notif-title-txt">${esc(n.title||'notifikasi.')}</div>
+            <!-- FIX 15: verified badge with sender username -->
+            <div class="notif-sender-row">daripada @${esc(n.senderUname||'admin')}${n.senderVerified?` <img src="verifiedbadge.png" style="width:12px;height:12px" alt="" onerror="this.style.display='none'">`:''}.
+            </div>
+          </div>
+          <div class="notif-ts">${fmtT(n.createdat)}</div>
+        </div>
+        <div class="notif-preview">${esc(n.message||'')}</div>
+        <button class="btn-buka" onclick="openNotif('${d.id}','${nJsonSafe}')">buka.</button>
+      </div>`;
+    }).join('');
+    snap.docs.forEach(async d=>{if(!d.data().read)await updateDoc(doc(db,'users',CU.uid,'notifikasi',d.id),{read:true});});
+  });
+}
+
+// FIX 3: openNotif shows full message in modal
+w('openNotif',(id,nJsonEncoded)=>{
+  try{
+    const n=JSON.parse(decodeURIComponent(nJsonEncoded));
+    if(n.popupType==='photo'&&n.imageUrl){
+      document.getElementById('popup-photo-img').src=n.imageUrl;
+      document.getElementById('popup-photo-txt').innerHTML=esc(n.text||n.message||'');
+      document.getElementById('popup-photo-sender').innerHTML=buildSenderHTML(n.senderUname,n.senderVerified);
+      document.getElementById('popup-photo-box').style.background=n.bgColor||'var(--grad-h)';
+      oModal('popup-photo-modal');
+    }else{
+      document.getElementById('popup-title').textContent=n.title||'notifikasi.';
+      document.getElementById('popup-body').innerHTML=esc(n.message||'');
+      document.getElementById('popup-text-box').style.background=n.bgColor||'var(--grad-h)';
+      const urlBtn=document.getElementById('popup-url-btn');
+      if(n.btnText&&n.btnUrl){urlBtn.textContent=n.btnText;urlBtn.style.display='block';urlBtn.onclick=()=>window.open(n.btnUrl,'_blank');}
+      else{urlBtn.style.display='none';}
+      document.getElementById('popup-sender').innerHTML=buildSenderHTML(n.senderUname,n.senderVerified);
+      document.getElementById('popup-close-btn').textContent='tutup tetingkap timbul.';
+      oModal('popup-text-modal');
+    }
+  }catch(e){console.error('openNotif error',e);}
+});
+
+function updNBadge(snap){
+  const c=snap.docs.filter(d=>!d.data().read).length,show=c>0;
+  document.getElementById('bnav-dot')?.classList.toggle('show',show);
+  document.getElementById('dt-nd')?.classList.toggle('show',show);
+  const nb=document.getElementById('nbc');if(nb){nb.textContent=c;nb.classList.toggle('show',show);}
+}
+function startNotifListener(){
+  if(!CU)return;
+  const q=query(collection(db,'users',CU.uid,'notifikasi'),orderBy('createdat','desc'),limit(30));
+  onSnapshot(q,snap=>updNBadge(snap));
+}
+
+// PROFIL
+async function ldProfil(){
+  const uid=viewUID||CU.uid,isOwn=uid===CU.uid;
+  const backEl=document.getElementById('prof-back');
+  backEl.innerHTML=isOwn?'':`<button class="back-btn" onclick="nav('utama')">&#8592; kembali.</button>`;
+  const snap=await getDoc(doc(db,'users',uid));
+  if(!snap.exists()){toast('pengguna tidak dijumpai.');nav('utama');return;}
+  const d=snap.data();
+  document.getElementById('prof-heading').textContent=isOwn?'profil.':'@'+d.namapengguna+'.';
+  const bDataSnap=await getDoc(doc(db,'users',uid,'bertahan','data'));
+  const bData=bDataSnap.exists()?bDataSnap.data().days||{}:{};
+  if(isOwn)tDays=bData;
+  const{streak,total}=cST(bData);
+  const sh=getShape(total,d.frameShape);
+  const avH=mkAv(d.photourl,d.namapengguna);
+  // Mobile avatar - FIX 11: clickable, shape-aware lightbox
+  const mav=document.getElementById('m-prof-av');
+  if(mav){mav.className=`prof-av shape-${sh}`;mav.innerHTML=avH;mav.style.cursor='pointer';mav.onclick=()=>showAvLightbox(d.photourl,d.namapengguna,sh);}
+  // Desktop avatar
+  const dav=document.getElementById('dt-prof-av');
+  if(dav){dav.className=`dt-prof-av shape-${sh}`;dav.innerHTML=avH;dav.style.cursor='pointer';dav.onclick=()=>showAvLightbox(d.photourl,d.namapengguna,sh);}
+  const un='@'+(d.namapengguna||'');
+  ['m-prof-uname','d-prof-uname'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=un;});
+  // FIX 15: verified badge alongside username in profile
+  ['m-prof-badge','d-prof-badge'].forEach(id=>{document.getElementById(id)?.classList.toggle('hidden',!d.verified);});
+  ['m-prof-bio','d-prof-bio'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=d.bio||'';});
+  const actH=isOwn?`<button class="btn-sunting" onclick="nav('tetapan')">sunting.</button>`:'';
+  ['m-prof-action','d-prof-action'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=actH;});
+  const lSnap=await getDocs(query(collection(db,'luahan'),where('authorid','==',uid)));
+  const setN=(ids,v)=>ids.forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=v;});
+  setN(['m-ps-luahan','d-ps-luahan'],lSnap.size);
+  setN(['m-ps-streak','d-ps-streak'],streak);
+  setN(['m-ps-total','d-ps-total'],total);
+  // Luahan tab
+  const sorted=lSnap.docs.sort((a,b)=>(b.data().createdat?.seconds||0)-(a.data().createdat?.seconds||0));
+  const um={[uid]:d};
+  document.getElementById('prof-luahan-list').innerHTML=sorted.length===0?'<div class="feed-empty">tiada luahan lagi.</div>':sorted.map(doc=>mkPost(doc,um)).join('');
+  // Rekod tab
+  profBDays=bData;pCalVM={year:new Date().getFullYear(),month:new Date().getMonth()};
+  rdProfDots(bData);rdProfCal(bData);
+  // Bintang tab - FIX 9: starred posts from ANY user, not just own
+  ldBintang(uid,d);
+}
+
+function rdProfDots(days){
+  const el=document.getElementById('prof-dots');if(!el)return;el.innerHTML='';
+  for(let i=29;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const dot=document.createElement('div');dot.className='d-dot'+(days[k]?' done':'');el.appendChild(dot);
+  }
+}
+function rdProfCal(days){
+  const el=document.getElementById('prof-cal'),mEl=document.getElementById('prof-cal-month');if(!el)return;
+  const{year,month}=pCalVM;if(mEl)mEl.textContent=`${MO[month]} ${year}.`;
+  const DL=['ahd','isn','sel','rab','kha','jum','sab'],dim=new Date(year,month+1,0).getDate(),fd=new Date(year,month,1).getDay(),ts=todayK();
+  el.innerHTML=DL.map(d=>`<div class="cal-dlbl">${d}</div>`).join('');
+  for(let i=0;i<fd;i++)el.innerHTML+='<div></div>';
+  for(let d=1;d<=dim;d++){
+    const k=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const e2=document.createElement('div');e2.className='cal-day';e2.textContent=d;
+    if(days[k])e2.classList.add('ticked');if(k===ts)e2.classList.add('today');el.appendChild(e2);
+  }
+}
+w('chPCal',(dir)=>{pCalVM.month+=dir;if(pCalVM.month>11){pCalVM.month=0;pCalVM.year++;}if(pCalVM.month<0){pCalVM.month=11;pCalVM.year--;}rdProfCal(profBDays);});
+
+// FIX 9: Tab bintang shows posts starred by this user (from any author)
+async function ldBintang(uid,udata){
+  const el=document.getElementById('prof-bintang-list');if(!el)return;
+  el.innerHTML='<div class="spinner"></div>';
+  const q=query(collection(db,'luahan'),where('starredBy','array-contains',uid));
+  const snap=await getDocs(q);
+  if(snap.empty){el.innerHTML='<div class="feed-empty">tiada luahan berbintang lagi.</div>';return;}
+  const sorted=snap.docs.sort((a,b)=>(b.data().createdat?.seconds||0)-(a.data().createdat?.seconds||0));
+  const authorIds=[...new Set(sorted.map(d=>d.data().authorid))];
+  const um={};
+  await Promise.all(authorIds.map(async aid=>{const u=await getDoc(doc(db,'users',aid));if(u.exists())um[aid]=u.data();}));
+  el.innerHTML=sorted.map(d=>mkPost(d,um)).join('');
+}
+
+// FIX 11: Avatar lightbox respects frame shape
+function showAvLightbox(url,un,shape){
+  const src=url||(un?`https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(un)}`:'');
+  const inner=document.getElementById('av-lightbox-inner');if(!inner)return;
+  let styleStr='width:100%;aspect-ratio:1;object-fit:cover;display:block;';
+  if(shape==='rect'){styleStr+='border-radius:0;';}
+  else if(shape==='patterned'){styleStr+='border-radius:0;outline:4px solid #fc9fb1;outline-offset:3px;';}
+  else{styleStr+='border-radius:50%;';}// circle
+  inner.innerHTML=`<img src="${src}" alt="${un||''}" style="${styleStr}" onerror="this.style.display='none'"><p style="text-align:center;padding:10px;color:#fff;font-size:0.82rem">@${un||''}</p>`;
+  oModal('av-lightbox');
+}
+
+w('swPTab',(tabId,btn)=>{
+  document.querySelectorAll('.ptab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');btn.classList.add('active');
+  // Reload bintang when switching to that tab
+  if(tabId==='pt-bintang'){
+    const uid=viewUID||CU?.uid;
+    if(uid)ldBintang(uid,null);
+  }
+});
+
+// TETAPAN
+async function ldTetapan(){
+  if(!CU)return;
+  const snap=await getDoc(doc(db,'users',CU.uid));if(!snap.exists())return;
+  const d=snap.data();
+  document.getElementById('set-un').value=d.namapengguna||'';
+  document.getElementById('set-bio').value=d.bio||'';
+  document.getElementById('set-photo').value=d.photourl||'';
+  document.getElementById('set-em').value=d.emel||CU.email||'';
+  // FIX 15: verified badge in settings
+  document.getElementById('set-v-badge')?.classList.toggle('hidden',!d.verified);
+  const avH=mkAv(d.photourl,d.namapengguna);
+  const{total}=cST(tDays);const sh=getShape(total,d.frameShape);
+  const p1=document.getElementById('set-av-prev');if(p1){p1.innerHTML=avH;p1.className=`set-av-prev shape-${sh}`;}
+  const p2=document.getElementById('set-av-sm');if(p2){p2.innerHTML=avH;p2.className=`set-av-prev shape-${sh}`;p2.style.cssText+='width:38px;height:38px;font-size:0.85rem';}
+  const dark=document.body.classList.contains('theme-dark');
+  const sw=document.getElementById('theme-sw');if(sw)sw.classList.toggle('on',dark);
+}
+
+w('prevAv',()=>{
+  const url=document.getElementById('set-photo').value;
+  const un=document.getElementById('set-un').value;
+  const h=mkAv(url,un);
+  const el=document.getElementById('set-av-sm');if(el)el.innerHTML=h;
+});
+
+w('saveProf',async()=>{
+  let un=document.getElementById('set-un').value.trim().toLowerCase().replace('@','');
+  const bio=document.getElementById('set-bio').value.trim();
+  const photo=document.getElementById('set-photo').value.trim();
+  if(!un)return toast('nama pengguna tidak boleh kosong.');
+  if(/[^a-z0-9_.]/.test(un))return toast('hanya huruf kecil, nombor, _ atau . sahaja.');
+  try{
+    if(un!==UD?.namapengguna){const us=await getDocs(query(collection(db,'users'),where('namapengguna','==',un)));if(!us.empty)return toast('nama pengguna sudah digunakan.');}
+    await updateDoc(doc(db,'users',CU.uid),{namapengguna:un,bio,photourl:photo});
+    UD={...UD,namapengguna:un,bio,photourl:photo};updUI();
+    toast('profil dikemas kini.');
+  }catch(e){toast('gagal menyimpan.');}
+});
+
+w('chgPw',async()=>{
+  const oldPw=document.getElementById('set-pw-old').value,newPw=document.getElementById('set-pw-new').value;
+  if(!oldPw||!newPw)return toast('sila isi kedua-dua medan.');
+  if(newPw.length<6)return toast('kata laluan baharu terlalu pendek.');
+  try{
+    const cred=EmailAuthProvider.credential(CU.email,oldPw);
+    await reauthenticateWithCredential(CU,cred);
+    await updatePassword(CU,newPw);
+    document.getElementById('set-pw-old').value='';document.getElementById('set-pw-new').value='';
+    toast('kata laluan berjaya ditukar.');
+  }catch(e){toast(e.code==='auth/wrong-password'?'kata laluan semasa salah.':'gagal menukar kata laluan.');}
+});
+
+w('delAcc',async()=>{
+  const pw=document.getElementById('del-pw').value;if(!pw)return toast('sila masukkan kata laluan.');
+  try{
+    const cred=EmailAuthProvider.credential(CU.email,pw);
+    await reauthenticateWithCredential(CU,cred);
+    const batch=writeBatch(db);
+    const ls=await getDocs(query(collection(db,'luahan'),where('authorid','==',CU.uid)));
+    ls.forEach(d=>batch.delete(d.ref));
+    batch.delete(doc(db,'users',CU.uid));
+    await batch.commit();await deleteUser(CU);cModal('del-modal');
+  }catch(e){toast(e.code==='auth/wrong-password'?'kata laluan salah.':'gagal memadam akaun.');}
+});
 </script>
 </body>
 </html>
