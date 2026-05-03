@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <title>crash out, burn out, turn out d</title>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -22,7 +21,6 @@
             padding-bottom: 70px;
         }
 
-        /* Warna sistem */
         :root {
             --primary: #fc9fb1;
             --secondary: #74a12e;
@@ -34,7 +32,6 @@
             --light-gray: #eeeeee;
         }
 
-        /* Header */
         .header {
             background: var(--primary);
             padding: 15px 16px;
@@ -63,10 +60,8 @@
             justify-content: center;
             font-weight: bold;
             font-size: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* Fallback jika logo.png takde */
         .logo img {
             width: 100%;
             height: 100%;
@@ -105,18 +100,16 @@
             cursor: pointer;
         }
 
-        /* Container */
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 16px;
         }
 
-        /* Auth Card */
         .auth-card {
             background: var(--white);
             border-radius: 24px;
-            padding: 24px 20px;
+            padding: 28px 20px;
             margin-top: 40px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
@@ -202,7 +195,13 @@
             text-align: center;
         }
 
-        /* Feed */
+        .success-msg {
+            color: var(--secondary);
+            font-size: 13px;
+            margin-top: 8px;
+            text-align: center;
+        }
+
         .feed-header {
             display: flex;
             justify-content: space-between;
@@ -228,7 +227,6 @@
             cursor: pointer;
         }
 
-        /* Post Card */
         .post-card {
             background: var(--white);
             border-radius: 20px;
@@ -274,6 +272,7 @@
         .verified-badge {
             width: 18px;
             height: 18px;
+            display: inline-block;
         }
 
         .verified-badge img {
@@ -304,7 +303,7 @@
             border-top: 1px solid var(--light-gray);
         }
 
-        .like-btn, .comment-btn {
+        .like-btn, .comment-btn, .delete-post-btn {
             background: none;
             border: none;
             font-size: 14px;
@@ -321,7 +320,6 @@
             font-weight: 500;
         }
 
-        /* Modal */
         .modal {
             position: fixed;
             top: 0;
@@ -372,7 +370,6 @@
             flex: 1;
         }
 
-        /* Bottom nav */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -388,27 +385,27 @@
             margin: 0 auto;
         }
 
-        .nav-item {
+        .bottom-nav .nav-item {
             text-align: center;
             color: var(--gray);
-            font-size: 12px;
+            font-size: 14px;
             cursor: pointer;
             transition: 0.2s;
+            padding: 8px 16px;
+            border-radius: 30px;
         }
 
         .nav-item.active {
-            color: var(--primary);
-            font-weight: 600;
+            background: var(--primary);
+            color: white;
         }
 
-        /* Loading */
         .loading {
             text-align: center;
             padding: 40px;
             color: var(--gray);
         }
 
-        /* Empty state */
         .empty {
             text-align: center;
             padding: 60px 20px;
@@ -418,9 +415,7 @@
 </head>
 <body>
 
-<div id="app">
-    <!-- Header dinamik via JS -->
-</div>
+<div id="app"></div>
 
 <script>
     const firebaseConfig = {
@@ -437,12 +432,9 @@
     const auth = firebase.auth();
     const database = firebase.database();
 
-    // State
     let currentUser = null;
-    let posts = [];
-    let currentView = 'feed'; // feed or profile
+    let currentView = 'feed';
 
-    // Helper: formatTime
     function formatTime(timestamp) {
         const date = new Date(timestamp);
         const now = new Date();
@@ -453,73 +445,18 @@
         return date.toLocaleDateString('ms-MY');
     }
 
-    // Render App
-    function render() {
-        const appDiv = document.getElementById('app');
-        if (!currentUser) {
-            // Auth UI
-            appDiv.innerHTML = `
-                <div class="container">
-                    <div class="auth-card">
-                        <div class="logo-area" style="justify-content:center; margin-bottom:16px">
-                            <div class="logo"><img src="logo.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle fill=%22%23fc9fb1%22 cx=%2250%22 cy=%2250%22 r=%2250%22/%3E%3Ctext x=%2250%22 y=%2267%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3ECT%3C/text%3E%3C/svg%3E'" alt="logo"></div>
-                        </div>
-                        <div class="auth-title">crash out, burn out</div>
-                        <div class="auth-sub">turn out d ✨ luah perasaan di sini</div>
-                        <div id="authForm">
-                            <div class="input-group"><input type="text" id="authUsername" placeholder="Nama pengguna" autocomplete="off"></div>
-                            <div class="input-group"><input type="email" id="authEmail" placeholder="Email" autocomplete="off"></div>
-                            <div class="input-group"><input type="password" id="authPassword" placeholder="Kata laluan (min 6 huruf)"></div>
-                            <button class="btn btn-primary" id="loginBtn">Log Masuk</button>
-                            <button class="btn btn-secondary" id="registerBtn">Daftar Akaun Baru</button>
-                            <div class="switch-auth"><span id="switchToRegister">Tak ada akaun? Daftar sini</span></div>
-                            <div id="authError" class="error-msg"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            attachAuthEvents();
-            return;
-        }
-
-        // Main App with Feed & Posts
-        appDiv.innerHTML = `
-            <div class="header">
-                <div class="logo-area">
-                    <div class="logo"><img src="logo.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle fill=%22%23fc9fb1%22 cx=%2250%22 cy=%2250%22 r=%2250%22/%3E%3Ctext x=%2250%22 y=%2267%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3ECT%3C/text%3E%3C/svg%3E'" alt="logo"></div>
-                    <div class="app-title">crash out, burn out</div>
-                </div>
-                <div class="user-info">
-                    <span class="username-display">@${currentUser.username || currentUser.email.split('@')[0]}</span>
-                    <button class="logout-btn" id="logoutBtn">Keluar</button>
-                </div>
-            </div>
-            <div class="container" id="mainContainer">
-                <div class="feed-header">
-                    <div class="feed-title" id="feedTitle">🌱 Luahan Hati</div>
-                    <button class="new-post-btn" id="newPostBtn">+ Luah</button>
-                </div>
-                <div id="postsList"></div>
-            </div>
-            <div class="bottom-nav">
-                <div class="nav-item ${currentView === 'feed' ? 'active' : ''}" data-view="feed">🏠 Feed</div>
-                <div class="nav-item ${currentView === 'profile' ? 'active' : ''}" data-view="profile">👤 Profile</div>
-            </div>
-        `;
-        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
-        document.querySelectorAll('.nav-item').forEach(el => {
-            el.addEventListener('click', (e) => {
-                currentView = el.dataset.view;
-                render();
-            });
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
         });
-        document.getElementById('newPostBtn').addEventListener('click', showPostModal);
-        if (currentView === 'feed') loadPosts();
-        if (currentView === 'profile') loadProfile();
     }
 
-    async function loadPosts() {
-        const container = document.getElementById('postsList');
+    async function loadPosts(containerId) {
+        const container = document.getElementById(containerId);
         if (!container) return;
         container.innerHTML = '<div class="loading">Memuatkan luahan...</div>';
         try {
@@ -528,82 +465,92 @@
             snapshot.forEach(child => {
                 postsData.push({ id: child.key, ...child.val() });
             });
-            posts = postsData.reverse();
-            renderPosts();
-        } catch(e) {
-            container.innerHTML = '<div class="empty">Gagal muat naik. Cuba lagi.</div>';
-        }
-    }
-
-    function renderPosts() {
-        const container = document.getElementById('postsList');
-        if (!container) return;
-        if (posts.length === 0) {
-            container.innerHTML = '<div class="empty">Tiada luahan. Jadi orang pertama luah perasaan ✨</div>';
-            return;
-        }
-        container.innerHTML = posts.map(post => `
-            <div class="post-card" data-id="${post.id}">
-                <div class="post-header">
-                    <div class="post-avatar">${(post.username?.[0] || 'U').toUpperCase()}</div>
-                    <div class="post-user">
-                        <div class="post-username">
-                            @${post.username}
-                            ${post.verified ? '<span class="verified-badge"><img src="verifiedbadge.png" onerror="this.style.display=\'none\'" alt="verified"></span>' : ''}
+            postsData.reverse();
+            
+            if (postsData.length === 0) {
+                container.innerHTML = '<div class="empty">Tiada luahan. Jadi orang pertama luah perasaan ✨</div>';
+                return;
+            }
+            
+            container.innerHTML = postsData.map(post => `
+                <div class="post-card" data-id="${post.id}">
+                    <div class="post-header">
+                        <div class="post-avatar">${(post.username ? post.username[0] : 'U').toUpperCase()}</div>
+                        <div class="post-user">
+                            <div class="post-username">
+                                @${post.username || 'anonymous'}
+                                ${post.verified ? '<span class="verified-badge"><img src="verifiedbadge.png" onerror="this.style.display=\'none\'" alt="verified"></span>' : ''}
+                            </div>
+                            <div class="post-time">${formatTime(post.createdAt)}</div>
                         </div>
-                        <div class="post-time">${formatTime(post.createdAt)}</div>
+                        ${currentUser && post.userId === currentUser.uid ? `<button class="delete-post-btn" data-id="${post.id}">🗑️</button>` : ''}
+                    </div>
+                    <div class="post-content">${escapeHtml(post.content)}</div>
+                    <div class="post-actions">
+                        <button class="like-btn ${post.likes && post.likes[currentUser?.uid] ? 'liked' : ''}" data-id="${post.id}">
+                            ❤️ ${post.likeCount || 0}
+                        </button>
+                        <button class="comment-btn" data-id="${post.id}">💬 Balas</button>
                     </div>
                 </div>
-                <div class="post-content">${escapeHtml(post.content)}</div>
-                <div class="post-actions">
-                    <button class="like-btn ${post.likes && post.likes[currentUser.uid] ? 'liked' : ''}" data-id="${post.id}">
-                        ❤️ ${post.likeCount || 0}
-                    </button>
-                    <button class="comment-btn" data-id="${post.id}">💬 Luah balas</button>
-                </div>
-            </div>
-        `).join('');
-        
-        // Like event
-        document.querySelectorAll('.like-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                const postId = btn.dataset.id;
-                const postRef = database.ref(`posts/${postId}`);
-                const snap = await postRef.once('value');
-                const post = snap.val();
-                if (!post) return;
-                const likes = post.likes || {};
-                const uid = currentUser.uid;
-                let likeCount = post.likeCount || 0;
-                if (likes[uid]) {
-                    delete likes[uid];
-                    likeCount--;
-                } else {
-                    likes[uid] = true;
-                    likeCount++;
-                }
-                await postRef.update({ likes, likeCount });
-                loadPosts();
+            `).join('');
+            
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!currentUser) return;
+                    const postId = btn.dataset.id;
+                    const postRef = database.ref(`posts/${postId}`);
+                    const snap = await postRef.once('value');
+                    const post = snap.val();
+                    if (!post) return;
+                    const likes = post.likes || {};
+                    const uid = currentUser.uid;
+                    let likeCount = post.likeCount || 0;
+                    if (likes[uid]) {
+                        delete likes[uid];
+                        likeCount--;
+                    } else {
+                        likes[uid] = true;
+                        likeCount++;
+                    }
+                    await postRef.update({ likes, likeCount });
+                    loadPosts('postsList');
+                });
             });
-        });
-        
-        // Comment (modal simple for reply / comment)
-        document.querySelectorAll('.comment-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const postId = btn.dataset.id;
-                const content = prompt('Tulis balasan / komen (akan dipaparkan sebagai luahan baru dengan rujukan)');
-                if (content && content.trim()) {
-                    addComment(postId, content.trim());
-                }
+            
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!currentUser) return;
+                    const postId = btn.dataset.id;
+                    const content = prompt('Tulis balasan / komen anda:');
+                    if (content && content.trim()) {
+                        addComment(postId, content.trim());
+                    }
+                });
             });
-        });
+            
+            document.querySelectorAll('.delete-post-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!currentUser) return;
+                    if (confirm('Padam luahan ini?')) {
+                        await database.ref(`posts/${btn.dataset.id}`).remove();
+                        loadPosts('postsList');
+                        if (currentView === 'profile') loadMyPosts();
+                    }
+                });
+            });
+        } catch(e) {
+            console.error(e);
+            container.innerHTML = '<div class="empty">Gagal muat naik. Cuba lagi nanti.</div>';
+        }
     }
     
     async function addComment(parentId, content) {
         const newPostRef = database.ref('posts').push();
         await newPostRef.set({
-            content: `[Balasan kepada luahan] ${content}`,
+            content: `[Balasan] ${content}`,
             username: currentUser.username || currentUser.email.split('@')[0],
             userId: currentUser.uid,
             createdAt: Date.now(),
@@ -612,7 +559,39 @@
             parentId: parentId,
             verified: currentUser.verified || false
         });
-        loadPosts();
+        loadPosts('postsList');
+    }
+    
+    async function loadMyPosts() {
+        const container = document.getElementById('myPostsList');
+        if (!container) return;
+        const snapshot = await database.ref('posts').orderByChild('userId').equalTo(currentUser.uid).once('value');
+        const myPosts = [];
+        snapshot.forEach(child => myPosts.push({ id: child.key, ...child.val() }));
+        myPosts.reverse();
+        
+        if (myPosts.length === 0) {
+            container.innerHTML = '<div class="empty">Awak belum luah apa-apa</div>';
+            return;
+        }
+        
+        container.innerHTML = myPosts.map(post => `
+            <div class="post-card">
+                <div class="post-content">${escapeHtml(post.content)}</div>
+                <div class="post-time">${formatTime(post.createdAt)}</div>
+                <button class="delete-post-btn" data-id="${post.id}" style="background:#fc9fb1;border:none;padding:8px 16px;border-radius:20px;margin-top:8px;color:white;cursor:pointer">Padam</button>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('#myPostsList .delete-post-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (confirm('Padam luahan ini?')) {
+                    await database.ref(`posts/${btn.dataset.id}`).remove();
+                    loadMyPosts();
+                    if (currentView === 'feed') loadPosts('postsList');
+                }
+            });
+        });
     }
     
     function showPostModal() {
@@ -620,8 +599,9 @@
         modalDiv.className = 'modal active';
         modalDiv.innerHTML = `
             <div class="modal-content">
-                <h3 style="color:var(--primary);">Luah perasaan awak</h3>
-                <textarea id="postContent" placeholder="Apa yang awak rasa hari ini? Kongsi di sini... (tanpa nama awak akan @username)"></textarea>
+                <h3 style="color:var(--primary); margin-bottom:8px">Luah perasaan awak</h3>
+                <p style="color:var(--gray); font-size:14px; margin-bottom:12px">Apa yang terbuku di hati? Kongsi saja.</p>
+                <textarea id="postContent" placeholder="Contoh: Hari ini rasa kosong tapi saya masih cuba..."></textarea>
                 <div class="modal-buttons">
                     <button class="btn btn-secondary" id="cancelModal">Batal</button>
                     <button class="btn btn-primary" id="submitPost">Hantar Luahan</button>
@@ -633,7 +613,10 @@
         document.getElementById('cancelModal').addEventListener('click', closeModal);
         document.getElementById('submitPost').addEventListener('click', async () => {
             const content = document.getElementById('postContent').value.trim();
-            if (!content) return alert('Sila tulis luahan anda');
+            if (!content) {
+                alert('Sila tulis luahan anda');
+                return;
+            }
             const newPostRef = database.ref('posts').push();
             await newPostRef.set({
                 content: content,
@@ -645,143 +628,191 @@
                 verified: currentUser.verified || false
             });
             closeModal();
-            loadPosts();
+            if (currentView === 'feed') loadPosts('postsList');
+            else if (currentView === 'profile') loadMyPosts();
         });
     }
     
-    async function loadProfile() {
-        const container = document.getElementById('postsList');
-        if (!container) return;
-        container.innerHTML = `
-            <div class="post-card" style="text-align:center">
-                <div class="post-avatar" style="margin:0 auto 12px; width:80px;height:80px;font-size:32px">${(currentUser.username?.[0] || 'U').toUpperCase()}</div>
-                <h3>@${currentUser.username || currentUser.email.split('@')[0]}</h3>
-                ${currentUser.verified ? '<div><img src="verifiedbadge.png" width="24" onerror="this.style.display=\'none\'"> Verified</div>' : ''}
-                <p style="margin-top:16px; color:var(--gray)">Email: ${currentUser.email}</p>
-                <button id="editUsernameBtn" class="btn btn-secondary" style="margin-top:16px; width:auto; padding:8px 20px">Tukar Nama</button>
-            </div>
-            <div class="feed-header" style="margin-top:20px"><div class="feed-title">Luahan Saya</div></div>
-            <div id="myPosts"></div>
-        `;
-        const myPostsSnap = await database.ref('posts').orderByChild('userId').equalTo(currentUser.uid).once('value');
-        const myPosts = [];
-        myPostsSnap.forEach(child => myPosts.push({ id: child.key, ...child.val() }));
-        myPosts.reverse();
-        const myPostsDiv = document.getElementById('myPosts');
-        if (myPosts.length === 0) myPostsDiv.innerHTML = '<div class="empty">Awak belum luah apa-apa</div>';
-        else {
-            myPostsDiv.innerHTML = myPosts.map(p => `
-                <div class="post-card">
-                    <div class="post-content">${escapeHtml(p.content)}</div>
-                    <div class="post-time">${formatTime(p.createdAt)}</div>
-                    <button class="delete-post-btn" data-id="${p.id}" style="background:#fc9fb1;border:none;padding:6px 12px;border-radius:20px;margin-top:8px;color:white">Padam</button>
+    function renderAuth() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="container">
+                <div class="auth-card">
+                    <div class="logo-area" style="justify-content:center; margin-bottom:16px">
+                        <div class="logo"><img src="logo.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle fill=%22%23fc9fb1%22 cx=%2250%22 cy=%2250%22 r=%2250%22/%3E%3Ctext x=%2250%22 y=%2267%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3ECT%3C/text%3E%3C/svg%3E'" alt="logo"></div>
+                        <div class="app-title" style="color:var(--primary)">turn out d</div>
+                    </div>
+                    <div class="auth-title">crash out, burn out</div>
+                    <div class="auth-sub">luah perasaan • sembuh perlahan-lahan</div>
+                    <div id="authForm">
+                        <div class="input-group"><input type="text" id="regUsername" placeholder="Nama pengguna" autocomplete="off"></div>
+                        <div class="input-group"><input type="email" id="authEmail" placeholder="Email" autocomplete="off"></div>
+                        <div class="input-group"><input type="password" id="authPassword" placeholder="Kata laluan (min 6 huruf)"></div>
+                        <button class="btn btn-primary" id="loginBtn">Log Masuk</button>
+                        <button class="btn btn-secondary" id="registerBtn">Daftar Akaun Baru</button>
+                        <div class="switch-auth" id="switchAuthText"><span>Tak ada akaun? Daftar di sini</span></div>
+                        <div id="authMessage" class="error-msg"></div>
+                    </div>
                 </div>
-            `).join('');
-            document.querySelectorAll('.delete-post-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    if(confirm('Padam luahan ini?')) {
-                        await database.ref(`posts/${btn.dataset.id}`).remove();
-                        loadProfile();
-                    }
-                });
-            });
-        }
-        document.getElementById('editUsernameBtn')?.addEventListener('click', async () => {
-            const newName = prompt('Nama pengguna baru:');
-            if(newName && newName.trim()) {
-                await database.ref(`users/${currentUser.uid}`).update({ username: newName.trim() });
-                currentUser.username = newName.trim();
-                render();
-            }
-        });
-    }
-    
-    function escapeHtml(str) {
-        if(!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if(m === '&') return '&amp;';
-            if(m === '<') return '&lt;';
-            if(m === '>') return '&gt;';
-            return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
-        });
-    }
-    
-    function attachAuthEvents() {
+            </div>
+        `;
+        
         let isLoginMode = true;
+        const regUsername = document.getElementById('regUsername');
+        const authEmail = document.getElementById('authEmail');
+        const authPassword = document.getElementById('authPassword');
         const loginBtn = document.getElementById('loginBtn');
         const registerBtn = document.getElementById('registerBtn');
-        const switchBtn = document.getElementById('switchToRegister');
-        const authError = document.getElementById('authError');
-        const usernameInput = document.getElementById('authUsername');
-        const emailInput = document.getElementById('authEmail');
-        const passwordInput = document.getElementById('authPassword');
+        const switchText = document.getElementById('switchAuthText');
+        const authMessage = document.getElementById('authMessage');
         
-        function switchMode(toRegister) {
-            isLoginMode = !toRegister;
-            if(toRegister) {
-                loginBtn.style.display = 'none';
-                registerBtn.style.display = 'block';
-                switchBtn.innerText = 'Sudah ada akaun? Log masuk';
-                usernameInput.style.display = 'block';
-            } else {
+        regUsername.style.display = 'none';
+        registerBtn.style.display = 'none';
+        
+        switchText.onclick = () => {
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                regUsername.style.display = 'none';
                 loginBtn.style.display = 'block';
                 registerBtn.style.display = 'none';
-                switchBtn.innerText = 'Tak ada akaun? Daftar sini';
-                usernameInput.style.display = 'block';
+                switchText.innerHTML = '<span>Tak ada akaun? Daftar di sini</span>';
+                authMessage.innerHTML = '';
+            } else {
+                regUsername.style.display = 'block';
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'block';
+                switchText.innerHTML = '<span>Sudah ada akaun? Log masuk</span>';
+                authMessage.innerHTML = '';
             }
-        }
-        switchMode(false);
-        switchBtn.onclick = () => switchMode(!isLoginMode);
+        };
         
         loginBtn.onclick = async () => {
-            const email = emailInput.value.trim();
-            const pass = passwordInput.value;
-            if(!email || !pass) return authError.innerText = 'Isi email & kata laluan';
+            const email = authEmail.value.trim();
+            const password = authPassword.value;
+            if (!email || !password) {
+                authMessage.innerHTML = 'Isi email dan kata laluan';
+                return;
+            }
             try {
-                const cred = await auth.signInWithEmailAndPassword(email, pass);
-                const userSnap = await database.ref(`users/${cred.user.uid}`).once('value');
+                const userCred = await auth.signInWithEmailAndPassword(email, password);
+                const userSnap = await database.ref(`users/${userCred.user.uid}`).once('value');
                 const userData = userSnap.val() || {};
-                currentUser = { uid: cred.user.uid, email: cred.user.email, ...userData };
-                render();
-            } catch(e) { authError.innerText = e.message; }
+                currentUser = { uid: userCred.user.uid, email: userCred.user.email, ...userData };
+                renderMain();
+            } catch(e) {
+                authMessage.innerHTML = e.message;
+            }
         };
         
         registerBtn.onclick = async () => {
-            const username = usernameInput.value.trim();
-            const email = emailInput.value.trim();
-            const pass = passwordInput.value;
-            if(!username || !email || !pass) return authError.innerText = 'Isi semua ruangan';
-            if(pass.length < 6) return authError.innerText = 'Kata laluan perlu 6 huruf atau lebih';
+            const username = regUsername.value.trim();
+            const email = authEmail.value.trim();
+            const password = authPassword.value;
+            if (!username || !email || !password) {
+                authMessage.innerHTML = 'Isi semua ruangan';
+                return;
+            }
+            if (password.length < 6) {
+                authMessage.innerHTML = 'Kata laluan perlu sekurang-kurangnya 6 huruf';
+                return;
+            }
             try {
-                const cred = await auth.createUserWithEmailAndPassword(email, pass);
-                await database.ref(`users/${cred.user.uid}`).set({
+                const userCred = await auth.createUserWithEmailAndPassword(email, password);
+                await database.ref(`users/${userCred.user.uid}`).set({
                     username: username,
                     email: email,
                     verified: false,
                     createdAt: Date.now()
                 });
-                currentUser = { uid: cred.user.uid, email, username, verified: false };
-                render();
-            } catch(e) { authError.innerText = e.message; }
+                currentUser = { uid: userCred.user.uid, email, username, verified: false };
+                renderMain();
+            } catch(e) {
+                authMessage.innerHTML = e.message;
+            }
         };
     }
     
+    async function renderMain() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="header">
+                <div class="logo-area">
+                    <div class="logo"><img src="logo.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle fill=%22%23fc9fb1%22 cx=%2250%22 cy=%2250%22 r=%2250%22/%3E%3Ctext x=%2250%22 y=%2267%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3ECT%3C/text%3E%3C/svg%3E'" alt="logo"></div>
+                    <div class="app-title">crash out, burn out</div>
+                </div>
+                <div class="user-info">
+                    <span class="username-display">@${currentUser.username || currentUser.email.split('@')[0]}</span>
+                    <button class="logout-btn" id="logoutBtn">Keluar</button>
+                </div>
+            </div>
+            <div class="container" id="mainContainer">
+                <div id="viewContainer"></div>
+            </div>
+            <div class="bottom-nav">
+                <div class="nav-item ${currentView === 'feed' ? 'active' : ''}" data-view="feed">🏠 Feed</div>
+                <div class="nav-item ${currentView === 'profile' ? 'active' : ''}" data-view="profile">👤 Profil</div>
+            </div>
+        `;
+        
+        document.getElementById('logoutBtn').onclick = () => auth.signOut();
+        
+        document.querySelectorAll('.nav-item').forEach(el => {
+            el.onclick = () => {
+                currentView = el.dataset.view;
+                renderMain();
+            };
+        });
+        
+        const viewContainer = document.getElementById('viewContainer');
+        if (currentView === 'feed') {
+            viewContainer.innerHTML = `
+                <div class="feed-header">
+                    <div class="feed-title">🌱 Luahan Terkini</div>
+                    <button class="new-post-btn" id="newPostBtn">+ Luah</button>
+                </div>
+                <div id="postsList"></div>
+            `;
+            document.getElementById('newPostBtn')?.addEventListener('click', showPostModal);
+            await loadPosts('postsList');
+        } else if (currentView === 'profile') {
+            viewContainer.innerHTML = `
+                <div class="post-card" style="text-align:center">
+                    <div class="post-avatar" style="margin:0 auto 12px; width:80px;height:80px;font-size:32px">${(currentUser.username ? currentUser.username[0] : 'U').toUpperCase()}</div>
+                    <h3>@${currentUser.username || currentUser.email.split('@')[0]}</h3>
+                    <p style="color:var(--gray); margin-top:4px">${currentUser.email}</p>
+                    ${currentUser.verified ? '<div><img src="verifiedbadge.png" width="20" onerror="this.style.display=\'none\'"> Verified</div>' : ''}
+                    <button id="editUsernameBtn" class="btn btn-secondary" style="margin-top:16px; width:auto; padding:8px 24px">Tukar Nama</button>
+                </div>
+                <div class="feed-header" style="margin-top:20px">
+                    <div class="feed-title">📝 Luahan Saya</div>
+                    <button class="new-post-btn" id="newPostProfileBtn">+ Luah</button>
+                </div>
+                <div id="myPostsList"></div>
+            `;
+            document.getElementById('newPostProfileBtn')?.addEventListener('click', showPostModal);
+            document.getElementById('editUsernameBtn')?.addEventListener('click', async () => {
+                const newName = prompt('Masukkan nama pengguna baru:', currentUser.username);
+                if (newName && newName.trim()) {
+                    await database.ref(`users/${currentUser.uid}`).update({ username: newName.trim() });
+                    currentUser.username = newName.trim();
+                    renderMain();
+                }
+            });
+            await loadMyPosts();
+        }
+    }
+    
     auth.onAuthStateChanged(async (user) => {
-        if(user) {
+        if (user) {
             const snap = await database.ref(`users/${user.uid}`).once('value');
             const userData = snap.val() || {};
             currentUser = { uid: user.uid, email: user.email, ...userData };
-            render();
+            renderMain();
         } else {
             currentUser = null;
-            render();
+            renderAuth();
         }
     });
-    
-    // Init render
-    render();
 </script>
 </body>
 </html>
