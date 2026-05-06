@@ -8,44 +8,6 @@
     <link rel="apple-touch-icon" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import {
-            getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
-            onSnapshot, updateDoc, deleteDoc, query, orderBy, serverTimestamp,
-            increment, arrayUnion, arrayRemove, where, limit
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyB5Rzsr8YaGNb5E0I6hSQYbdOd1C2e54Gs",
-            authDomain: "crash-out-burn-out-turn-out-d.firebaseapp.com",
-            projectId: "crash-out-burn-out-turn-out-d",
-            storageBucket: "crash-out-burn-out-turn-out-d.firebasestorage.app",
-            messagingSenderId: "280103809790",
-            appId: "1:280103809790:web:514756e3aa0bf6a69cabaf",
-            measurementId: "G-FVFZJ1D6GK"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // ========== GLOBAL STATE ==========
-        window.db = db;
-        window.FB = { collection, doc, addDoc, setDoc, getDoc, getDocs, onSnapshot, updateDoc, deleteDoc, query, orderBy, serverTimestamp, increment, arrayUnion, arrayRemove, where, limit };
-        window.currentUser = null;
-        window.unsubscribePosts = null;
-        window.unsubscribeNotifs = null;
-        window.unsubscribePopup = null;
-
-        // Start the app immediately after Firebase is ready
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                if (window.startApp) window.startApp();
-            }, 100);
-        });
-    </script>
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -67,55 +29,123 @@
             min-height: 100vh;
         }
 
-        /* ========== PAGES ========== */
-        .page { display: none; min-height: 100vh; }
-        .page.active { display: block; }
-
-        /* ========== SPLASH ========== */
-        #splash-page {
+        /* ========== SPLASH SCREEN - SEPARATE ========== */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            min-height: 100vh;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
         }
-        .splash { text-align: center; max-width: 320px; width: 85%; margin: 0 auto; }
+        
+        #splash-screen.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .splash-content {
+            text-align: center;
+            max-width: 320px;
+            width: 85%;
+            margin: 0 auto;
+        }
+        
         .logo-blob {
-            width: 120px; height: 120px; margin: 0 auto 1.5rem auto;
-            background: #111; border: 1.5px solid var(--border);
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem auto;
+            background: #111;
+            border: 1.5px solid var(--border);
             border-radius: 42% 58% 48% 52% / 45% 39% 61% 55%;
-            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: blobFloat 2s ease-in-out infinite;
         }
-        .logo-blob img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
-        .welcome-text { font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: -0.3px; }
+        
+        @keyframes blobFloat {
+            0%, 100% { border-radius: 42% 58% 48% 52% / 45% 39% 61% 55%; }
+            50% { border-radius: 55% 45% 57% 43% / 38% 52% 48% 62%; }
+        }
+        
+        .logo-blob img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: inherit;
+        }
+        
+        .welcome-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.3px;
+        }
+        
         .message {
-            font-size: 0.85rem; line-height: 1.5; color: #ccc;
-            background: rgba(17,17,17,0.4); padding: 0.8rem; border-radius: 20px; margin-top: 0.5rem;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #ccc;
+            background: rgba(17,17,17,0.4);
+            padding: 0.8rem;
+            border-radius: 20px;
+            margin-top: 0.5rem;
         }
+        
         .three-dots {
-            position: fixed; bottom: 28px; left: 0; right: 0;
-            display: flex; justify-content: center; gap: 10px;
+            position: fixed;
+            bottom: 28px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
         }
-        .dot { width: 8px; height: 8px; background: #444; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #444;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+        
         .dot:nth-child(2) { animation-delay: 0.3s; }
         .dot:nth-child(3) { animation-delay: 0.6s; }
+        
         @keyframes pulse {
             0%, 100% { opacity: 0.3; transform: scale(0.8); }
             50% { opacity: 1; transform: scale(1.2); }
         }
 
+        /* ========== PAGES ========== */
+        .page { display: none; min-height: 100vh; }
+        .page.active { display: block; }
+
         /* ========== AUTH ========== */
         #auth-page {
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 2rem 1.5rem;
+            min-height: 100vh;
         }
+        
         .auth-wrapper { width: 100%; max-width: 400px; }
         .auth-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; letter-spacing: -0.5px; text-align: center; }
         .form-group { margin-bottom: 1.2rem; }
         .input-field {
             width: 100%; background: var(--surface); border: 1px solid var(--border);
             border-radius: 12px; padding: 0.9rem 1rem;
-            font-family: 'Open Sans', sans-serif; font-size: 0.9rem; color: var(--text); outline: none; transition: all 0.2s;
+            font-family: 'Open Sans', sans-serif; font-size: 0.9rem; color: var(--text); outline: none;
         }
         .input-field:focus { border-color: var(--text); background: #1a1a1a; }
         .input-field::placeholder { color: var(--dim); }
@@ -129,7 +159,7 @@
             width: 100%; background: var(--text); border: none; border-radius: 40px;
             padding: 0.85rem; font-family: 'Open Sans', sans-serif; font-weight: 800;
             font-size: 0.95rem; color: #000; margin-top: 0.5rem; margin-bottom: 1.5rem;
-            cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+            cursor: pointer; transition: all 0.2s;
         }
         .btn-primary:active { transform: scale(0.97); background: #e0e0e0; }
         .switch-auth { text-align: center; margin-top: 0.5rem; }
@@ -143,7 +173,7 @@
             position: sticky; top: 0; z-index: 100;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0.8rem 1.2rem; background: var(--bg);
-            border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .logo-img { height: 32px; width: auto; border-radius: 10%; }
         .header-right { display: flex; align-items: center; gap: 1.2rem; }
@@ -165,7 +195,6 @@
 
         .page-title { margin: 0.5rem 1.2rem 0; font-size: 0.85rem; font-weight: 500; color: var(--muted); }
 
-        /* ========== STATS CARD ========== */
         .stats-card {
             margin: 0.8rem 1.2rem 1.5rem;
             background: var(--surface); border: 1px solid var(--border);
@@ -176,7 +205,6 @@
         .stats-number { font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
         .stats-label { font-size: 0.7rem; color: var(--muted); }
 
-        /* ========== POSTS ========== */
         .posts-section { margin: 1rem 1.2rem; }
         .section-title { font-weight: 600; margin-bottom: 1rem; font-size: 0.85rem; color: #888; }
 
@@ -207,7 +235,6 @@
         .edit-delete { display: flex; gap: 1rem; }
         .edit-delete span { cursor: pointer; font-size: 0.7rem; color: #888; }
 
-        /* ========== FLOATING BTN ========== */
         .floating-luah { position: fixed; bottom: 80px; right: 20px; z-index: 100; }
         .blob-luah-btn {
             background: var(--surface); border: 1px solid var(--border);
@@ -219,18 +246,15 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* ========== BOTTOM NAV ========== */
         .bottom-nav {
             position: fixed; bottom: 0; max-width: 600px; width: 100%;
             background: var(--bg); display: flex; justify-content: space-around;
             padding: 0.7rem 1rem 1rem; border-top: 1px solid #222;
-            z-index: 10; transition: transform 0.3s;
+            z-index: 10;
         }
-        .bottom-nav.hide { transform: translateY(100%); }
         .nav-item { text-align: center; cursor: pointer; padding: 5px 12px; font-weight: 500; font-size: 0.75rem; color: #666; }
         .nav-item.active { color: var(--text); font-weight: 700; }
 
-        /* ========== MODALS ========== */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center;
@@ -269,11 +293,9 @@
         .modal-actions button.cancel { background: #333; color: white; }
         .modal-actions button.danger { background: var(--red); color: white; }
 
-        /* ========== BERTAHAN PAGE ========== */
         .checkin-btn {
             background: var(--text); color: #000; border: none; padding: 0.5rem 1rem;
             border-radius: 40px; font-weight: 700; font-size: 0.75rem; cursor: pointer;
-            font-family: 'Open Sans', sans-serif;
         }
         .checkin-btn.checked { background: var(--green); color: white; }
         .message-small { font-size: 0.7rem; color: var(--green); margin-top: 6px; text-align: center; }
@@ -306,10 +328,8 @@
             background: var(--surface); border: 1px solid var(--border);
             padding: 14px 6px; border-radius: 40px; font-size: 0.85rem;
             font-weight: 600; color: var(--text); cursor: pointer; text-align: center;
-            width: 100%; font-family: 'Open Sans', sans-serif;
         }
 
-        /* ========== PROFIL PAGE ========== */
         .profile-card { margin: 0.8rem 1.2rem 1rem; background: var(--surface); border: 1px solid var(--border); padding: 1rem; border-radius: 10px; }
         .profile-top { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
         .profile-avatar { width: 56px; height: 56px; border-radius: 42% 58% 38% 62% / 55% 40% 60% 45%; overflow: hidden; background: #1f1f1f; flex-shrink: 0; }
@@ -317,7 +337,7 @@
         .profile-name { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .profile-username { font-size: 0.7rem; color: #aaa; }
         .profile-bio { font-size: 0.75rem; color: #ccc; margin: 6px 0 10px; }
-        .edit-bio-btn { background: #262626; border: 1px solid #3a3a3a; padding: 4px 12px; border-radius: 40px; font-size: 0.65rem; font-weight: 600; color: white; cursor: pointer; align-self: flex-start; }
+        .edit-bio-btn { background: #262626; border: 1px solid #3a3a3a; padding: 4px 12px; border-radius: 40px; font-size: 0.65rem; font-weight: 600; color: white; cursor: pointer; }
         .profile-stats-row { display: flex; justify-content: space-around; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
         .profile-stat-item { text-align: center; flex: 1; }
         .profile-stat-number { font-size: 1.4rem; font-weight: 700; }
@@ -329,107 +349,6 @@
         .section-panel { margin: 1.2rem 1.2rem 2rem; }
         .empty-message { text-align: center; color: #666; padding: 2rem; font-size: 0.8rem; }
 
-        /* ========== TETAPAN PAGE ========== */
-        .settings-group { margin: 1rem 1.2rem; }
-        .group-title { font-size: 0.7rem; font-weight: 600; color: #888; margin-bottom: 8px; }
-        .setting-row { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
-        .setting-field { padding: 1rem; border-bottom: 1px solid var(--border); }
-        .setting-field:last-child { border-bottom: none; }
-        .field-label { font-size: 0.7rem; color: #aaa; margin-bottom: 8px; font-weight: 500; }
-        .setting-input { background: #1e1e1e; border: 1px solid #3a3a3a; padding: 0.7rem 0.9rem; border-radius: 10px; color: white; font-size: 0.85rem; width: 100%; font-family: 'Open Sans', sans-serif; }
-        .setting-textarea { background: #1e1e1e; border: 1px solid #3a3a3a; padding: 0.7rem 0.9rem; border-radius: 10px; color: white; font-size: 0.85rem; width: 100%; font-family: 'Open Sans', sans-serif; resize: vertical; }
-        .photo-url-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .photo-preview-blob { width: 48px; height: 48px; border-radius: 42% 58% 38% 62% / 55% 40% 60% 45%; overflow: hidden; background: #1f1f1f; flex-shrink: 0; }
-        .photo-preview-blob img { width: 100%; height: 100%; object-fit: cover; }
-        .inline-password { display: flex; align-items: center; gap: 8px; }
-        .show-btn { background: #262626; border: 1px solid #3a3a3a; padding: 0.65rem 1rem; border-radius: 10px; font-size: 0.7rem; color: white; cursor: pointer; white-space: nowrap; }
-        .save-btn { background: var(--text); color: #000; border: none; padding: 0.7rem; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; width: 100%; margin-top: 4px; }
-        .change-pw-btn { background: #262626; border: 1px solid #3a3a3a; padding: 0.7rem; border-radius: 10px; font-weight: 600; font-size: 0.75rem; color: white; cursor: pointer; width: 100%; }
-        .privacy-row { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; }
-        .privacy-label { font-size: 0.85rem; font-weight: 500; }
-        .privacy-desc { font-size: 0.65rem; color: #777; margin-top: 6px; }
-        .danger-btn { background: transparent; border: 1px solid var(--red); color: #ff5555; padding: 0.7rem; border-radius: 10px; font-weight: 600; font-size: 0.75rem; width: 100%; cursor: pointer; margin-top: 8px; }
-        .logout-btn { background: #262626; border: 1px solid #444; color: #ff8888; padding: 0.7rem; border-radius: 10px; font-weight: 600; font-size: 0.75rem; width: 100%; cursor: pointer; margin-top: 8px; }
-
-        /* ========== NOTIF PAGE ========== */
-        .notif-header-info { margin: 0.8rem 1.2rem 0.5rem; font-size: 0.75rem; color: #777; }
-        .notif-list { margin: 0.5rem 1.2rem 2rem; }
-        .notif-card {
-            background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-            padding: 1rem; margin-bottom: 0.9rem; display: flex; align-items: flex-start;
-            gap: 14px; cursor: pointer; transition: all 0.15s;
-        }
-        .notif-card:hover { background: #181818; }
-        .notif-system-logo { width: 44px; height: 44px; background: #0d0d0d; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid var(--border); overflow: hidden; }
-        .notif-system-logo img { width: 100%; height: 100%; object-fit: cover; }
-        .notif-content { flex: 1; }
-        .notif-header-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
-        .notif-badge { display: inline-block; font-size: 0.65rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
-        .notif-badge.welcome { background: #1e3a2f; color: #b8f2d0; }
-        .notif-badge.info { background: #2a3a4a; color: #b0e0ff; }
-        .notif-badge.ads { background: #3a2a2a; color: #ffb3b3; }
-        .notif-badge.news { background: #2a2a3a; color: #c0c0ff; }
-        .notif-badge.reminder { background: #3a3520; color: #ffe0a3; }
-        .notif-title-text { font-weight: 700; font-size: 0.85rem; }
-        .notif-message { font-size: 0.85rem; line-height: 1.45; color: #d0d0d0; margin: 6px 0 4px; }
-        .notif-time { font-size: 0.65rem; color: #777; margin-top: 6px; }
-
-        /* ========== ADMIN PAGE ========== */
-        #admin-page { padding-bottom: 40px; }
-        .admin-header { background: #0a0a0a; border-bottom: 1px solid var(--border); padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between; }
-        .admin-section { margin: 1rem 1.2rem; }
-        .admin-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
-        .admin-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.8rem; color: #ccc; }
-        .admin-input { background: #1e1e1e; border: 1px solid #3a3a3a; padding: 0.6rem 0.8rem; border-radius: 8px; color: white; font-size: 0.8rem; width: 100%; font-family: 'Open Sans', sans-serif; margin-bottom: 8px; }
-        .admin-textarea { background: #1e1e1e; border: 1px solid #3a3a3a; padding: 0.6rem 0.8rem; border-radius: 8px; color: white; font-size: 0.8rem; width: 100%; font-family: 'Open Sans', sans-serif; margin-bottom: 8px; resize: vertical; }
-        .admin-btn { background: var(--text); color: #000; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; margin-right: 8px; margin-top: 4px; }
-        .admin-btn.danger { background: var(--red); color: white; }
-        .admin-btn.outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-        .admin-select { background: #1e1e1e; border: 1px solid #3a3a3a; padding: 0.6rem 0.8rem; border-radius: 8px; color: white; font-size: 0.8rem; width: 100%; margin-bottom: 8px; }
-        .user-list-item { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
-        .user-list-item:last-child { border-bottom: none; }
-        .verified-tag { background: #1e3a6e; color: #7ec8ff; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; }
-        .tab-btns { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
-        .tab-btn { background: #1a1a1a; border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 6px; color: #aaa; font-size: 0.75rem; cursor: pointer; }
-        .tab-btn.active { background: var(--text); color: #000; border-color: var(--text); }
-        .admin-sub { display: none; }
-        .admin-sub.show { display: block; }
-
-        /* ========== POPUP MODAL ========== */
-        #popupModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center;
-            z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.2s;
-        }
-        #popupModal.show { opacity: 1; pointer-events: all; }
-        .popup-box-text { background: #111; width: 90%; max-width: 360px; padding: 2rem 1.8rem; border-radius: 10px; position: relative; border: 1px solid var(--border); text-align: center; }
-        .popup-box-image { background: #111; width: 90%; max-width: 360px; border-radius: 10px; position: relative; border: 1px solid var(--border); overflow: hidden; }
-        .popup-modal-text { color: var(--text); font-size: 0.95rem; line-height: 1.55; text-align: center; }
-        .popup-bold { font-weight: 700; font-size: 1rem; display: block; margin-bottom: 0.75rem; }
-        .popup-close-x { position: absolute; top: 14px; right: 16px; background: none; border: none; color: #aaa; font-size: 1.6rem; cursor: pointer; font-family: monospace; line-height: 1; z-index: 5; }
-        .hero-image { position: relative; width: 100%; }
-        .hero-image img { width: 100%; height: auto; display: block; }
-        .hero-text {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.4), transparent);
-            color: white; text-align: center; padding: 1.5rem 1rem 1rem;
-            font-size: 0.95rem; line-height: 1.55;
-        }
-
-        /* ========== USER PROFILE MODAL ========== */
-        .modal-profile-header { text-align: center; margin-bottom: 0.5rem; }
-        .modal-avatar { width: 60px; height: 60px; margin: 0 auto 10px; border-radius: 42% 58% 38% 62% / 55% 40% 60% 45%; overflow: hidden; background: #1f1f1f; }
-        .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .modal-name { font-size: 1rem; font-weight: 700; }
-        .modal-username { font-size: 0.65rem; color: #aaa; margin-top: 2px; }
-        .modal-bio { font-size: 0.7rem; color: #ccc; margin-top: 8px; }
-        .modal-stats { display: flex; justify-content: space-around; padding: 0.8rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 0.5rem 0; }
-        .modal-stat { text-align: center; }
-        .modal-stat-number { font-size: 1.1rem; font-weight: 700; }
-        .modal-stat-label { font-size: 0.55rem; color: #aaa; }
-        .close-modal-btn { background: #262626; border: none; padding: 0.7rem; border-radius: 40px; color: white; font-size: 0.7rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 0.5rem; }
-
-        /* ========== TOAST ========== */
         .toast-msg {
             position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
             background: #1f1f1f; border: 1px solid #333; padding: 0.6rem 1.2rem;
@@ -440,37 +359,41 @@
 </head>
 <body>
 
-<!-- ========== SPLASH ========== -->
-<div id="splash-page" class="page active">
-    <div class="splash">
+<!-- SPLASH SCREEN - SEPARATE, NO DUPLICATE -->
+<div id="splash-screen">
+    <div class="splash-content">
         <div class="logo-blob">
-            <img src="logo.png" alt="BlobSpace" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2742%27 fill=%27%231f1f1f%27 stroke=%27%23333%27 stroke-width=%271.2%27/%3E%3C/svg%3E'; this.onerror=null;">
+            <img src="logo.png" alt="BlobSpace" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2742%27 fill=%27%231f1f1f%27 stroke=%27%23333%27 stroke-width=%271.2%27/%3E%3C/svg%3E';">
         </div>
         <div class="welcome-text">hai, selamat datang.</div>
         <div class="message">kami berharap sistem ini dapat menjadi ruang kecil untuk mengurus kesihatan mental anda. luahlah apa yang terbuku di hati.</div>
     </div>
-    <div class="three-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <div class="three-dots">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    </div>
 </div>
 
-<!-- ========== AUTH ========== -->
+<!-- AUTH PAGE -->
 <div id="auth-page" class="page">
     <div class="auth-wrapper">
         <div id="authView"></div>
     </div>
 </div>
 
-<!-- ========== UTAMA ========== -->
+<!-- MAIN APP PAGES -->
 <div id="utama-page" class="page">
     <div class="app-container">
         <div class="header">
             <div class="header-left-placeholder"></div>
-            <div><img class="logo-img" src="logo.png" alt="BlobSpace" onerror="this.src='https://placehold.co/32x32/ffffff/000000?text=B'; this.onerror=null;"></div>
+            <div><img class="logo-img" src="logo.png" alt="BlobSpace"></div>
             <div class="header-right">
-                <div class="notification-icon" id="notifIconUtama" onclick="if(window.showPage) showPage('notif')">
+                <div class="notification-icon" onclick="showPage('notif')">
                     <svg viewBox="0 0 24 25" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8V11.1C6 12.4 5.5 13.6 4.7 14.5L4.5 14.7C3.5 15.9 4.2 17.6 5.8 17.9C10.4 18.7 13.6 18.7 18.2 17.9C19.8 17.6 20.5 15.9 19.5 14.7L19.3 14.5C18.5 13.6 18 12.3 18 11.1V8Z"/><path d="M9 19C9.3978 20.1647 10.3361 21.0821 11.5 21.462C12.6639 21.8419 13.928 21.648 14.935 20.935" stroke-linecap="round"/></svg>
                     <div class="notif-badge-dot" id="notifDot"></div>
                 </div>
-                <div class="profile-blob" onclick="if(window.showPage) showPage('profil')"><img id="headerAvatarUtama" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
+                <div class="profile-blob" onclick="showPage('profil')"><img id="headerAvatarUtama" src="https://placehold.co/42x42/222/fff?text=U"></div>
             </div>
         </div>
         <div class="page-title">papan muka bertahan</div>
@@ -478,7 +401,7 @@
             <div class="stats-row">
                 <div class="stats-item"><div class="stats-number" id="utamaStreak">0</div><div class="stats-label">hari berturut</div></div>
                 <div class="stats-item"><div class="stats-number" id="utamaTotal">0</div><div class="stats-label">jumlah bertahan</div></div>
-                <div style="font-size:1.6rem; color:#888; cursor:pointer; padding-left:0.5rem;" onclick="if(window.showPage) showPage('bertahan')">›</div>
+                <div style="font-size:1.6rem; color:#888; cursor:pointer; padding-left:0.5rem;" onclick="showPage('bertahan')">›</div>
             </div>
         </div>
         <div class="posts-section">
@@ -495,17 +418,16 @@
     </div>
 </div>
 
-<!-- ========== BERTAHAN ========== -->
 <div id="bertahan-page" class="page">
     <div class="app-container">
         <div class="header">
             <div class="header-left-placeholder"></div>
-            <div><img class="logo-img" src="logo.png" alt="BlobSpace" onerror="this.src='https://placehold.co/32x32/ffffff/000000?text=B';"></div>
+            <div><img class="logo-img" src="logo.png" alt="BlobSpace"></div>
             <div class="header-right">
-                <div class="notification-icon" onclick="if(window.showPage) showPage('notif')">
+                <div class="notification-icon" onclick="showPage('notif')">
                     <svg viewBox="0 0 24 25" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8V11.1C6 12.4 5.5 13.6 4.7 14.5L4.5 14.7C3.5 15.9 4.2 17.6 5.8 17.9C10.4 18.7 13.6 18.7 18.2 17.9C19.8 17.6 20.5 15.9 19.5 14.7L19.3 14.5C18.5 13.6 18 12.3 18 11.1V8Z"/><path d="M9 19C9.3978 20.1647 10.3361 21.0821 11.5 21.462C12.6639 21.8419 13.928 21.648 14.935 20.935" stroke-linecap="round"/></svg>
                 </div>
-                <div class="profile-blob" onclick="if(window.showPage) showPage('profil')"><img id="headerAvatarBertahan" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
+                <div class="profile-blob" onclick="showPage('profil')"><img id="headerAvatarBertahan" src="https://placehold.co/42x42/222/fff?text=U"></div>
             </div>
         </div>
         <div class="page-title">bertahan</div>
@@ -543,23 +465,22 @@
     </div>
 </div>
 
-<!-- ========== PROFIL ========== -->
 <div id="profil-page" class="page">
     <div class="app-container">
         <div class="header">
             <div class="header-left-placeholder"></div>
             <div><img class="logo-img" src="logo.png" alt="BlobSpace"></div>
             <div class="header-right">
-                <div class="notification-icon" onclick="if(window.showPage) showPage('notif')">
+                <div class="notification-icon" onclick="showPage('notif')">
                     <svg viewBox="0 0 24 25" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8V11.1C6 12.4 5.5 13.6 4.7 14.5L4.5 14.7C3.5 15.9 4.2 17.6 5.8 17.9C10.4 18.7 13.6 18.7 18.2 17.9C19.8 17.6 20.5 15.9 19.5 14.7L19.3 14.5C18.5 13.6 18 12.3 18 11.1V8Z"/><path d="M9 19C9.3978 20.1647 10.3361 21.0821 11.5 21.462C12.6639 21.8419 13.928 21.648 14.935 20.935" stroke-linecap="round"/></svg>
                 </div>
-                <div class="profile-blob"><img id="headerAvatarProfil" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
+                <div class="profile-blob"><img id="headerAvatarProfil" src="https://placehold.co/42x42/222/fff?text=U"></div>
             </div>
         </div>
         <div class="page-title">profil</div>
         <div class="profile-card">
             <div class="profile-top">
-                <div class="profile-avatar"><img id="profilAvatarImg" src="https://placehold.co/56x56/222/fff?text=U" alt="avatar"></div>
+                <div class="profile-avatar"><img id="profilAvatarImg" src="https://placehold.co/56x56/222/fff?text=U"></div>
                 <div class="profile-name-section">
                     <div class="profile-name" id="profilDisplayName">—</div>
                     <div class="profile-username" id="profilUsername">@—</div>
@@ -591,17 +512,16 @@
     </div>
 </div>
 
-<!-- ========== TETAPAN ========== -->
 <div id="tetapan-page" class="page">
     <div class="app-container">
         <div class="header">
             <div class="header-left-placeholder"></div>
             <div><img class="logo-img" src="logo.png" alt="BlobSpace"></div>
             <div class="header-right">
-                <div class="notification-icon" onclick="if(window.showPage) showPage('notif')">
+                <div class="notification-icon" onclick="showPage('notif')">
                     <svg viewBox="0 0 24 25" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8V11.1C6 12.4 5.5 13.6 4.7 14.5L4.5 14.7C3.5 15.9 4.2 17.6 5.8 17.9C10.4 18.7 13.6 18.7 18.2 17.9C19.8 17.6 20.5 15.9 19.5 14.7L19.3 14.5C18.5 13.6 18 12.3 18 11.1V8Z"/><path d="M9 19C9.3978 20.1647 10.3361 21.0821 11.5 21.462C12.6639 21.8419 13.928 21.648 14.935 20.935" stroke-linecap="round"/></svg>
                 </div>
-                <div class="profile-blob"><img id="headerAvatarTetapan" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
+                <div class="profile-blob"><img id="headerAvatarTetapan" src="https://placehold.co/42x42/222/fff?text=U"></div>
             </div>
         </div>
         <div class="page-title">tetapan</div>
@@ -612,10 +532,10 @@
                 <div class="setting-field"><div class="field-label">biografi.</div><textarea class="setting-textarea" id="settingBio" rows="2"></textarea></div>
                 <div class="setting-field"><div class="field-label">alamat e-mel</div><input type="email" class="setting-input" id="settingEmail"></div>
                 <div class="setting-field">
-                    <div class="field-label">https://.. (url photo profil)</div>
+                    <div class="field-label">url photo profil</div>
                     <div class="photo-url-row">
                         <input type="text" class="setting-input" id="settingPhotoUrl" placeholder="https://...">
-                        <div class="photo-preview-blob"><img id="settingPreviewImg" src="https://placehold.co/48x48/222/fff?text=U" alt="preview"></div>
+                        <div class="photo-preview-blob"><img id="settingPreviewImg" src="https://placehold.co/48x48/222/fff?text=U"></div>
                     </div>
                 </div>
                 <div class="setting-field"><button class="save-btn" id="saveProfileBtn">simpan perubahan.</button></div>
@@ -627,16 +547,6 @@
                 <div class="setting-field"><div class="field-label">kata laluan semasa.</div><div class="inline-password"><input type="password" class="setting-input" id="currentPassword" placeholder="••••••••"><button class="show-btn" data-target="currentPassword">papar.</button></div></div>
                 <div class="setting-field"><div class="field-label">kata laluan baru.</div><div class="inline-password"><input type="password" class="setting-input" id="newPassword" placeholder="••••••••"><button class="show-btn" data-target="newPassword">papar.</button></div></div>
                 <div class="setting-field"><button class="change-pw-btn" id="changePasswordBtn">tukar kata laluan.</button></div>
-            </div>
-        </div>
-        <div class="settings-group">
-            <div class="group-title">privasi.</div>
-            <div class="setting-row">
-                <div class="setting-field">
-                    <div class="privacy-row"><span class="privacy-label">awam/peribadi.</span>
-                    <label class="toggle-switch"><input type="checkbox" id="privacyToggle"><span class="toggle-slider"></span></label></div>
-                    <div class="privacy-desc" id="privacyDesc">awam: profil boleh dilihat oleh semua.</div>
-                </div>
             </div>
         </div>
         <div class="settings-group">
@@ -657,14 +567,13 @@
     </div>
 </div>
 
-<!-- ========== NOTIF ========== -->
 <div id="notif-page" class="page">
     <div class="app-container">
         <div class="header">
-            <div style="cursor:pointer; color:#888; font-size:1.2rem; padding:4px 8px;" onclick="if(window.showPage) showPage('utama')">‹</div>
+            <div style="cursor:pointer; color:#888; font-size:1.2rem; padding:4px 8px;" onclick="showPage('utama')">‹</div>
             <div><img class="logo-img" src="logo.png" alt="BlobSpace"></div>
             <div class="header-right">
-                <div class="profile-blob"><img id="headerAvatarNotif" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
+                <div class="profile-blob"><img id="headerAvatarNotif" src="https://placehold.co/42x42/222/fff?text=U"></div>
             </div>
         </div>
         <div class="page-title">pemberitahuan</div>
@@ -673,89 +582,7 @@
     </div>
 </div>
 
-<!-- ========== ADMIN ========== -->
-<div id="admin-page" class="page">
-    <div class="admin-header">
-        <span style="font-weight:700; font-size:1rem;">🔧 Admin Panel</span>
-        <button onclick="if(window.showPage) showPage('utama')" style="background:#222; border:1px solid #444; color:#aaa; padding:4px 12px; border-radius:6px; cursor:pointer; font-size:0.75rem;">keluar</button>
-    </div>
-    <div style="padding:0 1.2rem; margin-top:1rem;">
-        <div class="tab-btns">
-            <button class="tab-btn active" onclick="switchAdminTab('notif', this)">Notifikasi</button>
-            <button class="tab-btn" onclick="switchAdminTab('popup', this)">Popup Modal</button>
-            <button class="tab-btn" onclick="switchAdminTab('users', this)">Pengguna</button>
-            <button class="tab-btn" onclick="switchAdminTab('posts', this)">Luahan</button>
-        </div>
-
-        <!-- Notifikasi Tab -->
-        <div id="adminTabNotif" class="admin-sub show">
-            <div class="admin-card">
-                <h3>Hantar Notifikasi Baru</h3>
-                <select class="admin-select" id="notifType">
-                    <option value="info">INFO</option>
-                    <option value="welcome">SELAMAT DATANG</option>
-                    <option value="reminder">REMINDER</option>
-                    <option value="news">NEWS</option>
-                    <option value="ads">ADS</option>
-                </select>
-                <input type="text" class="admin-input" id="notifTitleInput" placeholder="Tajuk notifikasi...">
-                <textarea class="admin-textarea" id="notifMsgInput" rows="3" placeholder="Mesej notifikasi..."></textarea>
-                <button class="admin-btn" onclick="adminSendNotif()">Hantar</button>
-            </div>
-            <div class="admin-card">
-                <h3>Notifikasi Aktif</h3>
-                <div id="adminNotifList" style="font-size:0.8rem; color:#aaa;">memuatkan...</div>
-            </div>
-        </div>
-
-        <!-- Popup Tab -->
-        <div id="adminTabPopup" class="admin-sub">
-            <div class="admin-card">
-                <h3>Popup Modal — Teks Sahaja</h3>
-                <input type="text" class="admin-input" id="popupTitleText" placeholder="Tajuk tebal (contoh: peringatan.)">
-                <textarea class="admin-textarea" id="popupBodyText" rows="3" placeholder="Teks popup..."></textarea>
-                <button class="admin-btn" onclick="adminSendPopup('text')">Aktifkan Popup Teks</button>
-            </div>
-            <div class="admin-card">
-                <h3>Popup Modal — Imej + Teks</h3>
-                <input type="text" class="admin-input" id="popupImageUrl" placeholder="URL gambar...">
-                <textarea class="admin-textarea" id="popupImageCaption" rows="2" placeholder="Teks di atas gambar..."></textarea>
-                <button class="admin-btn" onclick="adminSendPopup('image')">Aktifkan Popup Imej</button>
-            </div>
-            <div class="admin-card">
-                <h3>Status Popup</h3>
-                <div id="adminPopupStatus" style="font-size:0.8rem; color:#aaa;">—</div>
-                <button class="admin-btn danger" onclick="adminClearPopup()" style="margin-top:8px;">Nyahaktif Popup</button>
-            </div>
-        </div>
-
-        <!-- Users Tab -->
-        <div id="adminTabUsers" class="admin-sub">
-            <div class="admin-card">
-                <h3>Senarai Pengguna</h3>
-                <div id="adminUserList">memuatkan...</div>
-            </div>
-            <div class="admin-card">
-                <h3>Urus Verified Badge</h3>
-                <input type="text" class="admin-input" id="verifyUsernameInput" placeholder="@namapengguna...">
-                <button class="admin-btn" onclick="adminToggleVerified(true)">Beri Verified ✓</button>
-                <button class="admin-btn outline" onclick="adminToggleVerified(false)">Tanggal Verified</button>
-            </div>
-        </div>
-
-        <!-- Posts Tab -->
-        <div id="adminTabPosts" class="admin-sub">
-            <div class="admin-card">
-                <h3>Semua Luahan</h3>
-                <div id="adminPostList">memuatkan...</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ========== ALL MODALS ========== -->
-
-<!-- Luah Modal -->
+<!-- MODALS -->
 <div class="modal-overlay" id="luahModal">
     <div class="modal-box">
         <h3>luah perasaan.</h3>
@@ -771,7 +598,6 @@
     </div>
 </div>
 
-<!-- Edit Luah Modal -->
 <div class="modal-overlay" id="editLuahModal">
     <div class="modal-box">
         <h3>sunting luahan.</h3>
@@ -783,7 +609,6 @@
     </div>
 </div>
 
-<!-- Delete Post Modal -->
 <div class="modal-overlay" id="deletePostModal">
     <div class="modal-box">
         <h3>padam luahan?</h3>
@@ -795,11 +620,10 @@
     </div>
 </div>
 
-<!-- User Profile Modal -->
 <div class="modal-overlay" id="userModal">
     <div class="modal-box">
         <div class="modal-profile-header">
-            <div class="modal-avatar"><img id="modalAvatarImg" src="" alt="avatar"></div>
+            <div class="modal-avatar"><img id="modalAvatarImg" src=""></div>
             <div class="modal-name" id="modalName"></div>
             <div class="modal-username" id="modalUsername"></div>
             <div class="modal-bio" id="modalBio"></div>
@@ -813,7 +637,6 @@
     </div>
 </div>
 
-<!-- Bio Edit Modal -->
 <div class="modal-overlay" id="bioModal">
     <div class="modal-box">
         <h3>sunting biografi.</h3>
@@ -825,25 +648,31 @@
     </div>
 </div>
 
-<!-- Notif Detail Modal -->
-<div class="modal-overlay" id="notifDetailModal">
-    <div class="modal-detail-box">
-        <div class="modal-detail-header"><h3 id="notifDetailCategory"></h3></div>
-        <div class="modal-detail-body">
-            <div class="detail-message-box">
-                <div class="detail-message-text" id="notifDetailBody"></div>
-                <div class="detail-meta" id="notifDetailMeta"></div>
-            </div>
-        </div>
-        <div class="modal-detail-footer"><button onclick="closeModal('notifDetailModal')">tutup</button></div>
+<div class="modal-overlay" id="modalBreathing">
+    <div class="modal-box">
+        <h3>pernafasan</h3>
+        <div class="breathing-step" id="breathText">tarik nafas</div>
+        <p style="text-align:center; font-size:0.8rem;">tarik (4s) → tahan (4s) → hembus (4s)</p>
+        <button class="modal-close" onclick="closeModal('modalBreathing'); stopBreathing();">tutup</button>
     </div>
 </div>
 
-<!-- Delete Account Modal -->
+<div class="modal-overlay" id="modalAffirmation">
+    <div class="modal-box"><h3>afirmasi</h3><div id="affirmationContent"></div><button class="modal-close" onclick="closeModal('modalAffirmation')">tutup</button></div>
+</div>
+
+<div class="modal-overlay" id="modalHelpline">
+    <div class="modal-box tall"><h3>talian bantuan</h3><div id="helplineContent"></div><button class="modal-close" onclick="closeModal('modalHelpline')">tutup</button></div>
+</div>
+
+<div class="modal-overlay" id="modalGratitude">
+    <div class="modal-box tall"><h3>syukur</h3><div id="gratitudeModalContent"></div><button class="modal-close" onclick="closeModal('modalGratitude')">tutup</button></div>
+</div>
+
 <div class="modal-overlay" id="deleteAccountModal">
     <div class="modal-box">
         <h3>padam akaun?</h3>
-        <p style="color:#ccc; font-size:0.85rem; margin:1rem 0;">Semua data akan hilang. Tindakan ini tidak boleh dibatalkan.</p>
+        <p style="color:#ccc; margin:1rem 0;">Semua data akan hilang. Tindakan ini tidak boleh dibatalkan.</p>
         <div class="modal-actions">
             <button class="cancel" onclick="closeModal('deleteAccountModal')">batal.</button>
             <button class="danger" onclick="confirmDeleteAccount()">padam.</button>
@@ -851,7 +680,6 @@
     </div>
 </div>
 
-<!-- Logout Modal -->
 <div class="modal-overlay" id="logoutModal">
     <div class="modal-box">
         <h3>log keluar?</h3>
@@ -863,1404 +691,591 @@
     </div>
 </div>
 
-<!-- Breathing Modal -->
-<div class="modal-overlay" id="modalBreathing">
-    <div class="modal-box">
-        <h3>pernafasan</h3>
-        <div class="breathing-step" id="breathText">tarik nafas</div>
-        <p style="text-align:center; font-size:0.8rem;">tarik (4s) → tahan (4s) → hembus (4s)</p>
-        <button class="modal-close" onclick="closeModal('modalBreathing'); stopBreathing();">tutup</button>
-    </div>
-</div>
-
-<!-- Affirmation Modal -->
-<div class="modal-overlay" id="modalAffirmation">
-    <div class="modal-box"><h3>afirmasi</h3><div id="affirmationContent"></div><button class="modal-close" onclick="closeModal('modalAffirmation')">tutup</button></div>
-</div>
-
-<!-- Helpline Modal -->
-<div class="modal-overlay" id="modalHelpline">
-    <div class="modal-box tall"><h3>talian bantuan</h3><div id="helplineContent"></div><button class="modal-close" onclick="closeModal('modalHelpline')">tutup</button></div>
-</div>
-
-<!-- Gratitude Modal -->
-<div class="modal-overlay" id="modalGratitude">
-    <div class="modal-box tall"><h3>syukur</h3><div id="gratitudeModalContent"></div><button class="modal-close" onclick="closeModal('modalGratitude')">tutup</button></div>
-</div>
-
-<!-- Admin Popup Modal -->
-<div id="popupModal">
-    <div id="popupContent"></div>
-</div>
-
-<!-- Toast -->
 <div class="toast-msg" id="toastMsg"></div>
 
-<script>
-// ============================================================
-// COMPLETE FIXED VERSION - NO EVENT LISTENER ISSUES
-// ============================================================
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
+        onSnapshot, updateDoc, deleteDoc, query, orderBy, serverTimestamp,
+        increment, where, limit
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Global variables
-let currentUser = null;
-let unsubPosts = null;
-let unsubNotifs = null;
-let unsubPopup = null;
-let currentDeletePostId = null;
-let currentEditPostId = null;
-let breathInterval = null;
-let survivalData = {};
-let gratitudeEntries = [];
-let starredPostIds = [];
-let unreadNotifCount = 0;
-let lastSeenNotifTime = 0;
-let FB, db;
-
-const ADMIN_USERS = ['admin', 'blobadmin'];
-
-// Utility functions
-function esc(str) {
-    if (!str) return '';
-    return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
-}
-
-function showToast(msg, isError = false) {
-    const t = document.getElementById('toastMsg');
-    if (!t) return;
-    t.style.background = isError ? '#2a1a1a' : '#1f1f1f';
-    t.style.color = isError ? '#ffaaaa' : '#aaffaa';
-    t.style.border = isError ? '1px solid #ff4444' : '1px solid #44ff44';
-    t.textContent = msg;
-    t.style.opacity = '1';
-    setTimeout(() => { if (t) t.style.opacity = '0'; }, 2500);
-}
-
-function openModal(id) {
-    document.getElementById(id)?.classList.add('show');
-}
-
-function closeModal(id) {
-    document.getElementById(id)?.classList.remove('show');
-    if (id === 'modalBreathing') stopBreathing();
-}
-
-function getRelativeTime(ts) {
-    if (!ts) return 'baru sahaja.';
-    const now = Date.now();
-    const created = ts.toMillis ? ts.toMillis() : new Date(ts).getTime();
-    const diff = now - created;
-    const secs = Math.floor(diff / 1000);
-    const mins = Math.floor(secs / 60);
-    const hrs = Math.floor(mins / 60);
-    const days = Math.floor(hrs / 24);
-    if (secs < 60) return 'baru sahaja.';
-    if (mins < 60) return `${mins} minit lalu.`;
-    if (hrs < 24) return `${hrs} jam lalu.`;
-    if (days === 1) return 'semalam.';
-    const d = new Date(created);
-    return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}.`;
-}
-
-function todayStr() {
-    return new Date().toISOString().split('T')[0];
-}
-
-// Page navigation
-window.showPage = function(name) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const page = document.getElementById(`${name}-page`);
-    if (page) {
-        page.classList.add('active');
-        page.style.display = '';
-    }
-    window.scrollTo(0, 0);
-    
-    if (name === 'utama' && window.refreshUtamaStats) refreshUtamaStats();
-    if (name === 'bertahan' && window.renderBertahan) renderBertahan();
-    if (name === 'profil' && window.renderProfil) renderProfil();
-    if (name === 'tetapan' && window.loadSettingsForm) loadSettingsForm();
-    if (name === 'notif') {
-        if (window.loadNotifs) loadNotifs();
-        lastSeenNotifTime = Date.now();
-        localStorage.setItem('blob_last_notif_seen', lastSeenNotifTime);
-        document.getElementById('notifDot')?.classList.remove('show');
-    }
-    
-    document.querySelectorAll('.nav-item').forEach(n => {
-        n.classList.remove('active');
-        if (n.getAttribute('data-nav') === name) n.classList.add('active');
-    });
-};
-
-// ========== APP INITIALIZATION ==========
-function startApp() {
-    console.log('Starting app...');
-    
-    // Get Firebase from window
-    FB = window.FB;
-    db = window.db;
-    
-    if (!FB || !db) {
-        console.log('Waiting for Firebase...');
-        setTimeout(startApp, 100);
-        return;
-    }
-    
-    console.log('Firebase ready');
-    
-    // Hide splash after 2 seconds and check login
-    setTimeout(() => {
-        const savedUser = localStorage.getItem('blob_current_user');
-        console.log('Saved user:', savedUser);
-        
-        const splash = document.getElementById('splash-page');
-        const auth = document.getElementById('auth-page');
-        
-        if (savedUser && savedUser !== 'undefined') {
-            try {
-                currentUser = JSON.parse(savedUser);
-                if (currentUser && currentUser.id) {
-                    onLoginSuccess();
-                } else {
-                    if (splash) splash.classList.remove('active');
-                    if (auth) auth.classList.add('active');
-                    renderLogin();
-                }
-            } catch(e) {
-                console.error('Failed to parse user', e);
-                if (splash) splash.classList.remove('active');
-                if (auth) auth.classList.add('active');
-                renderLogin();
-            }
-        } else {
-            if (splash) splash.classList.remove('active');
-            if (auth) auth.classList.add('active');
-            renderLogin();
-        }
-    }, 2000);
-    
-    // Setup event listeners
-    setupEventListeners();
-    
-    // Load local data
-    loadLocalData();
-}
-
-function setupEventListeners() {
-    // Wait for DOM to be ready
-    setTimeout(() => {
-        // Bottom nav listeners
-        document.querySelectorAll('.nav-item').forEach(nav => {
-            nav.removeEventListener('click', nav._listener);
-            nav._listener = () => {
-                const pg = nav.getAttribute('data-nav');
-                if (pg) window.showPage(pg);
-            };
-            nav.addEventListener('click', nav._listener);
-        });
-        
-        // Floating buttons
-        const btn1 = document.getElementById('openLuahBtnUtama');
-        const btn2 = document.getElementById('openLuahBtnProfil');
-        if (btn1) btn1.addEventListener('click', () => openLuahModal());
-        if (btn2) btn2.addEventListener('click', () => openLuahModal());
-        
-        // Settings
-        const photoUrl = document.getElementById('settingPhotoUrl');
-        if (photoUrl) {
-            photoUrl.addEventListener('input', e => {
-                const preview = document.getElementById('settingPreviewImg');
-                if (preview) preview.src = e.target.value;
-            });
-        }
-        
-        const saveBtn = document.getElementById('saveProfileBtn');
-        if (saveBtn) saveBtn.addEventListener('click', saveProfileSettings);
-        
-        const changePwBtn = document.getElementById('changePasswordBtn');
-        if (changePwBtn) changePwBtn.addEventListener('click', changePassword);
-        
-        const privacyToggle = document.getElementById('privacyToggle');
-        if (privacyToggle) privacyToggle.addEventListener('change', updatePrivacy);
-        
-        const deleteBtn = document.getElementById('deleteAccountBtn');
-        if (deleteBtn) deleteBtn.addEventListener('click', () => openModal('deleteAccountModal'));
-        
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) logoutBtn.addEventListener('click', () => openModal('logoutModal'));
-        
-        const editBio = document.getElementById('editBioBtn');
-        if (editBio) {
-            editBio.addEventListener('click', () => {
-                const bioInput = document.getElementById('bioTextarea');
-                if (bioInput && currentUser) bioInput.value = currentUser.bio || '';
-                openModal('bioModal');
-            });
-        }
-        
-        document.querySelectorAll('.show-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const inp = document.getElementById(btn.dataset.target);
-                if (!inp) return;
-                inp.type = inp.type === 'password' ? 'text' : 'password';
-                btn.textContent = inp.type === 'password' ? 'papar.' : 'sembunyi.';
-            });
-        });
-        
-        // Profile tabs
-        document.querySelectorAll('.profile-tab').forEach(tab => {
-            tab.addEventListener('click', () => switchProfilTab(tab.dataset.tab));
-        });
-        
-        // Bertahan buttons
-        const checkin = document.getElementById('checkinBtn');
-        if (checkin) checkin.addEventListener('click', dailyCheckIn);
-        
-        const breathBtn = document.getElementById('btnBreathing');
-        if (breathBtn) breathBtn.addEventListener('click', openBreathingModal);
-        
-        const affirmBtn = document.getElementById('btnAffirmation');
-        if (affirmBtn) affirmBtn.addEventListener('click', openAffirmationModal);
-        
-        const helpBtn = document.getElementById('btnHelpline');
-        if (helpBtn) helpBtn.addEventListener('click', openHelplineModal);
-        
-        const gratefulBtn = document.getElementById('btnGratitude');
-        if (gratefulBtn) gratefulBtn.addEventListener('click', openGratitudeModal);
-        
-        // Modal close on overlay click
-        document.querySelectorAll('.modal-overlay').forEach(m => {
-            m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
-        });
-    }, 100);
-}
-
-function loadLocalData() {
-    const sv = localStorage.getItem('blob_survival');
-    if (sv) survivalData = JSON.parse(sv);
-    const gv = localStorage.getItem('blob_gratitude');
-    if (gv) gratitudeEntries = JSON.parse(gv);
-    const starred = localStorage.getItem('blob_starred');
-    if (starred) starredPostIds = JSON.parse(starred);
-    lastSeenNotifTime = parseInt(localStorage.getItem('blob_last_notif_seen') || '0');
-}
-
-// ========== AUTH FUNCTIONS ==========
-function createPasswordField(id, placeholder) {
-    const wrap = document.createElement('div');
-    wrap.className = 'password-wrapper';
-    const inp = document.createElement('input');
-    inp.type = 'password'; inp.id = id; inp.className = 'input-field';
-    inp.placeholder = placeholder; inp.autocomplete = 'off';
-    const btn = document.createElement('button');
-    btn.type = 'button'; btn.className = 'password-toggle'; btn.textContent = 'papar.';
-    btn.onclick = () => {
-        inp.type = inp.type === 'password' ? 'text' : 'password';
-        btn.textContent = inp.type === 'password' ? 'papar.' : 'sembunyi.';
+    const firebaseConfig = {
+        apiKey: "AIzaSyB5Rzsr8YaGNb5E0I6hSQYbdOd1C2e54Gs",
+        authDomain: "crash-out-burn-out-turn-out-d.firebaseapp.com",
+        projectId: "crash-out-burn-out-turn-out-d",
+        storageBucket: "crash-out-burn-out-turn-out-d.firebasestorage.app",
+        messagingSenderId: "280103809790",
+        appId: "1:280103809790:web:514756e3aa0bf6a69cabaf"
     };
-    wrap.appendChild(inp); wrap.appendChild(btn);
-    return wrap;
-}
 
-function renderLogin() {
-    const c = document.getElementById('authView');
-    if (!c) return;
-    c.innerHTML = '';
-    const title = document.createElement('h1');
-    title.className = 'auth-title'; title.textContent = 'log masuk.';
-    const form = document.createElement('form');
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    const idGrp = document.createElement('div'); idGrp.className = 'form-group';
-    const idInp = document.createElement('input');
-    idInp.type = 'text'; idInp.id = 'loginIdentifier'; idInp.className = 'input-field';
-    idInp.placeholder = 'alamat e-mel atau @namapengguna.';
-    idGrp.appendChild(idInp);
-
-    const passGrp = document.createElement('div'); passGrp.className = 'form-group';
-    passGrp.appendChild(createPasswordField('loginPassword', 'kata laluan.'));
-
-    const btn = document.createElement('button');
-    btn.type = 'submit'; btn.className = 'btn-primary'; btn.textContent = 'log masuk.';
-
-    const sw = document.createElement('div'); sw.className = 'switch-auth';
-    const st = document.createElement('span'); st.className = 'switch-text'; st.textContent = 'belum ada akaun?';
-    const sl = document.createElement('button'); sl.type = 'button'; sl.className = 'switch-link'; sl.textContent = 'daftar.';
-    sl.onclick = renderRegister;
-    sw.appendChild(st); sw.appendChild(sl);
-
-    form.appendChild(idGrp); form.appendChild(passGrp); form.appendChild(btn);
-    c.appendChild(title); c.appendChild(form); c.appendChild(sw);
-
-    form.addEventListener('submit', async e => {
-        e.preventDefault();
-        const identifier = (document.getElementById('loginIdentifier')?.value || '').trim();
-        const password = document.getElementById('loginPassword')?.value || '';
-        if (!identifier || !password) { showToast('sila lengkapkan semua ruangan.', true); return; }
-        await loginUser(identifier, password);
-    });
-}
-
-function renderRegister() {
-    const c = document.getElementById('authView');
-    if (!c) return;
-    c.innerHTML = '';
-    const title = document.createElement('h1');
-    title.className = 'auth-title'; title.textContent = 'daftar.';
-    const form = document.createElement('form');
-
-    function addField(id, type, placeholder) {
-        const grp = document.createElement('div'); grp.className = 'form-group';
-        const inp = document.createElement('input');
-        inp.type = type; inp.id = id; inp.className = 'input-field'; inp.placeholder = placeholder;
-        grp.appendChild(inp); return grp;
-    }
-    function addPassField(id, placeholder) {
-        const grp = document.createElement('div'); grp.className = 'form-group';
-        grp.appendChild(createPasswordField(id, placeholder)); return grp;
-    }
-
-    form.appendChild(addField('regUsername', 'text', '@namapengguna.'));
-    form.appendChild(addField('regEmail', 'email', 'alamat e-mel.'));
-    form.appendChild(addPassField('regPassword', 'kata laluan.'));
-    form.appendChild(addPassField('regConfirmPassword', 'sah kata laluan.'));
-
-    const btn = document.createElement('button');
-    btn.type = 'submit'; btn.className = 'btn-primary'; btn.textContent = 'daftar.';
-    form.appendChild(btn);
-
-    const sw = document.createElement('div'); sw.className = 'switch-auth';
-    const st = document.createElement('span'); st.className = 'switch-text'; st.textContent = 'sudah ada akaun?';
-    const sl = document.createElement('button'); sl.type = 'button'; sl.className = 'switch-link'; sl.textContent = 'log masuk.';
-    sl.onclick = renderLogin;
-    sw.appendChild(st); sw.appendChild(sl);
-
-    c.appendChild(title); c.appendChild(form); c.appendChild(sw);
-
-    form.addEventListener('submit', async e => {
-        e.preventDefault();
-        const username = (document.getElementById('regUsername')?.value || '').trim();
-        const email = (document.getElementById('regEmail')?.value || '').trim();
-        const password = document.getElementById('regPassword')?.value || '';
-        const confirm = document.getElementById('regConfirmPassword')?.value || '';
-
-        if (!username || !email || !password || !confirm) { showToast('sila lengkapkan semua ruangan.', true); return; }
-        if (!/^[a-zA-Z0-9_\.]{3,20}$/.test(username)) { showToast('nama pengguna 3-20 aksara (huruf, nombor, _, .)', true); return; }
-        if (!/^[^\s@]+@([^\s@.,]+\.)+[^\s@]{2,}$/.test(email)) { showToast('e-mel tidak sah.', true); return; }
-        if (password.length < 4) { showToast('kata laluan sekurang-kurangnya 4 aksara.', true); return; }
-        if (password !== confirm) { showToast('kata laluan tidak sepadan.', true); return; }
-        await registerUser(username, email, password);
-    });
-}
-
-async function loginUser(identifier, password) {
-    try {
-        const lowerId = identifier.toLowerCase();
-        const usersRef = FB.collection(db, 'users');
-        let q;
-
-        if (identifier.includes('@') && !identifier.startsWith('@')) {
-            q = FB.query(usersRef, FB.where('email', '==', lowerId), FB.limit(1));
-        } else {
-            const uname = identifier.replace(/^@/, '').toLowerCase();
-            q = FB.query(usersRef, FB.where('usernameLower', '==', uname), FB.limit(1));
-        }
-
-        const snap = await FB.getDocs(q);
-        if (snap.empty) { showToast('pengguna tidak dijumpai.', true); return; }
-
-        const userDoc = snap.docs[0];
-        const userData = userDoc.data();
-
-        if (userData.password !== btoa(password)) { showToast('kata laluan salah.', true); return; }
-
-        currentUser = { id: userDoc.id, ...userData };
-        localStorage.setItem('blob_current_user', JSON.stringify(currentUser));
-        showToast('log masuk berjaya!');
-        setTimeout(onLoginSuccess, 600);
-    } catch (err) {
-        console.error(err);
-        showToast('ralat semasa log masuk.', true);
-    }
-}
-
-async function registerUser(username, email, password) {
-    try {
-        const usersRef = FB.collection(db, 'users');
-        const qUser = FB.query(usersRef, FB.where('usernameLower', '==', username.toLowerCase()), FB.limit(1));
-        const qEmail = FB.query(usersRef, FB.where('email', '==', email.toLowerCase()), FB.limit(1));
-
-        const [snapU, snapE] = await Promise.all([FB.getDocs(qUser), FB.getDocs(qEmail)]);
-        if (!snapU.empty) { showToast('nama pengguna sudah wujud.', true); return; }
-        if (!snapE.empty) { showToast('e-mel telah berdaftar.', true); return; }
-
-        const newUser = {
-            username, usernameLower: username.toLowerCase(),
-            email: email.toLowerCase(), password: btoa(password),
-            bio: '', photoUrl: '',
-            isVerified: false, isPrivate: false,
-            createdAt: FB.serverTimestamp()
-        };
-        await FB.addDoc(usersRef, newUser);
-        showToast('pendaftaran berjaya! sila log masuk.');
-        setTimeout(() => { renderLogin(); const inp = document.getElementById('loginIdentifier'); if(inp) inp.value = username; }, 1300);
-    } catch (err) {
-        console.error(err);
-        showToast('ralat semasa mendaftar.', true);
-    }
-}
-
-function onLoginSuccess() {
-    updateAllAvatars();
-    window.showPage('utama');
-    subscribeToRealtime();
-    if (window.checkAndShowPopup) checkAndShowPopup();
+    // Make global
+    window.db = db;
+    window.FB = { collection, doc, addDoc, setDoc, getDoc, getDocs, onSnapshot, updateDoc, deleteDoc, query, orderBy, serverTimestamp, increment, where, limit };
     
-    if (ADMIN_USERS.includes((currentUser.usernameLower || currentUser.username || '').toLowerCase())) {
+    // Start app after Firebase is ready
+    setTimeout(() => {
+        window.dispatchEvent(new Event('firebaseAppReady'));
+    }, 100);
+</script>
+
+<script>
+    // Main application script
+    let currentUser = null;
+    let unsubPosts = null;
+    let survivalData = {};
+    let gratitudeEntries = [];
+    let starredPostIds = [];
+    let breathInterval = null;
+    let FB, db;
+
+    function esc(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+    }
+
+    function showToast(msg, isError = false) {
+        const t = document.getElementById('toastMsg');
+        if (!t) return;
+        t.textContent = msg;
+        t.style.opacity = '1';
+        setTimeout(() => t.style.opacity = '0', 2500);
+    }
+
+    function openModal(id) {
+        document.getElementById(id)?.classList.add('show');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id)?.classList.remove('show');
+        if (id === 'modalBreathing' && breathInterval) {
+            clearInterval(breathInterval);
+            breathInterval = null;
+        }
+    }
+
+    function getRelativeTime(ts) {
+        if (!ts) return 'baru sahaja.';
+        const now = Date.now();
+        const created = ts.toMillis ? ts.toMillis() : new Date(ts).getTime();
+        const diff = now - created;
+        const mins = Math.floor(diff / 60000);
+        const hours = Math.floor(mins / 60);
+        const days = Math.floor(hours / 24);
+        if (mins < 1) return 'baru sahaja.';
+        if (mins < 60) return `${mins} minit lalu.`;
+        if (hours < 24) return `${hours} jam lalu.`;
+        if (days === 1) return 'semalam.';
+        return `${days} hari lalu.`;
+    }
+
+    function todayStr() {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    function showPage(name) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const page = document.getElementById(`${name}-page`);
+        if (page) page.classList.add('active');
+        window.scrollTo(0, 0);
+        
+        if (name === 'utama') refreshUtamaStats();
+        if (name === 'bertahan') renderBertahan();
+        if (name === 'profil') renderProfil();
+        
+        document.querySelectorAll('.nav-item').forEach(n => {
+            n.classList.remove('active');
+            if (n.getAttribute('data-nav') === name) n.classList.add('active');
+        });
+    }
+
+    // Hide splash and show appropriate page
+    function hideSplashAndStart() {
+        const splash = document.getElementById('splash-screen');
+        if (splash) splash.classList.add('hide');
+        
         setTimeout(() => {
-            document.querySelectorAll('.bottom-nav').forEach(nav => {
-                const existing = nav.querySelector('.admin-nav');
-                if (!existing) {
-                    const adminLink = document.createElement('div');
-                    adminLink.className = 'nav-item admin-nav';
-                    adminLink.textContent = '⚙';
-                    adminLink.style.color = '#f90';
-                    adminLink.onclick = () => window.showPage('admin');
-                    nav.appendChild(adminLink);
-                }
-            });
-            if (window.loadAdminData) loadAdminData();
+            const savedUser = localStorage.getItem('blob_current_user');
+            if (savedUser && savedUser !== 'undefined') {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    if (currentUser && currentUser.id) {
+                        initApp();
+                        showPage('utama');
+                        return;
+                    }
+                } catch(e) {}
+            }
+            showPage('auth');
+            renderLogin();
         }, 500);
     }
-}
 
-function updateAllAvatars() {
-    if (!currentUser) return;
-    const photo = currentUser.photoUrl || `https://placehold.co/42x42/222/fff?text=${(currentUser.username || 'U').charAt(0).toUpperCase()}`;
-    ['headerAvatarUtama','headerAvatarBertahan','headerAvatarProfil','headerAvatarTetapan','headerAvatarNotif'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.src = photo;
-    });
-}
+    function initApp() {
+        updateAllAvatars();
+        subscribeToRealtime();
+        loadLocalData();
+        renderBertahan();
+        refreshUtamaStats();
+    }
 
-// ========== REALTIME SUBSCRIPTIONS ==========
-function subscribeToRealtime() {
-    if (unsubPosts) unsubPosts();
-    const postsQ = FB.query(FB.collection(db, 'posts'), FB.orderBy('createdAt', 'desc'));
-    unsubPosts = FB.onSnapshot(postsQ, snap => {
-        const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        if (window.renderPosts) renderPosts(posts);
-        if (window.refreshUtamaStats) refreshUtamaStats();
-    });
-    
-    if (unsubPopup) unsubPopup();
-    const popupRef = FB.doc(db, 'config', 'popup');
-    unsubPopup = FB.onSnapshot(popupRef, snap => {
-        if (snap.exists()) {
-            const data = snap.data();
-            if (data.active && window.showPopup) showPopup(data);
-            else if (window.hidePopup) hidePopup();
+    function loadLocalData() {
+        const sv = localStorage.getItem('blob_survival');
+        if (sv) survivalData = JSON.parse(sv);
+        const gv = localStorage.getItem('blob_gratitude');
+        if (gv) gratitudeEntries = JSON.parse(gv);
+        const starred = localStorage.getItem('blob_starred');
+        if (starred) starredPostIds = JSON.parse(starred);
+    }
+
+    function updateAllAvatars() {
+        if (!currentUser) return;
+        const photo = currentUser.photoUrl || `https://placehold.co/42x42/222/fff?text=${(currentUser.username || 'U').charAt(0).toUpperCase()}`;
+        ['headerAvatarUtama','headerAvatarBertahan','headerAvatarProfil','headerAvatarTetapan','headerAvatarNotif'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.src = photo;
+        });
+    }
+
+    function subscribeToRealtime() {
+        if (unsubPosts) unsubPosts();
+        const postsQ = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+        unsubPosts = onSnapshot(postsQ, snap => {
+            const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderPosts(posts);
+        });
+    }
+
+    function renderPosts(posts) {
+        const container = document.getElementById('postsContainer');
+        if (!container) return;
+        if (!posts.length) {
+            container.innerHTML = '<div style="text-align:center; color:#555; padding:2rem;">tiada luahan. tekan "✎.."</div>';
+            return;
         }
-    });
-}
-
-// ========== POST FUNCTIONS ==========
-function renderPosts(posts) {
-    const container = document.getElementById('postsContainer');
-    if (!container) return;
-    if (!posts.length) {
-        container.innerHTML = '<div style="text-align:center; color:#555; padding:2rem; font-size:0.8rem;">tiada luahan. tekan "✎.."</div>';
-        return;
+        container.innerHTML = '';
+        posts.forEach(post => container.appendChild(createPostCard(post)));
     }
-    container.innerHTML = '';
-    posts.forEach(post => {
-        const card = createPostCard(post, true);
-        container.appendChild(card);
-    });
-}
 
-function createPostCard(post, showEditDelete) {
-    const isAnon = post.isAnonymous === true;
-    const isOwn = currentUser && post.userId === currentUser.id;
-    const starred = starredPostIds.includes(post.id);
-    const starSrc = starred
-        ? 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2720%27 height=%2720%27 viewBox=%270 0 24 24%27 fill=%27%23ffcc00%27 stroke=%27%23ffcc00%27%3E%3Cpolygon points=%2712 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2%27/%3E%3C/svg%3E'
-        : 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2720%27 height=%2720%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23ffffff%27 stroke-width=%271.5%27%3E%3Cpolygon points=%2712 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2%27/%3E%3C/svg%3E';
-
-    const card = document.createElement('div');
-    card.className = 'post-card';
-
-    let avatarHtml = isAnon
-        ? '<div class="post-avatar anonymous-avatar"></div>'
-        : `<div class="post-avatar"><img src="${esc(post.userPhoto || 'https://placehold.co/36x36/222/fff?text=U')}" alt="ava" onerror="this.src='https://placehold.co/36x36/222/fff?text=U';"></div>`;
-
-    let userHtml = isAnon
-        ? '<span class="post-user anonymous-user">tanpa nama</span>'
-        : `<span class="post-user">@${esc(post.username)}</span>${post.isVerified ? '<img src="verifiedbadge.png" class="verified-badge" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7641/7641709.png\';">' : ''}`;
-
-    const timeStr = getRelativeTime(post.createdAt) + (post.isEdited ? ' (disunting)' : '');
-
-    let actionsHtml = `
-        <div class="post-actions">
-            <button class="star-btn" data-id="${post.id}">
-                <img class="star-img" src="${starSrc}" alt="star">
-                <span class="star-count ${starred ? 'starred' : ''}">${post.stars || 0}</span>
-            </button>`;
-
-    if (showEditDelete && isOwn) {
-        actionsHtml += `<div class="edit-delete">
-            <span class="edit-post" data-id="${post.id}" data-content="${esc(post.content)}">sunting.</span>
-            <span class="delete-post" data-id="${post.id}">padam.</span>
-        </div>`;
-    }
-    actionsHtml += '</div>';
-
-    card.innerHTML = `
-        <div class="post-header">
-            ${avatarHtml}
-            <div class="post-user-wrapper" data-username="${isAnon ? '' : esc(post.username)}" data-userid="${isAnon ? '' : (post.userId || '')}">
-                ${userHtml}
+    function createPostCard(post) {
+        const isAnon = post.isAnonymous === true;
+        const isOwn = currentUser && post.userId === currentUser.id;
+        const starred = starredPostIds.includes(post.id);
+        
+        const card = document.createElement('div');
+        card.className = 'post-card';
+        
+        let avatarHtml = isAnon ? '<div class="post-avatar anonymous-avatar"></div>' 
+            : `<div class="post-avatar"><img src="${post.userPhoto || 'https://placehold.co/36x36/222/fff?text=U'}" onerror="this.src='https://placehold.co/36x36/222/fff?text=U'"></div>`;
+        
+        let userHtml = isAnon ? '<span class="post-user anonymous-user">tanpa nama</span>' 
+            : `<span class="post-user">@${esc(post.username)}</span>`;
+        
+        card.innerHTML = `
+            <div class="post-header">
+                ${avatarHtml}
+                <div class="post-user-wrapper">
+                    ${userHtml}
+                </div>
+                <div class="post-time">${getRelativeTime(post.createdAt)}</div>
             </div>
-            <div class="post-time">${esc(timeStr)}</div>
-        </div>
-        <div class="post-content">${esc(post.content)}</div>
-        ${actionsHtml}
-    `;
+            <div class="post-content">${esc(post.content)}</div>
+            <div class="post-actions">
+                <button class="star-btn" data-id="${post.id}">
+                    <span class="star-count ${starred ? 'starred' : ''}">⭐ ${post.stars || 0}</span>
+                </button>
+                ${isOwn ? `<div class="edit-delete">
+                    <span class="edit-post" data-id="${post.id}" data-content="${esc(post.content)}">sunting.</span>
+                    <span class="delete-post" data-id="${post.id}">padam.</span>
+                </div>` : ''}
+            </div>
+        `;
+        
+        card.querySelector('.star-btn')?.addEventListener('click', () => toggleStar(post.id, post.stars || 0));
+        card.querySelector('.edit-post')?.addEventListener('click', () => openEditPost(post.id, post.content));
+        card.querySelector('.delete-post')?.addEventListener('click', () => {
+            window.currentDeletePostId = post.id;
+            openModal('deletePostModal');
+        });
+        
+        return card;
+    }
 
-    card.querySelector('.star-btn')?.addEventListener('click', () => toggleStar(post.id, post.stars || 0));
-    card.querySelector('.edit-post')?.addEventListener('click', () => openEditPost(post.id, post.content));
-    card.querySelector('.delete-post')?.addEventListener('click', () => { currentDeletePostId = post.id; openModal('deletePostModal'); });
-    card.querySelector('.post-user-wrapper')?.addEventListener('click', e => {
-        const uid = e.currentTarget.dataset.userid;
-        const uname = e.currentTarget.dataset.username;
-        if (uid && uname && window.showUserProfile) showUserProfile(uid, uname);
-    });
+    async function toggleStar(postId, currentStars) {
+        if (starredPostIds.includes(postId)) return;
+        starredPostIds.push(postId);
+        localStorage.setItem('blob_starred', JSON.stringify(starredPostIds));
+        await updateDoc(doc(db, 'posts', postId), { stars: increment(1) });
+    }
 
-    return card;
-}
-
-function openLuahModal() {
-    const textarea = document.getElementById('newLuahText');
-    if (textarea) textarea.value = '';
-    const toggle = document.getElementById('anonymousToggle');
-    if (toggle) toggle.checked = false;
-    openModal('luahModal');
-}
-
-async function submitLuah() {
-    const content = document.getElementById('newLuahText')?.value.trim();
-    if (!content) { showToast('tulis luahan dulu.', true); return; }
-    const isAnon = document.getElementById('anonymousToggle')?.checked || false;
-
-    const post = {
-        content,
-        isAnonymous: isAnon,
-        username: isAnon ? 'tanpa nama' : currentUser.username,
-        userId: isAnon ? null : currentUser.id,
-        userPhoto: isAnon ? null : (currentUser.photoUrl || ''),
-        isVerified: isAnon ? false : (currentUser.isVerified || false),
-        stars: 0,
-        isEdited: false,
-        createdAt: FB.serverTimestamp()
-    };
-
-    try {
-        await FB.addDoc(FB.collection(db, 'posts'), post);
+    async function submitLuah() {
+        const content = document.getElementById('newLuahText')?.value.trim();
+        if (!content) { showToast('tulis luahan dulu.', true); return; }
+        const isAnon = document.getElementById('anonymousToggle')?.checked || false;
+        
+        await addDoc(collection(db, 'posts'), {
+            content, isAnonymous: isAnon,
+            username: isAnon ? 'tanpa nama' : currentUser.username,
+            userId: isAnon ? null : currentUser.id,
+            userPhoto: isAnon ? null : currentUser.photoUrl,
+            stars: 0, isEdited: false,
+            createdAt: serverTimestamp()
+        });
         closeModal('luahModal');
         showToast('luahan disimpan.');
-    } catch (err) {
-        console.error(err);
-        showToast('ralat menyimpan luahan.', true);
     }
-}
 
-function openEditPost(id, content) {
-    currentEditPostId = id;
-    const textarea = document.getElementById('editLuahText');
-    if (textarea) textarea.value = content;
-    openModal('editLuahModal');
-}
+    function openEditPost(id, content) {
+        window.currentEditPostId = id;
+        document.getElementById('editLuahText').value = content;
+        openModal('editLuahModal');
+    }
 
-async function saveEdit() {
-    const content = document.getElementById('editLuahText')?.value.trim();
-    if (!content || !currentEditPostId) return;
-    try {
-        await FB.updateDoc(FB.doc(db, 'posts', currentEditPostId), { content, isEdited: true });
+    async function saveEdit() {
+        const content = document.getElementById('editLuahText')?.value.trim();
+        if (!content || !window.currentEditPostId) return;
+        await updateDoc(doc(db, 'posts', window.currentEditPostId), { content, isEdited: true });
         closeModal('editLuahModal');
         showToast('luahan disunting.');
-    } catch (err) { showToast('ralat menyunting.', true); }
-}
+    }
 
-async function confirmDeletePost() {
-    if (!currentDeletePostId) return;
-    try {
-        await FB.deleteDoc(FB.doc(db, 'posts', currentDeletePostId));
+    async function confirmDeletePost() {
+        if (!window.currentDeletePostId) return;
+        await deleteDoc(doc(db, 'posts', window.currentDeletePostId));
         closeModal('deletePostModal');
         showToast('luahan dipadam.');
-        currentDeletePostId = null;
-    } catch (err) { showToast('ralat memadam.', true); }
-}
-
-async function toggleStar(postId, currentStars) {
-    if (starredPostIds.includes(postId)) return;
-    starredPostIds.push(postId);
-    localStorage.setItem('blob_starred', JSON.stringify(starredPostIds));
-    try {
-        await FB.updateDoc(FB.doc(db, 'posts', postId), { stars: FB.increment(1) });
-    } catch (err) { console.error(err); }
-}
-
-// ========== UTAMA STATS ==========
-function refreshUtamaStats() {
-    const { streak, total } = calcSurvival();
-    const streakEl = document.getElementById('utamaStreak');
-    const totalEl = document.getElementById('utamaTotal');
-    if (streakEl) streakEl.textContent = streak;
-    if (totalEl) totalEl.textContent = total;
-}
-
-// ========== SURVIVAL FUNCTIONS ==========
-function saveSurvival() {
-    localStorage.setItem('blob_survival', JSON.stringify(survivalData));
-    if (currentUser?.id) {
-        FB.setDoc(FB.doc(db, 'survival', currentUser.id), survivalData, { merge: true }).catch(() => {});
-    }
-}
-
-async function loadSurvivalFromFirestore() {
-    if (!currentUser?.id) return;
-    try {
-        const snap = await FB.getDoc(FB.doc(db, 'survival', currentUser.id));
-        if (snap.exists()) {
-            survivalData = snap.data();
-            localStorage.setItem('blob_survival', JSON.stringify(survivalData));
-        }
-    } catch (err) { console.error(err); }
-}
-
-function calcSurvival() {
-    let total = 0, streak = 0;
-    for (const k in survivalData) if (survivalData[k] === true) total++;
-    let d = new Date();
-    while (true) {
-        const s = d.toISOString().split('T')[0];
-        if (survivalData[s] === true) { streak++; d.setDate(d.getDate() - 1); }
-        else break;
-    }
-    return { total, streak };
-}
-
-function dailyCheckIn() {
-    const today = todayStr();
-    if (survivalData[today]) {
-        const msg = document.getElementById('checkinMessage');
-        if (msg) msg.textContent = 'hari ini sudah direkodkan!';
-        return;
-    }
-    survivalData[today] = true;
-    saveSurvival();
-    renderBertahan();
-    const msg = document.getElementById('checkinMessage');
-    if (msg) msg.textContent = 'terima kasih! +1 hari bertahan.';
-    const btn = document.getElementById('checkinBtn');
-    if (btn) btn.classList.add('checked');
-    refreshUtamaStats();
-}
-
-function renderBertahan() {
-    loadSurvivalFromFirestore();
-    const { streak, total } = calcSurvival();
-    const streakEl = document.getElementById('bertahanStreak');
-    const totalEl = document.getElementById('bertahanTotal');
-    if (streakEl) streakEl.textContent = streak;
-    if (totalEl) totalEl.textContent = total;
-
-    const today = todayStr();
-    const btn = document.getElementById('checkinBtn');
-    if (survivalData[today]) {
-        btn?.classList.add('checked');
-        const msg = document.getElementById('checkinMessage');
-        if (msg) msg.textContent = 'hari ini sudah bertahan. esok lagi.';
-    } else {
-        btn?.classList.remove('checked');
+        window.currentDeletePostId = null;
     }
 
-    const dots = document.getElementById('streakDots');
-    if (dots) {
-        dots.innerHTML = '';
-        for (let i = 0; i < 15; i++) {
-            const d = new Date(); d.setDate(d.getDate() - i);
+    function refreshUtamaStats() {
+        const { streak, total } = calcSurvival();
+        document.getElementById('utamaStreak').textContent = streak;
+        document.getElementById('utamaTotal').textContent = total;
+    }
+
+    function calcSurvival() {
+        let total = 0, streak = 0;
+        for (const k in survivalData) if (survivalData[k] === true) total++;
+        let d = new Date();
+        while (true) {
             const s = d.toISOString().split('T')[0];
-            const dot = document.createElement('div');
-            dot.className = 'sdot' + (survivalData[s] ? ' active' : '');
-            dot.textContent = survivalData[s] ? '✓' : '○';
-            dots.appendChild(dot);
+            if (survivalData[s] === true) { streak++; d.setDate(d.getDate() - 1); }
+            else break;
+        }
+        return { total, streak };
+    }
+
+    function dailyCheckIn() {
+        const today = todayStr();
+        if (survivalData[today]) {
+            document.getElementById('checkinMessage').textContent = 'hari ini sudah direkodkan!';
+            return;
+        }
+        survivalData[today] = true;
+        localStorage.setItem('blob_survival', JSON.stringify(survivalData));
+        if (currentUser?.id) {
+            setDoc(doc(db, 'survival', currentUser.id), survivalData, { merge: true });
+        }
+        renderBertahan();
+        document.getElementById('checkinMessage').textContent = 'terima kasih! +1 hari bertahan.';
+        refreshUtamaStats();
+    }
+
+    function renderBertahan() {
+        const { streak, total } = calcSurvival();
+        document.getElementById('bertahanStreak').textContent = streak;
+        document.getElementById('bertahanTotal').textContent = total;
+        
+        const today = todayStr();
+        const btn = document.getElementById('checkinBtn');
+        if (survivalData[today]) {
+            btn?.classList.add('checked');
+            document.getElementById('checkinMessage').textContent = 'hari ini sudah bertahan.';
+        } else {
+            btn?.classList.remove('checked');
+        }
+        
+        const dots = document.getElementById('streakDots');
+        if (dots) {
+            dots.innerHTML = '';
+            for (let i = 0; i < 15; i++) {
+                const d = new Date(); d.setDate(d.getDate() - i);
+                const s = d.toISOString().split('T')[0];
+                const dot = document.createElement('div');
+                dot.className = 'sdot' + (survivalData[s] ? ' active' : '');
+                dot.textContent = survivalData[s] ? '✓' : '○';
+                dots.appendChild(dot);
+            }
+        }
+        
+        const now = new Date();
+        const monthNames = ['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
+        document.getElementById('calendarMonthTitle').textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}.`;
+        
+        const grid = document.getElementById('calendarGrid');
+        if (grid) {
+            grid.innerHTML = '';
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            for (let i = 0; i < firstDay; i++) {
+                const e = document.createElement('div'); e.className = 'cal-day empty'; grid.appendChild(e);
+            }
+            for (let day = 1; day <= daysInMonth; day++) {
+                const ds = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const el = document.createElement('div');
+                el.className = 'cal-day' + (survivalData[ds] ? ' checked' : '');
+                el.textContent = day;
+                grid.appendChild(el);
+            }
         }
     }
 
-    const now = new Date();
-    const year = now.getFullYear(), month = now.getMonth();
-    const monthNames = ['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
-    const calTitle = document.getElementById('calendarMonthTitle');
-    if (calTitle) calTitle.textContent = `${monthNames[month]} ${year}.`;
-
-    const grid = document.getElementById('calendarGrid');
-    if (grid) {
-        grid.innerHTML = '';
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        for (let i = 0; i < firstDay; i++) {
-            const e = document.createElement('div'); e.className = 'cal-day empty'; e.textContent = ''; grid.appendChild(e);
-        }
-        for (let day = 1; day <= daysInMonth; day++) {
-            const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-            const el = document.createElement('div');
-            el.className = 'cal-day' + (survivalData[ds] ? ' checked' : '');
-            el.textContent = day;
-            grid.appendChild(el);
-        }
+    async function renderProfil() {
+        if (!currentUser) return;
+        const { streak, total } = calcSurvival();
+        const photo = currentUser.photoUrl || `https://placehold.co/56x56/222/fff?text=${(currentUser.username || 'U').charAt(0).toUpperCase()}`;
+        document.getElementById('profilAvatarImg').src = photo;
+        document.getElementById('profilDisplayName').innerHTML = esc(currentUser.username || '');
+        document.getElementById('profilUsername').textContent = `@${currentUser.username || ''}`;
+        document.getElementById('profileBioText').textContent = currentUser.bio || '—';
+        document.getElementById('profilStreak').textContent = streak;
+        document.getElementById('profilTotalSurvive').textContent = total;
+        
+        const q = query(collection(db, 'posts'), where('userId', '==', currentUser.id));
+        const snap = await getDocs(q);
+        document.getElementById('profilPostCount').textContent = snap.size;
+        
+        renderMyLuahan();
     }
-}
 
-// ========== ACTIVITY FUNCTIONS ==========
-function openBreathingModal() {
-    openModal('modalBreathing');
-    const texts = ['tarik nafas...', 'tahan...', 'hembus...'];
-    let state = 0, counter = 0;
-    const div = document.getElementById('breathText');
-    if (breathInterval) clearInterval(breathInterval);
-    const update = () => { if (div) div.textContent = texts[state]; counter++; if (counter >= 4) { state = (state + 1) % 3; counter = 0; } };
-    update();
-    breathInterval = setInterval(update, 1000);
-}
-
-function stopBreathing() { if (breathInterval) clearInterval(breathInterval); breathInterval = null; }
-
-function openAffirmationModal() {
-    const affs = [
-        'Saya kuat dan mampu mengharungi apa jua.',
-        'Setiap hari adalah peluang baru untuk sembuh.',
-        'Saya layak untuk berasa aman dan tenang.',
-        'Saya memilih untuk bertahan hari ini.',
-        'Perasaan ini sementara. Saya kekal kuat.'
-    ];
-    const container = document.getElementById('affirmationContent');
-    if (container) container.innerHTML = affs.map(a => `<div class="affirmation-text">${esc(a)}</div>`).join('');
-    openModal('modalAffirmation');
-}
-
-function openHelplineModal() {
-    const lines = [
-        { name: 'Talian Kasih', number: '15999', desc: '24 jam, kaunseling psikososial' },
-        { name: 'Befrienders KL', number: '03-7627 2929', desc: 'sokongan emosi' },
-        { name: 'MHPSS Taskforce', number: '03-2935 9935', desc: 'krisis kesihatan mental' }
-    ];
-    const container = document.getElementById('helplineContent');
-    if (container) {
-        container.innerHTML = lines.map(l => `<div class="helpline-item"><strong>${l.name}</strong><br>${l.number}<br><span style="font-size:0.7rem;">${l.desc}</span></div>`).join('') + '<p style="margin-top:12px; font-size:0.7rem; text-align:center;">Jangan ragu untuk menghubungi jika perlu bercakap.</p>';
+    async function renderMyLuahan() {
+        const container = document.getElementById('luahanPanel');
+        if (!container) return;
+        const q = query(collection(db, 'posts'), where('userId', '==', currentUser.id), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            container.innerHTML = '<div class="empty-message">tiada luahan.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        snap.docs.forEach(d => container.appendChild(createPostCard({ id: d.id, ...d.data() })));
     }
-    openModal('modalHelpline');
-}
 
-function openGratitudeModal() {
-    renderGratitudeContent();
-    openModal('modalGratitude');
-}
-
-function renderGratitudeContent() {
-    const c = document.getElementById('gratitudeModalContent');
-    if (!c) return;
-    const today = todayStr();
-    const todayList = gratitudeEntries.filter(e => e.dateStr === today);
-    let html = '<div class="gratitude-list">';
-    if (!todayList.length) html += '<div style="color:#aaa; padding:8px;">tiada catatan hari ini.</div>';
-    else todayList.forEach(e => { html += `<div class="gratitude-item">${esc(e.text)}</div>`; });
-    html += '</div><div class="add-gratitude"><input type="text" id="newGratitudeInput" placeholder="saya bersyukur untuk..."><button id="submitGratitudeBtn">+</button></div>';
-    c.innerHTML = html;
-    const submitBtn = document.getElementById('submitGratitudeBtn');
-    if (submitBtn) {
-        submitBtn.addEventListener('click', () => {
+    function openBreathingModal() {
+        openModal('modalBreathing');
+        const texts = ['tarik nafas...', 'tahan...', 'hembus...'];
+        let state = 0, counter = 0;
+        const div = document.getElementById('breathText');
+        const update = () => { div.textContent = texts[state]; counter++; if (counter >= 4) { state = (state + 1) % 3; counter = 0; } };
+        update();
+        breathInterval = setInterval(update, 1000);
+    }
+    
+    function stopBreathing() { if (breathInterval) { clearInterval(breathInterval); breathInterval = null; } }
+    
+    function openAffirmationModal() {
+        const affs = ['Saya kuat dan mampu mengharungi apa jua.', 'Setiap hari adalah peluang baru untuk sembuh.', 'Saya layak untuk berasa aman dan tenang.'];
+        document.getElementById('affirmationContent').innerHTML = affs.map(a => `<div class="affirmation-text">${esc(a)}</div>`).join('');
+        openModal('modalAffirmation');
+    }
+    
+    function openHelplineModal() {
+        document.getElementById('helplineContent').innerHTML = `<div class="helpline-item"><strong>Talian Kasih</strong><br>15999</div><div class="helpline-item"><strong>Befrienders KL</strong><br>03-7627 2929</div>`;
+        openModal('modalHelpline');
+    }
+    
+    function openGratitudeModal() {
+        const today = todayStr();
+        const todayList = gratitudeEntries.filter(e => e.dateStr === today);
+        let html = '<div class="gratitude-list">';
+        if (!todayList.length) html += '<div style="color:#aaa;">tiada catatan hari ini.</div>';
+        else todayList.forEach(e => { html += `<div class="gratitude-item">${esc(e.text)}</div>`; });
+        html += '</div><div class="add-gratitude"><input type="text" id="newGratitudeInput" placeholder="saya bersyukur untuk..."><button id="submitGratitudeBtn">+</button></div>';
+        document.getElementById('gratitudeModalContent').innerHTML = html;
+        document.getElementById('submitGratitudeBtn')?.addEventListener('click', () => {
             const inp = document.getElementById('newGratitudeInput');
             if (inp?.value.trim()) {
                 gratitudeEntries.push({ id: Date.now() + '', dateStr: today, text: inp.value.trim() });
                 localStorage.setItem('blob_gratitude', JSON.stringify(gratitudeEntries));
-                inp.value = '';
-                renderGratitudeContent();
+                openGratitudeModal();
             }
         });
-    }
-}
-
-// ========== PROFIL FUNCTIONS ==========
-async function renderProfil() {
-    if (!currentUser) return;
-    await loadSurvivalFromFirestore();
-    const { streak, total } = calcSurvival();
-
-    const photo = currentUser.photoUrl || `https://placehold.co/56x56/222/fff?text=${(currentUser.username || 'U').charAt(0).toUpperCase()}`;
-    const avatarImg = document.getElementById('profilAvatarImg');
-    if (avatarImg) avatarImg.src = photo;
-    const displayName = document.getElementById('profilDisplayName');
-    if (displayName) displayName.innerHTML = `${esc(currentUser.username || '')}${currentUser.isVerified ? ' <img src="verifiedbadge.png" style="width:14px;vertical-align:middle;" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7641/7641709.png\';">' : ''}`;
-    const usernameSpan = document.getElementById('profilUsername');
-    if (usernameSpan) usernameSpan.textContent = `@${currentUser.username || ''}`;
-    const bioSpan = document.getElementById('profileBioText');
-    if (bioSpan) bioSpan.textContent = currentUser.bio || '—';
-    const streakSpan = document.getElementById('profilStreak');
-    if (streakSpan) streakSpan.textContent = streak;
-    const totalSpan = document.getElementById('profilTotalSurvive');
-    if (totalSpan) totalSpan.textContent = total;
-
-    try {
-        const q = FB.query(FB.collection(db, 'posts'), FB.where('userId', '==', currentUser.id));
-        const snap = await FB.getDocs(q);
-        const postCountSpan = document.getElementById('profilPostCount');
-        if (postCountSpan) postCountSpan.textContent = snap.size;
-    } catch (err) {}
-
-    switchProfilTab('luahan');
-}
-
-function switchProfilTab(tab) {
-    document.querySelectorAll('.profile-tab').forEach(t => t.classList.toggle('active-tab', t.dataset.tab === tab));
-    ['luahan', 'rekod', 'bintang'].forEach(t => {
-        const panel = document.getElementById(`${t}Panel`);
-        if (panel) panel.style.display = t === tab ? 'block' : 'none';
-    });
-    if (tab === 'luahan') renderMyLuahan();
-    if (tab === 'rekod') renderRekodPanel();
-    if (tab === 'bintang') renderBintangPanel();
-}
-
-async function renderMyLuahan() {
-    const container = document.getElementById('luahanPanel');
-    if (!container) return;
-    container.innerHTML = '<div style="color:#555; font-size:0.8rem; text-align:center; padding:1rem;">memuatkan...</div>';
-    try {
-        const q = FB.query(FB.collection(db, 'posts'), FB.where('userId', '==', currentUser.id), FB.orderBy('createdAt', 'desc'));
-        const snap = await FB.getDocs(q);
-        if (snap.empty) { container.innerHTML = '<div class="empty-message">tiada luahan. tekan ✎ untuk luahkan.</div>'; return; }
-        container.innerHTML = '';
-        snap.docs.forEach(d => {
-            const post = { id: d.id, ...d.data() };
-            container.appendChild(createPostCard(post, true));
-        });
-    } catch (err) { container.innerHTML = '<div class="empty-message">ralat memuatkan luahan.</div>'; }
-}
-
-function renderRekodPanel() {
-    const c = document.getElementById('rekodPanel');
-    if (!c) return;
-    const { streak, total } = calcSurvival();
-    let html = `<div class="streak-history"><div class="streak-title">hari lalu.</div><div class="streak-dots" id="rekodDots"></div><div class="mini-calendar"><div class="calendar-header" id="rekodCalHeader"></div><div class="calendar-grid" id="rekodCalGrid"></div></div></div>`;
-    c.innerHTML = html;
-
-    const dots = document.getElementById('rekodDots');
-    if (dots) {
-        for (let i = 0; i < 15; i++) {
-            const d = new Date(); d.setDate(d.getDate() - i);
-            const s = d.toISOString().split('T')[0];
-            const dot = document.createElement('div');
-            dot.className = 'sdot' + (survivalData[s] ? ' active' : '');
-            dot.textContent = survivalData[s] ? '✓' : '○';
-            dots.appendChild(dot);
-        }
+        openModal('modalGratitude');
     }
 
-    const now = new Date();
-    const year = now.getFullYear(), month = now.getMonth();
-    const monthNames = ['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
-    const calHeader = document.getElementById('rekodCalHeader');
-    if (calHeader) calHeader.textContent = `${monthNames[month]} ${year}.`;
-    const grid = document.getElementById('rekodCalGrid');
-    if (grid) {
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        for (let i = 0; i < firstDay; i++) { const e = document.createElement('div'); e.className = 'cal-day empty'; grid.appendChild(e); }
-        for (let day = 1; day <= daysInMonth; day++) {
-            const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-            const el = document.createElement('div');
-            el.className = 'cal-day' + (survivalData[ds] ? ' checked' : '');
-            el.textContent = day;
-            grid.appendChild(el);
-        }
-    }
-}
-
-async function renderBintangPanel() {
-    const container = document.getElementById('bintangPanel');
-    if (!container) return;
-    if (!starredPostIds.length) { container.innerHTML = '<div class="empty-message">tiada bintang. tekan ★ pada mana-mana luahan.</div>'; return; }
-    container.innerHTML = '<div style="color:#555; font-size:0.8rem; text-align:center; padding:1rem;">memuatkan...</div>';
-    try {
-        const posts = [];
-        for (const pid of starredPostIds.slice(0, 10)) {
-            const snap = await FB.getDoc(FB.doc(db, 'posts', pid));
-            if (snap.exists()) posts.push({ id: snap.id, ...snap.data() });
-        }
-        if (!posts.length) { container.innerHTML = '<div class="empty-message">luahan yang dibintangi telah dipadam.</div>'; return; }
-        container.innerHTML = '';
-        posts.forEach(p => container.appendChild(createPostCard(p, false)));
-    } catch (err) { container.innerHTML = '<div class="empty-message">ralat memuatkan bintang.</div>'; }
-}
-
-// ========== SETTINGS FUNCTIONS ==========
-function loadSettingsForm() {
-    if (!currentUser) return;
-    const usernameInp = document.getElementById('settingUsername');
-    const bioInp = document.getElementById('settingBio');
-    const emailInp = document.getElementById('settingEmail');
-    const photoInp = document.getElementById('settingPhotoUrl');
-    const previewImg = document.getElementById('settingPreviewImg');
-    const privacyToggle = document.getElementById('privacyToggle');
-    
-    if (usernameInp) usernameInp.value = currentUser.username || '';
-    if (bioInp) bioInp.value = currentUser.bio || '';
-    if (emailInp) emailInp.value = currentUser.email || '';
-    const photo = currentUser.photoUrl || '';
-    if (photoInp) photoInp.value = photo;
-    if (previewImg) previewImg.src = photo || 'https://placehold.co/48x48/222/fff?text=U';
-    if (privacyToggle) privacyToggle.checked = currentUser.isPrivate || false;
-    updatePrivacy();
-}
-
-async function saveProfileSettings() {
-    if (!currentUser?.id) return;
-    const username = document.getElementById('settingUsername')?.value.trim() || '';
-    const bio = document.getElementById('settingBio')?.value.trim() || '';
-    const email = document.getElementById('settingEmail')?.value.trim() || '';
-    const photoUrl = document.getElementById('settingPhotoUrl')?.value.trim() || '';
-
-    try {
-        await FB.updateDoc(FB.doc(db, 'users', currentUser.id), { username, usernameLower: username.toLowerCase(), bio, email, photoUrl });
-        currentUser = { ...currentUser, username, bio, email, photoUrl };
+    async function saveBio() {
+        const bio = document.getElementById('bioTextarea')?.value.trim() || '';
+        closeModal('bioModal');
+        await updateDoc(doc(db, 'users', currentUser.id), { bio });
+        currentUser.bio = bio;
         localStorage.setItem('blob_current_user', JSON.stringify(currentUser));
-        updateAllAvatars();
-        showToast('profil disimpan.');
-    } catch (err) { showToast('ralat menyimpan profil.', true); }
-}
-
-async function changePassword() {
-    const current = document.getElementById('currentPassword')?.value || '';
-    const newPass = document.getElementById('newPassword')?.value || '';
-    if (!current || !newPass) { showToast('sila isi kedua-dua ruangan kata laluan.', true); return; }
-    if (newPass.length < 4) { showToast('kata laluan baru perlukan 4 aksara minimum.', true); return; }
-    if (!currentUser?.id) return;
-    try {
-        const snap = await FB.getDoc(FB.doc(db, 'users', currentUser.id));
-        if (!snap.exists() || snap.data().password !== btoa(current)) { showToast('kata laluan semasa salah.', true); return; }
-        await FB.updateDoc(FB.doc(db, 'users', currentUser.id), { password: btoa(newPass) });
-        const currPass = document.getElementById('currentPassword');
-        const newPassInp = document.getElementById('newPassword');
-        if (currPass) currPass.value = '';
-        if (newPassInp) newPassInp.value = '';
-        showToast('kata laluan ditukar.');
-    } catch (err) { showToast('ralat menukar kata laluan.', true); }
-}
-
-function updatePrivacy() {
-    const isPrivate = document.getElementById('privacyToggle')?.checked || false;
-    const descSpan = document.getElementById('privacyDesc');
-    if (descSpan) {
-        descSpan.textContent = isPrivate
-            ? 'peribadi: hanya anda boleh lihat profil anda.'
-            : 'awam: profil boleh dilihat oleh semua.';
+        document.getElementById('profileBioText').textContent = bio;
+        showToast('biografi disimpan.');
     }
-    if (currentUser?.id) {
-        FB.updateDoc(FB.doc(db, 'users', currentUser.id), { isPrivate }).catch(() => {});
-        currentUser.isPrivate = isPrivate;
-        localStorage.setItem('blob_current_user', JSON.stringify(currentUser));
-    }
-}
 
-async function confirmDeleteAccount() {
-    if (!currentUser?.id) return;
-    try {
-        await FB.deleteDoc(FB.doc(db, 'users', currentUser.id));
+    async function confirmDeleteAccount() {
+        if (!currentUser?.id) return;
+        await deleteDoc(doc(db, 'users', currentUser.id));
         localStorage.clear();
         showToast('akaun dipadam.');
         setTimeout(() => window.location.reload(), 1000);
-    } catch (err) { showToast('ralat memadam akaun.', true); }
-}
+    }
 
-function confirmLogout() {
-    if (unsubPosts) unsubPosts();
-    if (unsubPopup) unsubPopup();
-    localStorage.removeItem('blob_current_user');
-    currentUser = null;
-    showToast('log keluar...');
-    setTimeout(() => window.location.reload(), 800);
-}
+    function confirmLogout() {
+        if (unsubPosts) unsubPosts();
+        localStorage.removeItem('blob_current_user');
+        currentUser = null;
+        showToast('log keluar...');
+        setTimeout(() => window.location.reload(), 800);
+    }
 
-async function saveBio() {
-    const bio = document.getElementById('bioTextarea')?.value.trim() || '';
-    closeModal('bioModal');
-    if (!currentUser?.id) return;
-    try {
-        await FB.updateDoc(FB.doc(db, 'users', currentUser.id), { bio });
-        currentUser.bio = bio;
-        localStorage.setItem('blob_current_user', JSON.stringify(currentUser));
-        const bioSpan = document.getElementById('profileBioText');
-        if (bioSpan) bioSpan.textContent = bio;
-        showToast('biografi disimpan.');
-    } catch (err) { showToast('ralat menyimpan biografi.', true); }
-}
-
-// ========== NOTIFICATION FUNCTIONS ==========
-async function loadNotifs() {
-    const container = document.getElementById('notifContainer');
-    if (!container) return;
-    container.innerHTML = '<div style="color:#555; font-size:0.8rem; text-align:center; padding:2rem;">memuatkan...</div>';
-
-    try {
-        const q = FB.query(FB.collection(db, 'notifications'), FB.orderBy('createdAt', 'desc'));
-        const snap = await FB.getDocs(q);
-        if (snap.empty) { container.innerHTML = '<div style="text-align:center; color:#555; padding:2rem; font-size:0.8rem;">tiada pemberitahuan.</div>'; return; }
-        container.innerHTML = '';
-        snap.docs.forEach(d => {
-            const notif = { id: d.id, ...d.data() };
-            container.appendChild(createNotifCard(notif));
+    // AUTH FUNCTIONS
+    function renderLogin() {
+        const c = document.getElementById('authView');
+        c.innerHTML = `
+            <h1 class="auth-title">log masuk.</h1>
+            <form id="loginForm">
+                <div class="form-group"><input type="text" id="loginIdentifier" class="input-field" placeholder="e-mel atau @namapengguna"></div>
+                <div class="form-group"><div class="password-wrapper"><input type="password" id="loginPassword" class="input-field" placeholder="kata laluan"><button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">papar.</button></div></div>
+                <button type="submit" class="btn-primary">log masuk.</button>
+            </form>
+            <div class="switch-auth"><span class="switch-text">belum ada akaun?</span><button class="switch-link" onclick="renderRegister()">daftar.</button></div>
+        `;
+        document.getElementById('loginForm')?.addEventListener('submit', async e => {
+            e.preventDefault();
+            const identifier = document.getElementById('loginIdentifier')?.value.trim();
+            const password = document.getElementById('loginPassword')?.value;
+            if (!identifier || !password) { showToast('sila lengkapkan semua ruangan.', true); return; }
+            await loginUser(identifier, password);
         });
-    } catch (err) {
-        container.innerHTML = '<div style="color:#555; font-size:0.8rem; text-align:center; padding:2rem;">ralat memuatkan pemberitahuan.</div>';
-    }
-}
-
-function createNotifCard(notif) {
-    const badgeMap = { welcome: ['SELAMAT DATANG', 'welcome'], info: ['INFO', 'info'], ads: ['ADS', 'ads'], news: ['NEWS', 'news'], reminder: ['REMINDER', 'reminder'] };
-    const [badgeText, badgeClass] = badgeMap[notif.type] || ['SISTEM', 'info'];
-    const timeStr = getRelativeTime(notif.createdAt);
-    const preview = (notif.message || '').length > 90 ? notif.message.substring(0, 90) + '…' : notif.message;
-
-    const card = document.createElement('div');
-    card.className = 'notif-card';
-    card.innerHTML = `
-        <div class="notif-system-logo"><img src="logo.png" alt="system" onerror="this.src='https://placehold.co/44x44/1a1a1a/ffffff?text=BS';"></div>
-        <div class="notif-content">
-            <div class="notif-header-line">
-                <span class="notif-badge ${badgeClass}">${badgeText}</span>
-                <span class="notif-title-text">${esc(notif.title || 'Sistem')}</span>
-            </div>
-            <div class="notif-message">${esc(preview)}</div>
-            <div class="notif-time">${esc(timeStr)}</div>
-        </div>
-    `;
-    card.addEventListener('click', () => openNotifDetail(notif, badgeText));
-    return card;
-}
-
-function openNotifDetail(notif, category) {
-    const catSpan = document.getElementById('notifDetailCategory');
-    const bodySpan = document.getElementById('notifDetailBody');
-    const metaSpan = document.getElementById('notifDetailMeta');
-    if (catSpan) catSpan.textContent = category || 'SISTEM';
-    if (bodySpan) bodySpan.innerHTML = `<strong>${esc(notif.title)}</strong><br><br>${esc(notif.message)}`;
-    const ts = notif.createdAt?.toMillis ? new Date(notif.createdAt.toMillis()) : new Date(notif.createdAt);
-    if (metaSpan) metaSpan.textContent = ts.toLocaleString('ms-MY') + ' · daripada admin';
-    openModal('notifDetailModal');
-}
-
-// ========== USER PROFILE MODAL ==========
-async function showUserProfile(userId, username) {
-    try {
-        const userSnap = await FB.getDoc(FB.doc(db, 'users', userId));
-        let userData = {};
-        if (userSnap.exists()) userData = userSnap.data();
-
-        const postsQ = FB.query(FB.collection(db, 'posts'), FB.where('userId', '==', userId));
-        const postsSnap = await FB.getDocs(postsQ);
-        const postCount = postsSnap.size;
-
-        const avatarImg = document.getElementById('modalAvatarImg');
-        if (avatarImg) avatarImg.src = userData.photoUrl || `https://placehold.co/60x60/222/fff?text=${username.charAt(0).toUpperCase()}`;
-        const nameSpan = document.getElementById('modalName');
-        if (nameSpan) nameSpan.innerHTML = `${esc(userData.username || username)}${userData.isVerified ? ' <img src="verifiedbadge.png" style="width:14px;vertical-align:middle;" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7641/7641709.png\';">' : ''}`;
-        const usernameSpan = document.getElementById('modalUsername');
-        if (usernameSpan) usernameSpan.textContent = `@${userData.username || username}`;
-        const bioSpan = document.getElementById('modalBio');
-        if (bioSpan) bioSpan.textContent = userData.bio || 'sedang belajar untuk bertahan.';
-        const luahanSpan = document.getElementById('modalLuahan');
-        if (luahanSpan) luahanSpan.textContent = postCount;
-        const berturutSpan = document.getElementById('modalBerturut');
-        if (berturutSpan) berturutSpan.textContent = Math.min(postCount + 1, 7);
-        const bertahanSpan = document.getElementById('modalBertahan');
-        if (bertahanSpan) bertahanSpan.textContent = postCount + 2;
-
-        openModal('userModal');
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-// ========== POPUP FUNCTIONS ==========
-async function checkAndShowPopup() {
-    try {
-        const snap = await FB.getDoc(FB.doc(db, 'config', 'popup'));
-        if (snap.exists() && snap.data().active) {
-            showPopup(snap.data());
-        }
-    } catch (err) {}
-}
-
-function showPopup(data) {
-    const modal = document.getElementById('popupModal');
-    const content = document.getElementById('popupContent');
-    if (!modal || !content) return;
-
-    if (data.mode === 'image') {
-        content.innerHTML = `
-            <div class="popup-box-image">
-                <button class="popup-close-x" onclick="hidePopup()">✕</button>
-                <div class="hero-image">
-                    <img src="${esc(data.imageUrl || '')}" alt="popup" onerror="this.src='https://placehold.co/400x300/222/fff?text=GAMBAR';">
-                    <div class="hero-text">${esc(data.caption || '')}</div>
-                </div>
-            </div>`;
-    } else {
-        content.innerHTML = `
-            <div class="popup-box-text">
-                <button class="popup-close-x" onclick="hidePopup()">✕</button>
-                <div class="popup-modal-text">
-                    ${data.title ? `<span class="popup-bold">${esc(data.title)}</span>` : ''}
-                    ${esc(data.body || '')}
-                </div>
-            </div>`;
     }
 
-    modal.classList.add('show');
-    modal.addEventListener('click', e => { if (e.target === modal) hidePopup(); }, { once: true });
-}
-
-function hidePopup() {
-    const modal = document.getElementById('popupModal');
-    if (modal) modal.classList.remove('show');
-}
-
-// ========== ADMIN FUNCTIONS ==========
-function switchAdminTab(tab, btn) {
-    document.querySelectorAll('.admin-sub').forEach(s => s.classList.remove('show'));
-    const tabId = `adminTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`;
-    const tabEl = document.getElementById(tabId);
-    if (tabEl) tabEl.classList.add('show');
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    
-    if (tab === 'users' && window.loadAdminUsers) loadAdminUsers();
-    if (tab === 'posts' && window.loadAdminPosts) loadAdminPosts();
-    if (tab === 'notif' && window.loadAdminNotifs) loadAdminNotifs();
-    if (tab === 'popup' && window.loadAdminPopupStatus) loadAdminPopupStatus();
-}
-
-async function loadAdminData() {
-    loadAdminNotifs();
-}
-
-async function loadAdminNotifs() {
-    const el = document.getElementById('adminNotifList');
-    if (!el) return;
-    try {
-        const q = FB.query(FB.collection(db, 'notifications'), FB.orderBy('createdAt', 'desc'), FB.limit(10));
-        const snap = await FB.getDocs(q);
-        if (snap.empty) { el.textContent = 'tiada notifikasi.'; return; }
-        el.innerHTML = snap.docs.map(d => {
-            const n = d.data();
-            return `<div style="border-bottom:1px solid #2a2a2a; padding:6px 0; display:flex; justify-content:space-between; align-items:center;">
-                <div><strong>${esc(n.title)}</strong> <span style="color:#888;">(${n.type})</span><div style="font-size:0.7rem; color:#777;">${esc((n.message||'').substring(0,60))}...</div></div>
-                <button onclick="adminDeleteNotif('${d.id}')" style="background:none; border:1px solid #aa2e2e; color:#ff5555; padding:2px 8px; border-radius:4px; cursor:pointer; font-size:0.65rem;">padam</button>
-            </div>`;
-        }).join('');
-    } catch (err) { el.textContent = 'ralat memuatkan.'; }
-}
-
-async function adminSendNotif() {
-    const type = document.getElementById('notifType')?.value || 'info';
-    const title = document.getElementById('notifTitleInput')?.value.trim() || '';
-    const message = document.getElementById('notifMsgInput')?.value.trim() || '';
-    if (!title || !message) { showToast('sila isi tajuk dan mesej.', true); return; }
-    try {
-        await FB.addDoc(FB.collection(db, 'notifications'), { type, title, message, createdAt: FB.serverTimestamp() });
-        const titleInp = document.getElementById('notifTitleInput');
-        const msgInp = document.getElementById('notifMsgInput');
-        if (titleInp) titleInp.value = '';
-        if (msgInp) msgInp.value = '';
-        showToast('notifikasi dihantar.');
-        loadAdminNotifs();
-    } catch (err) { showToast('ralat menghantar notifikasi.', true); }
-}
-
-window.adminDeleteNotif = async function(id) {
-    try {
-        await FB.deleteDoc(FB.doc(db, 'notifications', id));
-        showToast('notifikasi dipadam.');
-        loadAdminNotifs();
-    } catch (err) { showToast('ralat memadam.', true); }
-}
-
-window.adminSendPopup = async function(mode) {
-    let data = { active: true, mode, createdAt: FB.serverTimestamp() };
-    if (mode === 'text') {
-        data.title = document.getElementById('popupTitleText')?.value.trim() || '';
-        data.body = document.getElementById('popupBodyText')?.value.trim() || '';
-        if (!data.body) { showToast('sila isi teks popup.', true); return; }
-    } else {
-        data.imageUrl = document.getElementById('popupImageUrl')?.value.trim() || '';
-        data.caption = document.getElementById('popupImageCaption')?.value.trim() || '';
-        if (!data.imageUrl) { showToast('sila isi URL gambar.', true); return; }
+    function renderRegister() {
+        const c = document.getElementById('authView');
+        c.innerHTML = `
+            <h1 class="auth-title">daftar.</h1>
+            <form id="registerForm">
+                <div class="form-group"><input type="text" id="regUsername" class="input-field" placeholder="@namapengguna"></div>
+                <div class="form-group"><input type="email" id="regEmail" class="input-field" placeholder="alamat e-mel"></div>
+                <div class="form-group"><div class="password-wrapper"><input type="password" id="regPassword" class="input-field" placeholder="kata laluan"><button type="button" class="password-toggle" onclick="togglePassword('regPassword', this)">papar.</button></div></div>
+                <div class="form-group"><div class="password-wrapper"><input type="password" id="regConfirmPassword" class="input-field" placeholder="sah kata laluan"><button type="button" class="password-toggle" onclick="togglePassword('regConfirmPassword', this)">papar.</button></div></div>
+                <button type="submit" class="btn-primary">daftar.</button>
+            </form>
+            <div class="switch-auth"><span class="switch-text">sudah ada akaun?</span><button class="switch-link" onclick="renderLogin()">log masuk.</button></div>
+        `;
+        document.getElementById('registerForm')?.addEventListener('submit', async e => {
+            e.preventDefault();
+            const username = document.getElementById('regUsername')?.value.trim();
+            const email = document.getElementById('regEmail')?.value.trim();
+            const password = document.getElementById('regPassword')?.value;
+            const confirm = document.getElementById('regConfirmPassword')?.value;
+            if (!username || !email || !password) { showToast('sila lengkapkan semua ruangan.', true); return; }
+            if (password !== confirm) { showToast('kata laluan tidak sepadan.', true); return; }
+            await registerUser(username, email, password);
+        });
     }
-    try {
-        await FB.setDoc(FB.doc(db, 'config', 'popup'), data);
-        showToast('popup diaktifkan.');
-        loadAdminPopupStatus();
-    } catch (err) { showToast('ralat mengaktifkan popup.', true); }
-}
 
-window.adminClearPopup = async function() {
-    try {
-        await FB.setDoc(FB.doc(db, 'config', 'popup'), { active: false });
-        hidePopup();
-        showToast('popup dinyahaktifkan.');
-        loadAdminPopupStatus();
-    } catch (err) { showToast('ralat.', true); }
-}
+    window.togglePassword = function(id, btn) {
+        const inp = document.getElementById(id);
+        if (!inp) return;
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        btn.textContent = inp.type === 'password' ? 'papar.' : 'sembunyi.';
+    };
 
-async function loadAdminPopupStatus() {
-    const el = document.getElementById('adminPopupStatus');
-    if (!el) return;
-    try {
-        const snap = await FB.getDoc(FB.doc(db, 'config', 'popup'));
-        if (snap.exists()) {
-            const d = snap.data();
-            el.innerHTML = d.active
-                ? `<span style="color:#4caf50;">AKTIF</span> — mode: ${d.mode || '—'} | tajuk: ${esc(d.title || d.caption || '—')}`
-                : '<span style="color:#888;">tidak aktif</span>';
-        } else { el.textContent = 'tiada popup dikonfigurasi.'; }
-    } catch (err) { el.textContent = 'ralat.'; }
-}
+    async function loginUser(identifier, password) {
+        try {
+            const lowerId = identifier.toLowerCase();
+            const usersRef = collection(db, 'users');
+            let q;
+            if (identifier.includes('@')) {
+                q = query(usersRef, where('email', '==', lowerId), limit(1));
+            } else {
+                const uname = identifier.replace(/^@/, '').toLowerCase();
+                q = query(usersRef, where('usernameLower', '==', uname), limit(1));
+            }
+            const snap = await getDocs(q);
+            if (snap.empty) { showToast('pengguna tidak dijumpai.', true); return; }
+            const userDoc = snap.docs[0];
+            const userData = userDoc.data();
+            if (userData.password !== btoa(password)) { showToast('kata laluan salah.', true); return; }
+            currentUser = { id: userDoc.id, ...userData };
+            localStorage.setItem('blob_current_user', JSON.stringify(currentUser));
+            showToast('log masuk berjaya!');
+            initApp();
+            showPage('utama');
+        } catch (err) { showToast('ralat semasa log masuk.', true); }
+    }
 
-async function loadAdminUsers() {
-    const el = document.getElementById('adminUserList');
-    if (!el) return;
-    el.innerHTML = '<div style="color:#555; font-size:0.8rem;">memuatkan...</div>';
-    try {
-        const snap = await FB.getDocs(FB.collection(db, 'users'));
-        if (snap.empty) { el.textContent = 'tiada pengguna.'; return; }
-        el.innerHTML = snap.docs.map(d => {
-            const u = d.data();
-            return `<div class="user-list-item">
-                <div><strong>@${esc(u.username)}</strong> ${u.isVerified ? '<span class="verified-tag">✓ verified</span>' : ''}<div style="font-size:0.65rem; color:#777;">${esc(u.email)}</div></div>
-                <div>
-                    <button onclick="adminSetVerified('${d.id}', ${!u.isVerified})" style="background:none; border:1px solid #3a3a3a; color:#aaa; padding:2px 8px; border-radius:4px; cursor:pointer; font-size:0.65rem; white-space:nowrap;">${u.isVerified ? 'tanggal ✓' : 'beri ✓'}</button>
-                </div>
-            </div>`;
-        }).join('');
-    } catch (err) { el.textContent = 'ralat.'; }
-}
+    async function registerUser(username, email, password) {
+        try {
+            const usersRef = collection(db, 'users');
+            const qUser = query(usersRef, where('usernameLower', '==', username.toLowerCase()), limit(1));
+            const qEmail = query(usersRef, where('email', '==', email.toLowerCase()), limit(1));
+            const [snapU, snapE] = await Promise.all([getDocs(qUser), getDocs(qEmail)]);
+            if (!snapU.empty) { showToast('nama pengguna sudah wujud.', true); return; }
+            if (!snapE.empty) { showToast('e-mel telah berdaftar.', true); return; }
+            await addDoc(usersRef, {
+                username, usernameLower: username.toLowerCase(),
+                email: email.toLowerCase(), password: btoa(password),
+                bio: '', photoUrl: '', isVerified: false, isPrivate: false,
+                createdAt: serverTimestamp()
+            });
+            showToast('pendaftaran berjaya! sila log masuk.');
+            setTimeout(renderLogin, 1300);
+        } catch (err) { showToast('ralat semasa mendaftar.', true); }
+    }
 
-window.adminSetVerified = async function(userId, state) {
-    try {
-        await FB.updateDoc(FB.doc(db, 'users', userId), { isVerified: state });
-        showToast(state ? 'verified badge diberikan.' : 'verified badge ditanggalkan.');
-        loadAdminUsers();
-    } catch (err) { showToast('ralat mengemas kini.', true); }
-}
+    // Event listeners setup
+    function setupEventListeners() {
+        document.getElementById('openLuahBtnUtama')?.addEventListener('click', () => openModal('luahModal'));
+        document.getElementById('openLuahBtnProfil')?.addEventListener('click', () => openModal('luahModal'));
+        document.getElementById('checkinBtn')?.addEventListener('click', dailyCheckIn);
+        document.getElementById('btnBreathing')?.addEventListener('click', openBreathingModal);
+        document.getElementById('btnAffirmation')?.addEventListener('click', openAffirmationModal);
+        document.getElementById('btnHelpline')?.addEventListener('click', openHelplineModal);
+        document.getElementById('btnGratitude')?.addEventListener('click', openGratitudeModal);
+        document.getElementById('editBioBtn')?.addEventListener('click', () => {
+            document.getElementById('bioTextarea').value = currentUser?.bio || '';
+            openModal('bioModal');
+        });
+        document.getElementById('deleteAccountBtn')?.addEventListener('click', () => openModal('deleteAccountModal'));
+        document.getElementById('logoutBtn')?.addEventListener('click', () => openModal('logoutModal'));
+        
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.addEventListener('click', () => showPage(nav.getAttribute('data-nav')));
+        });
+        
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+        });
+    }
 
-window.adminToggleVerified = async function(state) {
-    let uname = (document.getElementById('verifyUsernameInput')?.value || '').trim().replace(/^@/, '').toLowerCase();
-    if (!uname) { showToast('sila masukkan nama pengguna.', true); return; }
-    try {
-        const q = FB.query(FB.collection(db, 'users'), FB.where('usernameLower', '==', uname), FB.limit(1));
-        const snap = await FB.getDocs(q);
-        if (snap.empty) { showToast('pengguna tidak dijumpai.', true); return; }
-        await FB.updateDoc(snap.docs[0].ref, { isVerified: state });
-        showToast(state ? `@${uname} diberikan verified badge.` : `@${uname} verified badge ditanggalkan.`);
-        const inp = document.getElementById('verifyUsernameInput');
-        if (inp) inp.value = '';
-        loadAdminUsers();
-    } catch (err) { showToast('ralat.', true); }
-}
+    // Make global functions available
+    window.showPage = showPage;
+    window.closeModal = closeModal;
+    window.submitLuah = submitLuah;
+    window.saveEdit = saveEdit;
+    window.confirmDeletePost = confirmDeletePost;
+    window.saveBio = saveBio;
+    window.confirmDeleteAccount = confirmDeleteAccount;
+    window.confirmLogout = confirmLogout;
+    window.stopBreathing = stopBreathing;
+    window.renderLogin = renderLogin;
+    window.renderRegister = renderRegister;
 
-async function loadAdminPosts() {
-    const el = document.getElementById('adminPostList');
-    if (!el) return;
-    el.innerHTML = '<div style="color:#555; font-size:0.8rem;">memuatkan...</div>';
-    try {
-        const q = FB.query(FB.collection(db, 'posts'), FB.orderBy('createdAt', 'desc'), FB.limit(20));
-        const snap = await FB.getDocs(q);
-        if (snap.empty) { el.textContent = 'tiada luahan.'; return; }
-        el.innerHTML = snap.docs.map(d => {
-            const p = d.data();
-            return `<div style="border-bottom:1px solid #2a2a2a; padding:8px 0; display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
-                <div style="flex:1;"><strong style="font-size:0.75rem;">@${esc(p.username)}</strong><div style="font-size:0.8rem; color:#ccc; margin-top:4px;">${esc((p.content||'').substring(0,80))}${p.content?.length > 80 ? '...' : ''}</div></div>
-                <button onclick="adminDeletePost('${d.id}')" style="background:none; border:1px solid #aa2e2e; color:#ff5555; padding:2px 8px; border-radius:4px; cursor:pointer; font-size:0.65rem; flex-shrink:0;">padam</button>
-            </div>`;
-        }).join('');
-    } catch (err) { el.textContent = 'ralat.'; }
-}
-
-window.adminDeletePost = async function(id) {
-    if (!confirm('Padam luahan ini?')) return;
-    try {
-        await FB.deleteDoc(FB.doc(db, 'posts', id));
-        showToast('luahan dipadam.');
-        loadAdminPosts();
-    } catch (err) { showToast('ralat.', true); }
-}
-
-// ========== SCROLL HIDE NAV ==========
-let lastScroll = 0;
-window.addEventListener('scroll', () => {
-    const cur = window.scrollY;
-    document.querySelectorAll('.bottom-nav').forEach(nav => {
-        if (cur > lastScroll && cur > 60) nav.classList.add('hide');
-        else if (cur < lastScroll) nav.classList.remove('hide');
+    // Wait for Firebase then start
+    window.addEventListener('firebaseAppReady', () => {
+        FB = window.FB;
+        db = window.db;
+        setupEventListeners();
+        
+        // Show splash for 2.5 seconds then hide
+        setTimeout(hideSplashAndStart, 2500);
     });
-    lastScroll = cur;
-});
-
-// Make functions globally available
-window.startApp = startApp;
-window.renderLogin = renderLogin;
-window.renderRegister = renderRegister;
-window.showUserProfile = showUserProfile;
-window.refreshUtamaStats = refreshUtamaStats;
-window.renderBertahan = renderBertahan;
-window.renderProfil = renderProfil;
-window.loadSettingsForm = loadSettingsForm;
-window.loadNotifs = loadNotifs;
-window.loadAdminUsers = loadAdminUsers;
-window.loadAdminPosts = loadAdminPosts;
-window.loadAdminNotifs = loadAdminNotifs;
-window.loadAdminPopupStatus = loadAdminPopupStatus;
-window.renderPosts = renderPosts;
-window.createPostCard = createPostCard;
-window.submitLuah = submitLuah;
-window.saveEdit = saveEdit;
-window.confirmDeletePost = confirmDeletePost;
-window.toggleStar = toggleStar;
-window.dailyCheckIn = dailyCheckIn;
-window.openBreathingModal = openBreathingModal;
-window.openAffirmationModal = openAffirmationModal;
-window.openHelplineModal = openHelplineModal;
-window.openGratitudeModal = openGratitudeModal;
-window.stopBreathing = stopBreathing;
-window.switchProfilTab = switchProfilTab;
-window.renderMyLuahan = renderMyLuahan;
-window.renderRekodPanel = renderRekodPanel;
-window.renderBintangPanel = renderBintangPanel;
-window.saveBio = saveBio;
-window.saveProfileSettings = saveProfileSettings;
-window.changePassword = changePassword;
-window.updatePrivacy = updatePrivacy;
-window.confirmDeleteAccount = confirmDeleteAccount;
-window.confirmLogout = confirmLogout;
-window.checkAndShowPopup = checkAndShowPopup;
-window.showPopup = showPopup;
-window.hidePopup = hidePopup;
-window.openLuahModal = openLuahModal;
-window.switchAdminTab = switchAdminTab;
-window.adminSendNotif = adminSendNotif;
-
-// Start the app
-startApp();
 </script>
 </body>
 </html>
