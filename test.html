@@ -16,7 +16,7 @@
             background: #000000;
             font-family: 'Open Sans', sans-serif;
             color: #ffffff;
-            padding-bottom: 80px;
+            padding-bottom: 0px;
         }
 
         .app-container {
@@ -26,18 +26,21 @@
             min-height: 100vh;
         }
 
-        /* ===== HEADER STATIC - TIADA FLOATING, TIADA STICKY ===== */
+        /* ===== HEADER STICKY ===== */
         .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0.8rem 1.2rem;
             background: #000000;
             width: 100%;
-            border-bottom: none;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        /* Logo di tengah */
         .logo-area {
             display: flex;
             justify-content: center;
@@ -79,7 +82,6 @@
             object-fit: cover;
         }
 
-        /* placeholder kiri untuk balance flex */
         .header-left-placeholder {
             width: 70px;
             visibility: hidden;
@@ -128,6 +130,7 @@
             padding-left: 0.5rem;
         }
 
+        /* BUTTON LUAH - TETAP STATIK, TAK HILANG */
         .floating-luah {
             position: fixed;
             bottom: 80px;
@@ -157,6 +160,7 @@
 
         .posts-section {
             margin: 1rem 1.2rem;
+            padding-bottom: 2rem;
         }
         .section-title {
             font-weight: 600;
@@ -270,6 +274,7 @@
             color: #888;
         }
 
+        /* BOTTOM NAV - auto-hide on scroll */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -281,6 +286,11 @@
             padding: 0.7rem 1rem 1rem;
             border-top: 1px solid #222;
             z-index: 10;
+            transition: transform 0.3s ease;
+            transform: translateY(0);
+        }
+        .bottom-nav.hide {
+            transform: translateY(100%);
         }
         .nav-item {
             text-align: center;
@@ -437,7 +447,7 @@
 </head>
 <body>
 <div class="app-container">
-    <!-- HEADER STATIC - TIDAK FLOATING/TIDAK STICKY -->
+    <!-- HEADER STICKY -->
     <div class="header">
         <div class="header-left-placeholder"></div>
         <div class="logo-area">
@@ -477,11 +487,13 @@
         <div id="postsContainer"></div>
     </div>
 
+    <!-- BUTTON LUAH - KEKAL STATIK, TAK HILANG -->
     <div class="floating-luah">
         <button class="blob-luah-btn" id="openLuahBtn">✎ ..<br></button>
     </div>
 
-    <div class="bottom-nav">
+    <!-- BOTTOM NAV - auto hide on scroll down, show on scroll up -->
+    <div class="bottom-nav" id="bottomNav">
         <div class="nav-item active" data-nav="utama">utama.</div>
         <div class="nav-item" data-nav="bertahan">bertahan.</div>
         <div class="nav-item" data-nav="profil">profil.</div>
@@ -540,10 +552,29 @@
     let currentEditId = null;
     let dynamicInterval = null;
 
-    // ========== TIMESTAMP (minit lalu, jam lalu, semalam, then tarikh) ==========
+    // Scroll behavior untuk bottom-nav sahaja
+    let lastScrollPosition = window.scrollY;
+    const bottomNav = document.getElementById('bottomNav');
+    
+    function handleScroll() {
+        if (!bottomNav) return;
+        const currentScroll = window.scrollY;
+        // Skrol ke bawah: hide, skrol ke atas: show
+        if (currentScroll > lastScrollPosition && currentScroll > 50) {
+            // Scrolling down - hide bottom nav
+            bottomNav.classList.add('hide');
+        } else if (currentScroll < lastScrollPosition) {
+            // Scrolling up - show bottom nav
+            bottomNav.classList.remove('hide');
+        }
+        lastScrollPosition = currentScroll;
+    }
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    // TIMESTAMP
     function getDisplayTime(post) {
         if (!post.createdAt) return "baru sahaja.";
-        
         const now = new Date();
         const created = new Date(post.createdAt);
         const diffMs = now - created;
