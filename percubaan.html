@@ -38,8 +38,12 @@
         window.unsubscribeNotifs = null;
         window.unsubscribePopup = null;
 
-        // Dispatch event when Firebase is ready
-        window.dispatchEvent(new Event('firebaseReady'));
+        // Start the app immediately after Firebase is ready
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (window.startApp) window.startApp();
+            }, 100);
+        });
     </script>
 
     <style>
@@ -73,6 +77,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            min-height: 100vh;
         }
         .splash { text-align: center; max-width: 320px; width: 85%; margin: 0 auto; }
         .logo-blob {
@@ -91,7 +96,13 @@
             position: fixed; bottom: 28px; left: 0; right: 0;
             display: flex; justify-content: center; gap: 10px;
         }
-        .dot { width: 8px; height: 8px; background: #444; border-radius: 50%; display: inline-block; }
+        .dot { width: 8px; height: 8px; background: #444; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        .dot:nth-child(2) { animation-delay: 0.3s; }
+        .dot:nth-child(3) { animation-delay: 0.6s; }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
 
         /* ========== AUTH ========== */
         #auth-page {
@@ -153,7 +164,6 @@
         .profile-blob img { width: 100%; height: 100%; object-fit: cover; }
 
         .page-title { margin: 0.5rem 1.2rem 0; font-size: 0.85rem; font-weight: 500; color: var(--muted); }
-        .page-title::after { content: "."; }
 
         /* ========== STATS CARD ========== */
         .stats-card {
@@ -169,7 +179,6 @@
         /* ========== POSTS ========== */
         .posts-section { margin: 1rem 1.2rem; }
         .section-title { font-weight: 600; margin-bottom: 1rem; font-size: 0.85rem; color: #888; }
-        .section-title::after { content: "."; }
 
         .post-card {
             background: var(--surface); margin-bottom: 1rem;
@@ -190,7 +199,6 @@
         .verified-badge { width: 14px; height: 14px; }
         .post-time { font-size: 0.7rem; color: #777; margin-left: auto; flex-shrink: 0; }
         .post-content { font-size: 0.9rem; line-height: 1.5; margin: 0.5rem 0 0.8rem; color: #e0e0e0; }
-        .post-content::after { content: "."; }
         .post-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
         .star-btn { background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
         .star-img { width: 20px; height: 20px; }
@@ -387,7 +395,7 @@
         .admin-sub { display: none; }
         .admin-sub.show { display: block; }
 
-        /* ========== POPUP MODAL (Admin-controlled) ========== */
+        /* ========== POPUP MODAL ========== */
         #popupModal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center;
@@ -428,35 +436,6 @@
             border-radius: 40px; font-size: 0.75rem; color: #fff; pointer-events: none;
             z-index: 3000; transition: opacity 0.3s; opacity: 0; max-width: 85%; text-align: center;
         }
-
-        /* ========== NOTIF DETAIL MODAL ========== */
-        .modal-detail-box { background: #121212; width: 88%; max-width: 380px; border-radius: 24px; border: 1px solid #2c2c2c; overflow: hidden; }
-        .modal-detail-header { padding: 1.2rem 1.5rem 0.5rem; border-bottom: 1px solid var(--border); }
-        .modal-detail-header h3 { font-size: 1.1rem; font-weight: 700; }
-        .modal-detail-body { padding: 1.5rem; }
-        .detail-message-box { background: #0c0c0c; border-radius: 16px; padding: 1rem; margin-bottom: 1rem; border-left: 3px solid #3a6ea5; }
-        .detail-message-text { font-size: 0.95rem; line-height: 1.5; color: #ececec; }
-        .detail-meta { font-size: 0.7rem; color: #6a6a6a; margin-top: 10px; }
-        .modal-detail-footer { padding: 0.8rem 1.5rem 1.5rem; display: flex; justify-content: flex-end; }
-        .modal-detail-footer button { background: #2a2a2a; border: none; padding: 0.6rem 1.5rem; border-radius: 40px; font-family: 'Open Sans', sans-serif; font-weight: 600; font-size: 0.8rem; color: white; cursor: pointer; }
-
-        /* ========== BREATHING / ACTIVITY MODALS ========== */
-        .breathing-step { text-align: center; font-size: 1.3rem; font-weight: 700; padding: 20px; background: #1f1f1f; border-radius: 10px; margin: 15px 0; }
-        .affirmation-text { background: #1a1a1a; padding: 14px; border-radius: 10px; margin: 10px 0; text-align: center; font-size: 0.95rem; }
-        .helpline-item { background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 10px; }
-        .gratitude-list { max-height: 220px; overflow-y: auto; margin: 10px 0; }
-        .gratitude-item { background: #1a1a1a; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; font-size: 0.85rem; }
-        .add-gratitude { display: flex; gap: 8px; margin-top: 12px; }
-        .add-gratitude input { flex: 1; background: #1a1a1a; border: 1px solid #333; padding: 10px; border-radius: 10px; color: white; font-size: 0.85rem; }
-        .add-gratitude button { background: white; border: none; padding: 0 18px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .modal-close { background: #333; color: white; border: none; padding: 10px; margin-top: 18px; width: 100%; border-radius: 40px; cursor: pointer; font-weight: 600; }
-        .modal-box.tall { max-height: 85vh; overflow-y: auto; }
-
-        @media (max-width: 550px) {
-            .header-left-placeholder { width: 50px; }
-            .logo-img { height: 28px; }
-            .profile-blob { width: 38px; height: 38px; }
-        }
     </style>
 </head>
 <body>
@@ -487,11 +466,11 @@
             <div class="header-left-placeholder"></div>
             <div><img class="logo-img" src="logo.png" alt="BlobSpace" onerror="this.src='https://placehold.co/32x32/ffffff/000000?text=B'; this.onerror=null;"></div>
             <div class="header-right">
-                <div class="notification-icon" id="notifIconUtama" onclick="showPage('notif')">
+                <div class="notification-icon" id="notifIconUtama" onclick="if(window.showPage) showPage('notif')">
                     <svg viewBox="0 0 24 25" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8V11.1C6 12.4 5.5 13.6 4.7 14.5L4.5 14.7C3.5 15.9 4.2 17.6 5.8 17.9C10.4 18.7 13.6 18.7 18.2 17.9C19.8 17.6 20.5 15.9 19.5 14.7L19.3 14.5C18.5 13.6 18 12.3 18 11.1V8Z"/><path d="M9 19C9.3978 20.1647 10.3361 21.0821 11.5 21.462C12.6639 21.8419 13.928 21.648 14.935 20.935" stroke-linecap="round"/></svg>
                     <div class="notif-badge-dot" id="notifDot"></div>
                 </div>
-                <div class="profile-blob" onclick="showPage('profil')"><img id="headerAvatarUtama" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
+                <div class="profile-blob" onclick="if(window.showPage) showPage('profil')"><img id="headerAvatarUtama" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
             </div>
         </div>
         <div class="page-title">papan muka bertahan</div>
@@ -499,7 +478,7 @@
             <div class="stats-row">
                 <div class="stats-item"><div class="stats-number" id="utamaStreak">0</div><div class="stats-label">hari berturut</div></div>
                 <div class="stats-item"><div class="stats-number" id="utamaTotal">0</div><div class="stats-label">jumlah bertahan</div></div>
-                <div style="font-size:1.6rem; color:#888; cursor:pointer; padding-left:0.5rem;" onclick="showPage('bertahan')">›</div>
+                <div style="font-size:1.6rem; color:#888; cursor:pointer; padding-left:0.5rem;" onclick="if(window.showPage) showPage('bertahan')">›</div>
             </div>
         </div>
         <div class="posts-section">
@@ -523,10 +502,10 @@
             <div class="header-left-placeholder"></div>
             <div><img class="logo-img" src="logo.png" alt="BlobSpace" onerror="this.src='https://placehold.co/32x32/ffffff/000000?text=B';"></div>
             <div class="header-right">
-                <div class="notification-icon" onclick="showPage('notif')">
+                <div class="notification-icon" onclick="if(window.showPage) showPage('notif')">
                     <svg viewBox="0 0 24 25" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8V11.1C6 12.4 5.5 13.6 4.7 14.5L4.5 14.7C3.5 15.9 4.2 17.6 5.8 17.9C10.4 18.7 13.6 18.7 18.2 17.9C19.8 17.6 20.5 15.9 19.5 14.7L19.3 14.5C18.5 13.6 18 12.3 18 11.1V8Z"/><path d="M9 19C9.3978 20.1647 10.3361 21.0821 11.5 21.462C12.6639 21.8419 13.928 21.648 14.935 20.935" stroke-linecap="round"/></svg>
                 </div>
-                <div class="profile-blob" onclick="showPage('profil')"><img id="headerAvatarBertahan" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
+                <div class="profile-blob" onclick="if(window.showPage) showPage('profil')"><img id="headerAvatarBertahan" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
             </div>
         </div>
         <div class="page-title">bertahan</div>
@@ -542,7 +521,7 @@
             <div class="streak-title">hari lalu.</div>
             <div class="streak-dots" id="streakDots"></div>
             <div class="mini-calendar">
-                <div class="calendar-header" id="calendarMonthTitle">mei 2026.</div>
+                <div class="calendar-header" id="calendarMonthTitle"></div>
                 <div class="calendar-grid" id="calendarGrid"></div>
             </div>
         </div>
@@ -571,7 +550,7 @@
             <div class="header-left-placeholder"></div>
             <div><img class="logo-img" src="logo.png" alt="BlobSpace"></div>
             <div class="header-right">
-                <div class="notification-icon" onclick="showPage('notif')">
+                <div class="notification-icon" onclick="if(window.showPage) showPage('notif')">
                     <svg viewBox="0 0 24 25" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8V11.1C6 12.4 5.5 13.6 4.7 14.5L4.5 14.7C3.5 15.9 4.2 17.6 5.8 17.9C10.4 18.7 13.6 18.7 18.2 17.9C19.8 17.6 20.5 15.9 19.5 14.7L19.3 14.5C18.5 13.6 18 12.3 18 11.1V8Z"/><path d="M9 19C9.3978 20.1647 10.3361 21.0821 11.5 21.462C12.6639 21.8419 13.928 21.648 14.935 20.935" stroke-linecap="round"/></svg>
                 </div>
                 <div class="profile-blob"><img id="headerAvatarProfil" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
@@ -619,7 +598,7 @@
             <div class="header-left-placeholder"></div>
             <div><img class="logo-img" src="logo.png" alt="BlobSpace"></div>
             <div class="header-right">
-                <div class="notification-icon" onclick="showPage('notif')">
+                <div class="notification-icon" onclick="if(window.showPage) showPage('notif')">
                     <svg viewBox="0 0 24 25" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M18 8C18 4.68629 15.3137 2 12 2C8.68629 2 6 4.68629 6 8V11.1C6 12.4 5.5 13.6 4.7 14.5L4.5 14.7C3.5 15.9 4.2 17.6 5.8 17.9C10.4 18.7 13.6 18.7 18.2 17.9C19.8 17.6 20.5 15.9 19.5 14.7L19.3 14.5C18.5 13.6 18 12.3 18 11.1V8Z"/><path d="M9 19C9.3978 20.1647 10.3361 21.0821 11.5 21.462C12.6639 21.8419 13.928 21.648 14.935 20.935" stroke-linecap="round"/></svg>
                 </div>
                 <div class="profile-blob"><img id="headerAvatarTetapan" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
@@ -682,7 +661,7 @@
 <div id="notif-page" class="page">
     <div class="app-container">
         <div class="header">
-            <div style="cursor:pointer; color:#888; font-size:1.2rem; padding:4px 8px;" onclick="showPage('utama')">‹</div>
+            <div style="cursor:pointer; color:#888; font-size:1.2rem; padding:4px 8px;" onclick="if(window.showPage) showPage('utama')">‹</div>
             <div><img class="logo-img" src="logo.png" alt="BlobSpace"></div>
             <div class="header-right">
                 <div class="profile-blob"><img id="headerAvatarNotif" src="https://placehold.co/42x42/222/fff?text=U" alt="profile"></div>
@@ -698,7 +677,7 @@
 <div id="admin-page" class="page">
     <div class="admin-header">
         <span style="font-weight:700; font-size:1rem;">🔧 Admin Panel</span>
-        <button onclick="showPage('utama')" style="background:#222; border:1px solid #444; color:#aaa; padding:4px 12px; border-radius:6px; cursor:pointer; font-size:0.75rem;">keluar</button>
+        <button onclick="if(window.showPage) showPage('utama')" style="background:#222; border:1px solid #444; color:#aaa; padding:4px 12px; border-radius:6px; cursor:pointer; font-size:0.75rem;">keluar</button>
     </div>
     <div style="padding:0 1.2rem; margin-top:1rem;">
         <div class="tab-btns">
@@ -909,7 +888,7 @@
     <div class="modal-box tall"><h3>syukur</h3><div id="gratitudeModalContent"></div><button class="modal-close" onclick="closeModal('modalGratitude')">tutup</button></div>
 </div>
 
-<!-- Admin Popup Modal (shown to users) -->
+<!-- Admin Popup Modal -->
 <div id="popupModal">
     <div id="popupContent"></div>
 </div>
@@ -919,18 +898,10 @@
 
 <script>
 // ============================================================
-// WAIT FOR FIREBASE
+// COMPLETE FIXED VERSION - NO EVENT LISTENER ISSUES
 // ============================================================
-let FB, db;
-window.addEventListener('firebaseReady', () => {
-    FB = window.FB;
-    db = window.db;
-    init();
-});
 
-// ============================================================
-// STATE
-// ============================================================
+// Global variables
 let currentUser = null;
 let unsubPosts = null;
 let unsubNotifs = null;
@@ -943,12 +914,11 @@ let gratitudeEntries = [];
 let starredPostIds = [];
 let unreadNotifCount = 0;
 let lastSeenNotifTime = 0;
+let FB, db;
 
 const ADMIN_USERS = ['admin', 'blobadmin'];
 
-// ============================================================
-// UTILITY
-// ============================================================
+// Utility functions
 function esc(str) {
     if (!str) return '';
     return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
@@ -956,17 +926,19 @@ function esc(str) {
 
 function showToast(msg, isError = false) {
     const t = document.getElementById('toastMsg');
+    if (!t) return;
     t.style.background = isError ? '#2a1a1a' : '#1f1f1f';
     t.style.color = isError ? '#ffaaaa' : '#aaffaa';
     t.style.border = isError ? '1px solid #ff4444' : '1px solid #44ff44';
     t.textContent = msg;
     t.style.opacity = '1';
-    setTimeout(() => t.style.opacity = '0', 2500);
+    setTimeout(() => { if (t) t.style.opacity = '0'; }, 2500);
 }
 
 function openModal(id) {
     document.getElementById(id)?.classList.add('show');
 }
+
 function closeModal(id) {
     document.getElementById(id)?.classList.remove('show');
     if (id === 'modalBreathing') stopBreathing();
@@ -993,10 +965,8 @@ function todayStr() {
     return new Date().toISOString().split('T')[0];
 }
 
-// ============================================================
-// PAGE NAVIGATION
-// ============================================================
-function showPage(name) {
+// Page navigation
+window.showPage = function(name) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById(`${name}-page`);
     if (page) {
@@ -1004,109 +974,178 @@ function showPage(name) {
         page.style.display = '';
     }
     window.scrollTo(0, 0);
-
-    // Refresh page data
-    if (name === 'utama') refreshUtamaStats();
-    if (name === 'bertahan') renderBertahan();
-    if (name === 'profil') renderProfil();
-    if (name === 'tetapan') loadSettingsForm();
+    
+    if (name === 'utama' && window.refreshUtamaStats) refreshUtamaStats();
+    if (name === 'bertahan' && window.renderBertahan) renderBertahan();
+    if (name === 'profil' && window.renderProfil) renderProfil();
+    if (name === 'tetapan' && window.loadSettingsForm) loadSettingsForm();
     if (name === 'notif') {
-        loadNotifs();
+        if (window.loadNotifs) loadNotifs();
         lastSeenNotifTime = Date.now();
         localStorage.setItem('blob_last_notif_seen', lastSeenNotifTime);
         document.getElementById('notifDot')?.classList.remove('show');
     }
-
-    // Bottom nav
+    
     document.querySelectorAll('.nav-item').forEach(n => {
         n.classList.remove('active');
         if (n.getAttribute('data-nav') === name) n.classList.add('active');
     });
-}
+};
 
-// ============================================================
-// INIT
-// ============================================================
-function init() {
-    // Splash → Auth
+// ========== APP INITIALIZATION ==========
+function startApp() {
+    console.log('Starting app...');
+    
+    // Get Firebase from window
+    FB = window.FB;
+    db = window.db;
+    
+    if (!FB || !db) {
+        console.log('Waiting for Firebase...');
+        setTimeout(startApp, 100);
+        return;
+    }
+    
+    console.log('Firebase ready');
+    
+    // Hide splash after 2 seconds and check login
     setTimeout(() => {
         const savedUser = localStorage.getItem('blob_current_user');
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            onLoginSuccess();
+        console.log('Saved user:', savedUser);
+        
+        const splash = document.getElementById('splash-page');
+        const auth = document.getElementById('auth-page');
+        
+        if (savedUser && savedUser !== 'undefined') {
+            try {
+                currentUser = JSON.parse(savedUser);
+                if (currentUser && currentUser.id) {
+                    onLoginSuccess();
+                } else {
+                    if (splash) splash.classList.remove('active');
+                    if (auth) auth.classList.add('active');
+                    renderLogin();
+                }
+            } catch(e) {
+                console.error('Failed to parse user', e);
+                if (splash) splash.classList.remove('active');
+                if (auth) auth.classList.add('active');
+                renderLogin();
+            }
         } else {
-            showPage('auth');
+            if (splash) splash.classList.remove('active');
+            if (auth) auth.classList.add('active');
             renderLogin();
         }
-    }, 2500);
+    }, 2000);
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Load local data
+    loadLocalData();
+}
 
-    // Bottom nav listeners
-    document.querySelectorAll('.nav-item').forEach(nav => {
-        nav.addEventListener('click', function() {
-            const pg = this.getAttribute('data-nav');
-            if (pg) showPage(pg);
+function setupEventListeners() {
+    // Wait for DOM to be ready
+    setTimeout(() => {
+        // Bottom nav listeners
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.removeEventListener('click', nav._listener);
+            nav._listener = () => {
+                const pg = nav.getAttribute('data-nav');
+                if (pg) window.showPage(pg);
+            };
+            nav.addEventListener('click', nav._listener);
         });
-    });
-
-    // Floating luah buttons
-    document.getElementById('openLuahBtnUtama')?.addEventListener('click', () => openLuahModal());
-    document.getElementById('openLuahBtnProfil')?.addEventListener('click', () => openLuahModal());
-
-    // Settings form listeners
-    document.getElementById('settingPhotoUrl')?.addEventListener('input', e => {
-        document.getElementById('settingPreviewImg').src = e.target.value;
-    });
-
-    // Tetapan buttons
-    document.getElementById('saveProfileBtn')?.addEventListener('click', saveProfileSettings);
-    document.getElementById('changePasswordBtn')?.addEventListener('click', changePassword);
-    document.getElementById('privacyToggle')?.addEventListener('change', updatePrivacy);
-    document.getElementById('deleteAccountBtn')?.addEventListener('click', () => openModal('deleteAccountModal'));
-    document.getElementById('logoutBtn')?.addEventListener('click', () => openModal('logoutModal'));
-    document.getElementById('editBioBtn')?.addEventListener('click', () => {
-        document.getElementById('bioTextarea').value = currentUser?.bio || '';
-        openModal('bioModal');
-    });
-    document.querySelectorAll('.show-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const inp = document.getElementById(btn.dataset.target);
-            if (!inp) return;
-            inp.type = inp.type === 'password' ? 'text' : 'password';
-            btn.textContent = inp.type === 'password' ? 'papar.' : 'sembunyi.';
+        
+        // Floating buttons
+        const btn1 = document.getElementById('openLuahBtnUtama');
+        const btn2 = document.getElementById('openLuahBtnProfil');
+        if (btn1) btn1.addEventListener('click', () => openLuahModal());
+        if (btn2) btn2.addEventListener('click', () => openLuahModal());
+        
+        // Settings
+        const photoUrl = document.getElementById('settingPhotoUrl');
+        if (photoUrl) {
+            photoUrl.addEventListener('input', e => {
+                const preview = document.getElementById('settingPreviewImg');
+                if (preview) preview.src = e.target.value;
+            });
+        }
+        
+        const saveBtn = document.getElementById('saveProfileBtn');
+        if (saveBtn) saveBtn.addEventListener('click', saveProfileSettings);
+        
+        const changePwBtn = document.getElementById('changePasswordBtn');
+        if (changePwBtn) changePwBtn.addEventListener('click', changePassword);
+        
+        const privacyToggle = document.getElementById('privacyToggle');
+        if (privacyToggle) privacyToggle.addEventListener('change', updatePrivacy);
+        
+        const deleteBtn = document.getElementById('deleteAccountBtn');
+        if (deleteBtn) deleteBtn.addEventListener('click', () => openModal('deleteAccountModal'));
+        
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) logoutBtn.addEventListener('click', () => openModal('logoutModal'));
+        
+        const editBio = document.getElementById('editBioBtn');
+        if (editBio) {
+            editBio.addEventListener('click', () => {
+                const bioInput = document.getElementById('bioTextarea');
+                if (bioInput && currentUser) bioInput.value = currentUser.bio || '';
+                openModal('bioModal');
+            });
+        }
+        
+        document.querySelectorAll('.show-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const inp = document.getElementById(btn.dataset.target);
+                if (!inp) return;
+                inp.type = inp.type === 'password' ? 'text' : 'password';
+                btn.textContent = inp.type === 'password' ? 'papar.' : 'sembunyi.';
+            });
         });
-    });
+        
+        // Profile tabs
+        document.querySelectorAll('.profile-tab').forEach(tab => {
+            tab.addEventListener('click', () => switchProfilTab(tab.dataset.tab));
+        });
+        
+        // Bertahan buttons
+        const checkin = document.getElementById('checkinBtn');
+        if (checkin) checkin.addEventListener('click', dailyCheckIn);
+        
+        const breathBtn = document.getElementById('btnBreathing');
+        if (breathBtn) breathBtn.addEventListener('click', openBreathingModal);
+        
+        const affirmBtn = document.getElementById('btnAffirmation');
+        if (affirmBtn) affirmBtn.addEventListener('click', openAffirmationModal);
+        
+        const helpBtn = document.getElementById('btnHelpline');
+        if (helpBtn) helpBtn.addEventListener('click', openHelplineModal);
+        
+        const gratefulBtn = document.getElementById('btnGratitude');
+        if (gratefulBtn) gratefulBtn.addEventListener('click', openGratitudeModal);
+        
+        // Modal close on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+        });
+    }, 100);
+}
 
-    // Profile tabs
-    document.querySelectorAll('.profile-tab').forEach(tab => {
-        tab.addEventListener('click', () => switchProfilTab(tab.dataset.tab));
-    });
-
-    // Bertahan
-    document.getElementById('checkinBtn')?.addEventListener('click', dailyCheckIn);
-    document.getElementById('btnBreathing')?.addEventListener('click', openBreathingModal);
-    document.getElementById('btnAffirmation')?.addEventListener('click', openAffirmationModal);
-    document.getElementById('btnHelpline')?.addEventListener('click', openHelplineModal);
-    document.getElementById('btnGratitude')?.addEventListener('click', openGratitudeModal);
-
-    // Modal overlay close
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
-    });
-
-    // Load local survival/gratitude
+function loadLocalData() {
     const sv = localStorage.getItem('blob_survival');
     if (sv) survivalData = JSON.parse(sv);
     const gv = localStorage.getItem('blob_gratitude');
     if (gv) gratitudeEntries = JSON.parse(gv);
     const starred = localStorage.getItem('blob_starred');
     if (starred) starredPostIds = JSON.parse(starred);
-
     lastSeenNotifTime = parseInt(localStorage.getItem('blob_last_notif_seen') || '0');
 }
 
-// ============================================================
-// AUTH
-// ============================================================
+// ========== AUTH FUNCTIONS ==========
 function createPasswordField(id, placeholder) {
     const wrap = document.createElement('div');
     wrap.className = 'password-wrapper';
@@ -1125,6 +1164,7 @@ function createPasswordField(id, placeholder) {
 
 function renderLogin() {
     const c = document.getElementById('authView');
+    if (!c) return;
     c.innerHTML = '';
     const title = document.createElement('h1');
     title.className = 'auth-title'; title.textContent = 'log masuk.';
@@ -1158,12 +1198,11 @@ function renderLogin() {
         if (!identifier || !password) { showToast('sila lengkapkan semua ruangan.', true); return; }
         await loginUser(identifier, password);
     });
-
-    // Secret admin shortcut: type "adminblob" as username, "adminblob123" as pass
 }
 
 function renderRegister() {
     const c = document.getElementById('authView');
+    if (!c) return;
     c.innerHTML = '';
     const title = document.createElement('h1');
     title.className = 'auth-title'; title.textContent = 'daftar.';
@@ -1261,9 +1300,9 @@ async function registerUser(username, email, password) {
             isVerified: false, isPrivate: false,
             createdAt: FB.serverTimestamp()
         };
-        const docRef = await FB.addDoc(usersRef, newUser);
+        await FB.addDoc(usersRef, newUser);
         showToast('pendaftaran berjaya! sila log masuk.');
-        setTimeout(() => { renderLogin(); document.getElementById('loginIdentifier').value = username; }, 1300);
+        setTimeout(() => { renderLogin(); const inp = document.getElementById('loginIdentifier'); if(inp) inp.value = username; }, 1300);
     } catch (err) {
         console.error(err);
         showToast('ralat semasa mendaftar.', true);
@@ -1272,26 +1311,24 @@ async function registerUser(username, email, password) {
 
 function onLoginSuccess() {
     updateAllAvatars();
-    showPage('utama');
+    window.showPage('utama');
     subscribeToRealtime();
-    checkAndShowPopup();
-
-    // Admin check
-    if (ADMIN_USERS.includes(currentUser.usernameLower || currentUser.username?.toLowerCase())) {
-        // Admin user – small indicator
+    if (window.checkAndShowPopup) checkAndShowPopup();
+    
+    if (ADMIN_USERS.includes((currentUser.usernameLower || currentUser.username || '').toLowerCase())) {
         setTimeout(() => {
-            const nav = document.querySelectorAll('.bottom-nav');
-            nav.forEach(n => {
-                const adminLink = document.createElement('div');
-                adminLink.className = 'nav-item';
-                adminLink.textContent = '⚙';
-                adminLink.style.color = '#f90';
-                adminLink.onclick = () => showPage('admin');
-                // Remove existing and add admin
-                const existing = n.querySelector('.admin-nav');
-                if (!existing) { adminLink.classList.add('admin-nav'); n.appendChild(adminLink); }
+            document.querySelectorAll('.bottom-nav').forEach(nav => {
+                const existing = nav.querySelector('.admin-nav');
+                if (!existing) {
+                    const adminLink = document.createElement('div');
+                    adminLink.className = 'nav-item admin-nav';
+                    adminLink.textContent = '⚙';
+                    adminLink.style.color = '#f90';
+                    adminLink.onclick = () => window.showPage('admin');
+                    nav.appendChild(adminLink);
+                }
             });
-            loadAdminData();
+            if (window.loadAdminData) loadAdminData();
         }, 500);
     }
 }
@@ -1305,45 +1342,28 @@ function updateAllAvatars() {
     });
 }
 
-// ============================================================
-// REALTIME SUBSCRIPTIONS
-// ============================================================
+// ========== REALTIME SUBSCRIPTIONS ==========
 function subscribeToRealtime() {
-    // Posts
     if (unsubPosts) unsubPosts();
     const postsQ = FB.query(FB.collection(db, 'posts'), FB.orderBy('createdAt', 'desc'));
     unsubPosts = FB.onSnapshot(postsQ, snap => {
         const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderPosts(posts);
-        refreshUtamaStats();
+        if (window.renderPosts) renderPosts(posts);
+        if (window.refreshUtamaStats) refreshUtamaStats();
     });
-
-    // Notifications – listen for new ones
-    const notifsQ = FB.query(FB.collection(db, 'notifications'), FB.orderBy('createdAt', 'desc'), FB.limit(1));
-    FB.onSnapshot(notifsQ, snap => {
-        snap.docs.forEach(d => {
-            const ts = d.data().createdAt?.toMillis?.() || 0;
-            if (ts > lastSeenNotifTime) {
-                document.getElementById('notifDot')?.classList.add('show');
-            }
-        });
-    });
-
-    // Popup
+    
     if (unsubPopup) unsubPopup();
     const popupRef = FB.doc(db, 'config', 'popup');
     unsubPopup = FB.onSnapshot(popupRef, snap => {
         if (snap.exists()) {
             const data = snap.data();
-            if (data.active) showPopup(data);
-            else hidePopup();
+            if (data.active && window.showPopup) showPopup(data);
+            else if (window.hidePopup) hidePopup();
         }
     });
 }
 
-// ============================================================
-// POSTS RENDERING
-// ============================================================
+// ========== POST FUNCTIONS ==========
 function renderPosts(posts) {
     const container = document.getElementById('postsContainer');
     if (!container) return;
@@ -1406,32 +1426,30 @@ function createPostCard(post, showEditDelete) {
         ${actionsHtml}
     `;
 
-    // Events
     card.querySelector('.star-btn')?.addEventListener('click', () => toggleStar(post.id, post.stars || 0));
     card.querySelector('.edit-post')?.addEventListener('click', () => openEditPost(post.id, post.content));
     card.querySelector('.delete-post')?.addEventListener('click', () => { currentDeletePostId = post.id; openModal('deletePostModal'); });
     card.querySelector('.post-user-wrapper')?.addEventListener('click', e => {
         const uid = e.currentTarget.dataset.userid;
         const uname = e.currentTarget.dataset.username;
-        if (uid && uname) showUserProfile(uid, uname);
+        if (uid && uname && window.showUserProfile) showUserProfile(uid, uname);
     });
 
     return card;
 }
 
-// ============================================================
-// LUAH (POST)
-// ============================================================
 function openLuahModal() {
-    document.getElementById('newLuahText').value = '';
-    document.getElementById('anonymousToggle').checked = false;
+    const textarea = document.getElementById('newLuahText');
+    if (textarea) textarea.value = '';
+    const toggle = document.getElementById('anonymousToggle');
+    if (toggle) toggle.checked = false;
     openModal('luahModal');
 }
 
 async function submitLuah() {
-    const content = document.getElementById('newLuahText').value.trim();
+    const content = document.getElementById('newLuahText')?.value.trim();
     if (!content) { showToast('tulis luahan dulu.', true); return; }
-    const isAnon = document.getElementById('anonymousToggle').checked;
+    const isAnon = document.getElementById('anonymousToggle')?.checked || false;
 
     const post = {
         content,
@@ -1457,12 +1475,13 @@ async function submitLuah() {
 
 function openEditPost(id, content) {
     currentEditPostId = id;
-    document.getElementById('editLuahText').value = content;
+    const textarea = document.getElementById('editLuahText');
+    if (textarea) textarea.value = content;
     openModal('editLuahModal');
 }
 
 async function saveEdit() {
-    const content = document.getElementById('editLuahText').value.trim();
+    const content = document.getElementById('editLuahText')?.value.trim();
     if (!content || !currentEditPostId) return;
     try {
         await FB.updateDoc(FB.doc(db, 'posts', currentEditPostId), { content, isEdited: true });
@@ -1482,7 +1501,7 @@ async function confirmDeletePost() {
 }
 
 async function toggleStar(postId, currentStars) {
-    if (starredPostIds.includes(postId)) return; // already starred
+    if (starredPostIds.includes(postId)) return;
     starredPostIds.push(postId);
     localStorage.setItem('blob_starred', JSON.stringify(starredPostIds));
     try {
@@ -1490,48 +1509,18 @@ async function toggleStar(postId, currentStars) {
     } catch (err) { console.error(err); }
 }
 
-// ============================================================
-// UTAMA STATS
-// ============================================================
+// ========== UTAMA STATS ==========
 function refreshUtamaStats() {
     const { streak, total } = calcSurvival();
-    document.getElementById('utamaStreak').textContent = streak;
-    document.getElementById('utamaTotal').textContent = total;
+    const streakEl = document.getElementById('utamaStreak');
+    const totalEl = document.getElementById('utamaTotal');
+    if (streakEl) streakEl.textContent = streak;
+    if (totalEl) totalEl.textContent = total;
 }
 
-// ============================================================
-// USER PROFILE MODAL
-// ============================================================
-async function showUserProfile(userId, username) {
-    try {
-        const userSnap = await FB.getDoc(FB.doc(db, 'users', userId));
-        let userData = {};
-        if (userSnap.exists()) userData = userSnap.data();
-
-        const postsQ = FB.query(FB.collection(db, 'posts'), FB.where('userId', '==', userId));
-        const postsSnap = await FB.getDocs(postsQ);
-        const postCount = postsSnap.size;
-
-        document.getElementById('modalAvatarImg').src = userData.photoUrl || `https://placehold.co/60x60/222/fff?text=${username.charAt(0).toUpperCase()}`;
-        document.getElementById('modalName').innerHTML = `${esc(userData.username || username)}${userData.isVerified ? ' <img src="verifiedbadge.png" style="width:14px;vertical-align:middle;" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7641/7641709.png\';">' : ''}`;
-        document.getElementById('modalUsername').textContent = `@${userData.username || username}`;
-        document.getElementById('modalBio').textContent = userData.bio || 'sedang belajar untuk bertahan.';
-        document.getElementById('modalLuahan').textContent = postCount;
-        document.getElementById('modalBerturut').textContent = Math.min(postCount + 1, 7);
-        document.getElementById('modalBertahan').textContent = postCount + 2;
-
-        openModal('userModal');
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-// ============================================================
-// SURVIVAL / BERTAHAN
-// ============================================================
+// ========== SURVIVAL FUNCTIONS ==========
 function saveSurvival() {
     localStorage.setItem('blob_survival', JSON.stringify(survivalData));
-    // Also sync to Firestore if user logged in
     if (currentUser?.id) {
         FB.setDoc(FB.doc(db, 'survival', currentUser.id), survivalData, { merge: true }).catch(() => {});
     }
@@ -1563,22 +1552,27 @@ function calcSurvival() {
 function dailyCheckIn() {
     const today = todayStr();
     if (survivalData[today]) {
-        document.getElementById('checkinMessage').textContent = 'hari ini sudah direkodkan!';
+        const msg = document.getElementById('checkinMessage');
+        if (msg) msg.textContent = 'hari ini sudah direkodkan!';
         return;
     }
     survivalData[today] = true;
     saveSurvival();
     renderBertahan();
-    document.getElementById('checkinMessage').textContent = 'terima kasih! +1 hari bertahan.';
-    document.getElementById('checkinBtn').classList.add('checked');
+    const msg = document.getElementById('checkinMessage');
+    if (msg) msg.textContent = 'terima kasih! +1 hari bertahan.';
+    const btn = document.getElementById('checkinBtn');
+    if (btn) btn.classList.add('checked');
     refreshUtamaStats();
 }
 
 function renderBertahan() {
     loadSurvivalFromFirestore();
     const { streak, total } = calcSurvival();
-    document.getElementById('bertahanStreak').textContent = streak;
-    document.getElementById('bertahanTotal').textContent = total;
+    const streakEl = document.getElementById('bertahanStreak');
+    const totalEl = document.getElementById('bertahanTotal');
+    if (streakEl) streakEl.textContent = streak;
+    if (totalEl) totalEl.textContent = total;
 
     const today = todayStr();
     const btn = document.getElementById('checkinBtn');
@@ -1590,7 +1584,6 @@ function renderBertahan() {
         btn?.classList.remove('checked');
     }
 
-    // Streak dots
     const dots = document.getElementById('streakDots');
     if (dots) {
         dots.innerHTML = '';
@@ -1604,7 +1597,6 @@ function renderBertahan() {
         }
     }
 
-    // Calendar for current month
     const now = new Date();
     const year = now.getFullYear(), month = now.getMonth();
     const monthNames = ['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
@@ -1629,9 +1621,7 @@ function renderBertahan() {
     }
 }
 
-// ============================================================
-// BREATHING & ACTIVITIES
-// ============================================================
+// ========== ACTIVITY FUNCTIONS ==========
 function openBreathingModal() {
     openModal('modalBreathing');
     const texts = ['tarik nafas...', 'tahan...', 'hembus...'];
@@ -1642,6 +1632,7 @@ function openBreathingModal() {
     update();
     breathInterval = setInterval(update, 1000);
 }
+
 function stopBreathing() { if (breathInterval) clearInterval(breathInterval); breathInterval = null; }
 
 function openAffirmationModal() {
@@ -1652,7 +1643,8 @@ function openAffirmationModal() {
         'Saya memilih untuk bertahan hari ini.',
         'Perasaan ini sementara. Saya kekal kuat.'
     ];
-    document.getElementById('affirmationContent').innerHTML = affs.map(a => `<div class="affirmation-text">${esc(a)}</div>`).join('');
+    const container = document.getElementById('affirmationContent');
+    if (container) container.innerHTML = affs.map(a => `<div class="affirmation-text">${esc(a)}</div>`).join('');
     openModal('modalAffirmation');
 }
 
@@ -1662,7 +1654,10 @@ function openHelplineModal() {
         { name: 'Befrienders KL', number: '03-7627 2929', desc: 'sokongan emosi' },
         { name: 'MHPSS Taskforce', number: '03-2935 9935', desc: 'krisis kesihatan mental' }
     ];
-    document.getElementById('helplineContent').innerHTML = lines.map(l => `<div class="helpline-item"><strong>${l.name}</strong><br>${l.number}<br><span style="font-size:0.7rem;">${l.desc}</span></div>`).join('') + '<p style="margin-top:12px; font-size:0.7rem; text-align:center;">Jangan ragu untuk menghubungi jika perlu bercakap.</p>';
+    const container = document.getElementById('helplineContent');
+    if (container) {
+        container.innerHTML = lines.map(l => `<div class="helpline-item"><strong>${l.name}</strong><br>${l.number}<br><span style="font-size:0.7rem;">${l.desc}</span></div>`).join('') + '<p style="margin-top:12px; font-size:0.7rem; text-align:center;">Jangan ragu untuk menghubungi jika perlu bercakap.</p>';
+    }
     openModal('modalHelpline');
 }
 
@@ -1673,6 +1668,7 @@ function openGratitudeModal() {
 
 function renderGratitudeContent() {
     const c = document.getElementById('gratitudeModalContent');
+    if (!c) return;
     const today = todayStr();
     const todayList = gratitudeEntries.filter(e => e.dateStr === today);
     let html = '<div class="gratitude-list">';
@@ -1680,38 +1676,45 @@ function renderGratitudeContent() {
     else todayList.forEach(e => { html += `<div class="gratitude-item">${esc(e.text)}</div>`; });
     html += '</div><div class="add-gratitude"><input type="text" id="newGratitudeInput" placeholder="saya bersyukur untuk..."><button id="submitGratitudeBtn">+</button></div>';
     c.innerHTML = html;
-    document.getElementById('submitGratitudeBtn')?.addEventListener('click', () => {
-        const inp = document.getElementById('newGratitudeInput');
-        if (inp?.value.trim()) {
-            gratitudeEntries.push({ id: Date.now() + '', dateStr: today, text: inp.value.trim() });
-            localStorage.setItem('blob_gratitude', JSON.stringify(gratitudeEntries));
-            inp.value = '';
-            renderGratitudeContent();
-        }
-    });
+    const submitBtn = document.getElementById('submitGratitudeBtn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+            const inp = document.getElementById('newGratitudeInput');
+            if (inp?.value.trim()) {
+                gratitudeEntries.push({ id: Date.now() + '', dateStr: today, text: inp.value.trim() });
+                localStorage.setItem('blob_gratitude', JSON.stringify(gratitudeEntries));
+                inp.value = '';
+                renderGratitudeContent();
+            }
+        });
+    }
 }
 
-// ============================================================
-// PROFIL PAGE
-// ============================================================
+// ========== PROFIL FUNCTIONS ==========
 async function renderProfil() {
     if (!currentUser) return;
     await loadSurvivalFromFirestore();
     const { streak, total } = calcSurvival();
 
     const photo = currentUser.photoUrl || `https://placehold.co/56x56/222/fff?text=${(currentUser.username || 'U').charAt(0).toUpperCase()}`;
-    document.getElementById('profilAvatarImg').src = photo;
-    document.getElementById('profilDisplayName').innerHTML = `${esc(currentUser.username || '')}${currentUser.isVerified ? ' <img src="verifiedbadge.png" style="width:14px;vertical-align:middle;" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7641/7641709.png\';">' : ''}`;
-    document.getElementById('profilUsername').textContent = `@${currentUser.username || ''}`;
-    document.getElementById('profileBioText').textContent = currentUser.bio || '—';
-    document.getElementById('profilStreak').textContent = streak;
-    document.getElementById('profilTotalSurvive').textContent = total;
+    const avatarImg = document.getElementById('profilAvatarImg');
+    if (avatarImg) avatarImg.src = photo;
+    const displayName = document.getElementById('profilDisplayName');
+    if (displayName) displayName.innerHTML = `${esc(currentUser.username || '')}${currentUser.isVerified ? ' <img src="verifiedbadge.png" style="width:14px;vertical-align:middle;" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7641/7641709.png\';">' : ''}`;
+    const usernameSpan = document.getElementById('profilUsername');
+    if (usernameSpan) usernameSpan.textContent = `@${currentUser.username || ''}`;
+    const bioSpan = document.getElementById('profileBioText');
+    if (bioSpan) bioSpan.textContent = currentUser.bio || '—';
+    const streakSpan = document.getElementById('profilStreak');
+    if (streakSpan) streakSpan.textContent = streak;
+    const totalSpan = document.getElementById('profilTotalSurvive');
+    if (totalSpan) totalSpan.textContent = total;
 
-    // Count user posts
     try {
         const q = FB.query(FB.collection(db, 'posts'), FB.where('userId', '==', currentUser.id));
         const snap = await FB.getDocs(q);
-        document.getElementById('profilPostCount').textContent = snap.size;
+        const postCountSpan = document.getElementById('profilPostCount');
+        if (postCountSpan) postCountSpan.textContent = snap.size;
     } catch (err) {}
 
     switchProfilTab('luahan');
@@ -1752,29 +1755,34 @@ function renderRekodPanel() {
     c.innerHTML = html;
 
     const dots = document.getElementById('rekodDots');
-    for (let i = 0; i < 15; i++) {
-        const d = new Date(); d.setDate(d.getDate() - i);
-        const s = d.toISOString().split('T')[0];
-        const dot = document.createElement('div');
-        dot.className = 'sdot' + (survivalData[s] ? ' active' : '');
-        dot.textContent = survivalData[s] ? '✓' : '○';
-        dots.appendChild(dot);
+    if (dots) {
+        for (let i = 0; i < 15; i++) {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            const s = d.toISOString().split('T')[0];
+            const dot = document.createElement('div');
+            dot.className = 'sdot' + (survivalData[s] ? ' active' : '');
+            dot.textContent = survivalData[s] ? '✓' : '○';
+            dots.appendChild(dot);
+        }
     }
 
     const now = new Date();
     const year = now.getFullYear(), month = now.getMonth();
     const monthNames = ['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
-    document.getElementById('rekodCalHeader').textContent = `${monthNames[month]} ${year}.`;
+    const calHeader = document.getElementById('rekodCalHeader');
+    if (calHeader) calHeader.textContent = `${monthNames[month]} ${year}.`;
     const grid = document.getElementById('rekodCalGrid');
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    for (let i = 0; i < firstDay; i++) { const e = document.createElement('div'); e.className = 'cal-day empty'; grid.appendChild(e); }
-    for (let day = 1; day <= daysInMonth; day++) {
-        const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        const el = document.createElement('div');
-        el.className = 'cal-day' + (survivalData[ds] ? ' checked' : '');
-        el.textContent = day;
-        grid.appendChild(el);
+    if (grid) {
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        for (let i = 0; i < firstDay; i++) { const e = document.createElement('div'); e.className = 'cal-day empty'; grid.appendChild(e); }
+        for (let day = 1; day <= daysInMonth; day++) {
+            const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            const el = document.createElement('div');
+            el.className = 'cal-day' + (survivalData[ds] ? ' checked' : '');
+            el.textContent = day;
+            grid.appendChild(el);
+        }
     }
 }
 
@@ -1795,43 +1803,32 @@ async function renderBintangPanel() {
     } catch (err) { container.innerHTML = '<div class="empty-message">ralat memuatkan bintang.</div>'; }
 }
 
-// ============================================================
-// SAVE BIO
-// ============================================================
-async function saveBio() {
-    const bio = document.getElementById('bioTextarea').value.trim();
-    closeModal('bioModal');
-    if (!currentUser?.id) return;
-    try {
-        await FB.updateDoc(FB.doc(db, 'users', currentUser.id), { bio });
-        currentUser.bio = bio;
-        localStorage.setItem('blob_current_user', JSON.stringify(currentUser));
-        document.getElementById('profileBioText').textContent = bio;
-        showToast('biografi disimpan.');
-    } catch (err) { showToast('ralat menyimpan biografi.', true); }
-}
-
-// ============================================================
-// SETTINGS
-// ============================================================
+// ========== SETTINGS FUNCTIONS ==========
 function loadSettingsForm() {
     if (!currentUser) return;
-    document.getElementById('settingUsername').value = currentUser.username || '';
-    document.getElementById('settingBio').value = currentUser.bio || '';
-    document.getElementById('settingEmail').value = currentUser.email || '';
+    const usernameInp = document.getElementById('settingUsername');
+    const bioInp = document.getElementById('settingBio');
+    const emailInp = document.getElementById('settingEmail');
+    const photoInp = document.getElementById('settingPhotoUrl');
+    const previewImg = document.getElementById('settingPreviewImg');
+    const privacyToggle = document.getElementById('privacyToggle');
+    
+    if (usernameInp) usernameInp.value = currentUser.username || '';
+    if (bioInp) bioInp.value = currentUser.bio || '';
+    if (emailInp) emailInp.value = currentUser.email || '';
     const photo = currentUser.photoUrl || '';
-    document.getElementById('settingPhotoUrl').value = photo;
-    document.getElementById('settingPreviewImg').src = photo || 'https://placehold.co/48x48/222/fff?text=U';
-    document.getElementById('privacyToggle').checked = currentUser.isPrivate || false;
+    if (photoInp) photoInp.value = photo;
+    if (previewImg) previewImg.src = photo || 'https://placehold.co/48x48/222/fff?text=U';
+    if (privacyToggle) privacyToggle.checked = currentUser.isPrivate || false;
     updatePrivacy();
 }
 
 async function saveProfileSettings() {
     if (!currentUser?.id) return;
-    const username = document.getElementById('settingUsername').value.trim();
-    const bio = document.getElementById('settingBio').value.trim();
-    const email = document.getElementById('settingEmail').value.trim();
-    const photoUrl = document.getElementById('settingPhotoUrl').value.trim();
+    const username = document.getElementById('settingUsername')?.value.trim() || '';
+    const bio = document.getElementById('settingBio')?.value.trim() || '';
+    const email = document.getElementById('settingEmail')?.value.trim() || '';
+    const photoUrl = document.getElementById('settingPhotoUrl')?.value.trim() || '';
 
     try {
         await FB.updateDoc(FB.doc(db, 'users', currentUser.id), { username, usernameLower: username.toLowerCase(), bio, email, photoUrl });
@@ -1843,8 +1840,8 @@ async function saveProfileSettings() {
 }
 
 async function changePassword() {
-    const current = document.getElementById('currentPassword').value;
-    const newPass = document.getElementById('newPassword').value;
+    const current = document.getElementById('currentPassword')?.value || '';
+    const newPass = document.getElementById('newPassword')?.value || '';
     if (!current || !newPass) { showToast('sila isi kedua-dua ruangan kata laluan.', true); return; }
     if (newPass.length < 4) { showToast('kata laluan baru perlukan 4 aksara minimum.', true); return; }
     if (!currentUser?.id) return;
@@ -1852,17 +1849,22 @@ async function changePassword() {
         const snap = await FB.getDoc(FB.doc(db, 'users', currentUser.id));
         if (!snap.exists() || snap.data().password !== btoa(current)) { showToast('kata laluan semasa salah.', true); return; }
         await FB.updateDoc(FB.doc(db, 'users', currentUser.id), { password: btoa(newPass) });
-        document.getElementById('currentPassword').value = '';
-        document.getElementById('newPassword').value = '';
+        const currPass = document.getElementById('currentPassword');
+        const newPassInp = document.getElementById('newPassword');
+        if (currPass) currPass.value = '';
+        if (newPassInp) newPassInp.value = '';
         showToast('kata laluan ditukar.');
     } catch (err) { showToast('ralat menukar kata laluan.', true); }
 }
 
 function updatePrivacy() {
-    const isPrivate = document.getElementById('privacyToggle').checked;
-    document.getElementById('privacyDesc').textContent = isPrivate
-        ? 'peribadi: hanya anda boleh lihat profil anda.'
-        : 'awam: profil boleh dilihat oleh semua.';
+    const isPrivate = document.getElementById('privacyToggle')?.checked || false;
+    const descSpan = document.getElementById('privacyDesc');
+    if (descSpan) {
+        descSpan.textContent = isPrivate
+            ? 'peribadi: hanya anda boleh lihat profil anda.'
+            : 'awam: profil boleh dilihat oleh semua.';
+    }
     if (currentUser?.id) {
         FB.updateDoc(FB.doc(db, 'users', currentUser.id), { isPrivate }).catch(() => {});
         currentUser.isPrivate = isPrivate;
@@ -1889,9 +1891,21 @@ function confirmLogout() {
     setTimeout(() => window.location.reload(), 800);
 }
 
-// ============================================================
-// NOTIFICATIONS
-// ============================================================
+async function saveBio() {
+    const bio = document.getElementById('bioTextarea')?.value.trim() || '';
+    closeModal('bioModal');
+    if (!currentUser?.id) return;
+    try {
+        await FB.updateDoc(FB.doc(db, 'users', currentUser.id), { bio });
+        currentUser.bio = bio;
+        localStorage.setItem('blob_current_user', JSON.stringify(currentUser));
+        const bioSpan = document.getElementById('profileBioText');
+        if (bioSpan) bioSpan.textContent = bio;
+        showToast('biografi disimpan.');
+    } catch (err) { showToast('ralat menyimpan biografi.', true); }
+}
+
+// ========== NOTIFICATION FUNCTIONS ==========
 async function loadNotifs() {
     const container = document.getElementById('notifContainer');
     if (!container) return;
@@ -1904,8 +1918,7 @@ async function loadNotifs() {
         container.innerHTML = '';
         snap.docs.forEach(d => {
             const notif = { id: d.id, ...d.data() };
-            const el = createNotifCard(notif);
-            container.appendChild(el);
+            container.appendChild(createNotifCard(notif));
         });
     } catch (err) {
         container.innerHTML = '<div style="color:#555; font-size:0.8rem; text-align:center; padding:2rem;">ralat memuatkan pemberitahuan.</div>';
@@ -1936,16 +1949,49 @@ function createNotifCard(notif) {
 }
 
 function openNotifDetail(notif, category) {
-    document.getElementById('notifDetailCategory').textContent = category || 'SISTEM';
-    document.getElementById('notifDetailBody').innerHTML = `<strong>${esc(notif.title)}</strong><br><br>${esc(notif.message)}`;
+    const catSpan = document.getElementById('notifDetailCategory');
+    const bodySpan = document.getElementById('notifDetailBody');
+    const metaSpan = document.getElementById('notifDetailMeta');
+    if (catSpan) catSpan.textContent = category || 'SISTEM';
+    if (bodySpan) bodySpan.innerHTML = `<strong>${esc(notif.title)}</strong><br><br>${esc(notif.message)}`;
     const ts = notif.createdAt?.toMillis ? new Date(notif.createdAt.toMillis()) : new Date(notif.createdAt);
-    document.getElementById('notifDetailMeta').textContent = ts.toLocaleString('ms-MY') + ' · daripada admin';
+    if (metaSpan) metaSpan.textContent = ts.toLocaleString('ms-MY') + ' · daripada admin';
     openModal('notifDetailModal');
 }
 
-// ============================================================
-// POPUP MODAL (Admin-controlled)
-// ============================================================
+// ========== USER PROFILE MODAL ==========
+async function showUserProfile(userId, username) {
+    try {
+        const userSnap = await FB.getDoc(FB.doc(db, 'users', userId));
+        let userData = {};
+        if (userSnap.exists()) userData = userSnap.data();
+
+        const postsQ = FB.query(FB.collection(db, 'posts'), FB.where('userId', '==', userId));
+        const postsSnap = await FB.getDocs(postsQ);
+        const postCount = postsSnap.size;
+
+        const avatarImg = document.getElementById('modalAvatarImg');
+        if (avatarImg) avatarImg.src = userData.photoUrl || `https://placehold.co/60x60/222/fff?text=${username.charAt(0).toUpperCase()}`;
+        const nameSpan = document.getElementById('modalName');
+        if (nameSpan) nameSpan.innerHTML = `${esc(userData.username || username)}${userData.isVerified ? ' <img src="verifiedbadge.png" style="width:14px;vertical-align:middle;" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7641/7641709.png\';">' : ''}`;
+        const usernameSpan = document.getElementById('modalUsername');
+        if (usernameSpan) usernameSpan.textContent = `@${userData.username || username}`;
+        const bioSpan = document.getElementById('modalBio');
+        if (bioSpan) bioSpan.textContent = userData.bio || 'sedang belajar untuk bertahan.';
+        const luahanSpan = document.getElementById('modalLuahan');
+        if (luahanSpan) luahanSpan.textContent = postCount;
+        const berturutSpan = document.getElementById('modalBerturut');
+        if (berturutSpan) berturutSpan.textContent = Math.min(postCount + 1, 7);
+        const bertahanSpan = document.getElementById('modalBertahan');
+        if (bertahanSpan) bertahanSpan.textContent = postCount + 2;
+
+        openModal('userModal');
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// ========== POPUP FUNCTIONS ==========
 async function checkAndShowPopup() {
     try {
         const snap = await FB.getDoc(FB.doc(db, 'config', 'popup'));
@@ -1958,6 +2004,7 @@ async function checkAndShowPopup() {
 function showPopup(data) {
     const modal = document.getElementById('popupModal');
     const content = document.getElementById('popupContent');
+    if (!modal || !content) return;
 
     if (data.mode === 'image') {
         content.innerHTML = `
@@ -1985,22 +2032,22 @@ function showPopup(data) {
 
 function hidePopup() {
     const modal = document.getElementById('popupModal');
-    modal.classList.remove('show');
+    if (modal) modal.classList.remove('show');
 }
 
-// ============================================================
-// ADMIN
-// ============================================================
+// ========== ADMIN FUNCTIONS ==========
 function switchAdminTab(tab, btn) {
     document.querySelectorAll('.admin-sub').forEach(s => s.classList.remove('show'));
-    document.getElementById(`adminTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)?.classList.add('show');
+    const tabId = `adminTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`;
+    const tabEl = document.getElementById(tabId);
+    if (tabEl) tabEl.classList.add('show');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn?.classList.add('active');
-
-    if (tab === 'users') loadAdminUsers();
-    if (tab === 'posts') loadAdminPosts();
-    if (tab === 'notif') loadAdminNotifs();
-    if (tab === 'popup') loadAdminPopupStatus();
+    if (btn) btn.classList.add('active');
+    
+    if (tab === 'users' && window.loadAdminUsers) loadAdminUsers();
+    if (tab === 'posts' && window.loadAdminPosts) loadAdminPosts();
+    if (tab === 'notif' && window.loadAdminNotifs) loadAdminNotifs();
+    if (tab === 'popup' && window.loadAdminPopupStatus) loadAdminPopupStatus();
 }
 
 async function loadAdminData() {
@@ -2025,20 +2072,22 @@ async function loadAdminNotifs() {
 }
 
 async function adminSendNotif() {
-    const type = document.getElementById('notifType').value;
-    const title = document.getElementById('notifTitleInput').value.trim();
-    const message = document.getElementById('notifMsgInput').value.trim();
+    const type = document.getElementById('notifType')?.value || 'info';
+    const title = document.getElementById('notifTitleInput')?.value.trim() || '';
+    const message = document.getElementById('notifMsgInput')?.value.trim() || '';
     if (!title || !message) { showToast('sila isi tajuk dan mesej.', true); return; }
     try {
         await FB.addDoc(FB.collection(db, 'notifications'), { type, title, message, createdAt: FB.serverTimestamp() });
-        document.getElementById('notifTitleInput').value = '';
-        document.getElementById('notifMsgInput').value = '';
+        const titleInp = document.getElementById('notifTitleInput');
+        const msgInp = document.getElementById('notifMsgInput');
+        if (titleInp) titleInp.value = '';
+        if (msgInp) msgInp.value = '';
         showToast('notifikasi dihantar.');
         loadAdminNotifs();
     } catch (err) { showToast('ralat menghantar notifikasi.', true); }
 }
 
-async function adminDeleteNotif(id) {
+window.adminDeleteNotif = async function(id) {
     try {
         await FB.deleteDoc(FB.doc(db, 'notifications', id));
         showToast('notifikasi dipadam.');
@@ -2046,15 +2095,15 @@ async function adminDeleteNotif(id) {
     } catch (err) { showToast('ralat memadam.', true); }
 }
 
-async function adminSendPopup(mode) {
+window.adminSendPopup = async function(mode) {
     let data = { active: true, mode, createdAt: FB.serverTimestamp() };
     if (mode === 'text') {
-        data.title = document.getElementById('popupTitleText').value.trim();
-        data.body = document.getElementById('popupBodyText').value.trim();
+        data.title = document.getElementById('popupTitleText')?.value.trim() || '';
+        data.body = document.getElementById('popupBodyText')?.value.trim() || '';
         if (!data.body) { showToast('sila isi teks popup.', true); return; }
     } else {
-        data.imageUrl = document.getElementById('popupImageUrl').value.trim();
-        data.caption = document.getElementById('popupImageCaption').value.trim();
+        data.imageUrl = document.getElementById('popupImageUrl')?.value.trim() || '';
+        data.caption = document.getElementById('popupImageCaption')?.value.trim() || '';
         if (!data.imageUrl) { showToast('sila isi URL gambar.', true); return; }
     }
     try {
@@ -2064,7 +2113,7 @@ async function adminSendPopup(mode) {
     } catch (err) { showToast('ralat mengaktifkan popup.', true); }
 }
 
-async function adminClearPopup() {
+window.adminClearPopup = async function() {
     try {
         await FB.setDoc(FB.doc(db, 'config', 'popup'), { active: false });
         hidePopup();
@@ -2106,7 +2155,7 @@ async function loadAdminUsers() {
     } catch (err) { el.textContent = 'ralat.'; }
 }
 
-async function adminSetVerified(userId, state) {
+window.adminSetVerified = async function(userId, state) {
     try {
         await FB.updateDoc(FB.doc(db, 'users', userId), { isVerified: state });
         showToast(state ? 'verified badge diberikan.' : 'verified badge ditanggalkan.');
@@ -2114,7 +2163,7 @@ async function adminSetVerified(userId, state) {
     } catch (err) { showToast('ralat mengemas kini.', true); }
 }
 
-async function adminToggleVerified(state) {
+window.adminToggleVerified = async function(state) {
     let uname = (document.getElementById('verifyUsernameInput')?.value || '').trim().replace(/^@/, '').toLowerCase();
     if (!uname) { showToast('sila masukkan nama pengguna.', true); return; }
     try {
@@ -2123,7 +2172,8 @@ async function adminToggleVerified(state) {
         if (snap.empty) { showToast('pengguna tidak dijumpai.', true); return; }
         await FB.updateDoc(snap.docs[0].ref, { isVerified: state });
         showToast(state ? `@${uname} diberikan verified badge.` : `@${uname} verified badge ditanggalkan.`);
-        document.getElementById('verifyUsernameInput').value = '';
+        const inp = document.getElementById('verifyUsernameInput');
+        if (inp) inp.value = '';
         loadAdminUsers();
     } catch (err) { showToast('ralat.', true); }
 }
@@ -2146,7 +2196,7 @@ async function loadAdminPosts() {
     } catch (err) { el.textContent = 'ralat.'; }
 }
 
-async function adminDeletePost(id) {
+window.adminDeletePost = async function(id) {
     if (!confirm('Padam luahan ini?')) return;
     try {
         await FB.deleteDoc(FB.doc(db, 'posts', id));
@@ -2155,9 +2205,7 @@ async function adminDeletePost(id) {
     } catch (err) { showToast('ralat.', true); }
 }
 
-// ============================================================
-// SCROLL HIDE NAV
-// ============================================================
+// ========== SCROLL HIDE NAV ==========
 let lastScroll = 0;
 window.addEventListener('scroll', () => {
     const cur = window.scrollY;
@@ -2167,6 +2215,52 @@ window.addEventListener('scroll', () => {
     });
     lastScroll = cur;
 });
+
+// Make functions globally available
+window.startApp = startApp;
+window.renderLogin = renderLogin;
+window.renderRegister = renderRegister;
+window.showUserProfile = showUserProfile;
+window.refreshUtamaStats = refreshUtamaStats;
+window.renderBertahan = renderBertahan;
+window.renderProfil = renderProfil;
+window.loadSettingsForm = loadSettingsForm;
+window.loadNotifs = loadNotifs;
+window.loadAdminUsers = loadAdminUsers;
+window.loadAdminPosts = loadAdminPosts;
+window.loadAdminNotifs = loadAdminNotifs;
+window.loadAdminPopupStatus = loadAdminPopupStatus;
+window.renderPosts = renderPosts;
+window.createPostCard = createPostCard;
+window.submitLuah = submitLuah;
+window.saveEdit = saveEdit;
+window.confirmDeletePost = confirmDeletePost;
+window.toggleStar = toggleStar;
+window.dailyCheckIn = dailyCheckIn;
+window.openBreathingModal = openBreathingModal;
+window.openAffirmationModal = openAffirmationModal;
+window.openHelplineModal = openHelplineModal;
+window.openGratitudeModal = openGratitudeModal;
+window.stopBreathing = stopBreathing;
+window.switchProfilTab = switchProfilTab;
+window.renderMyLuahan = renderMyLuahan;
+window.renderRekodPanel = renderRekodPanel;
+window.renderBintangPanel = renderBintangPanel;
+window.saveBio = saveBio;
+window.saveProfileSettings = saveProfileSettings;
+window.changePassword = changePassword;
+window.updatePrivacy = updatePrivacy;
+window.confirmDeleteAccount = confirmDeleteAccount;
+window.confirmLogout = confirmLogout;
+window.checkAndShowPopup = checkAndShowPopup;
+window.showPopup = showPopup;
+window.hidePopup = hidePopup;
+window.openLuahModal = openLuahModal;
+window.switchAdminTab = switchAdminTab;
+window.adminSendNotif = adminSendNotif;
+
+// Start the app
+startApp();
 </script>
 </body>
-  </html>
+</html>
