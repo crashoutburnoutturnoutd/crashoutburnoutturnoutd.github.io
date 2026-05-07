@@ -2019,8 +2019,31 @@ function renderRekodPanel() {
         </div>
     </div>`;
 
+    const now = new Date();
+    const year = now.getFullYear(), month = now.getMonth();
+    const monthNames = ['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
+    const calH = document.getElementById('rekodCalHeader'); 
+    if (calH) calH.textContent = `${monthNames[month]} ${year}.`;
+
+    const grid = document.getElementById('rekodCalGrid');
+    if (grid) {
+        grid.innerHTML = '';
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        for (let i = 0; i < firstDay; i++) { 
+            const e = document.createElement('div'); 
+            e.className = 'cal-day empty'; 
+            grid.appendChild(e); 
+        }
+        for (let day = 1; day <= daysInMonth; day++) {
+            const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            const el = document.createElement('div');
+            el.className = 'cal-day' + (survivalData[ds] ? ' checked' : '');
+            el.textContent = day; 
+            grid.appendChild(el);
         }
     }
+}
 
 async function renderBintangPanel() {
     const container = document.getElementById('bintangPanel');
