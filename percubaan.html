@@ -1987,27 +1987,54 @@ async function saveProfileSettings() {
     const bio = (document.getElementById('settingBio')?.value || '').trim();
     const email = (document.getElementById('settingEmail')?.value || '').trim();
     const photoUrl = (document.getElementById('settingPhotoUrl')?.value || '').trim();
+    
     if (!username) { showToast('nama pengguna tidak boleh kosong.', true); return; }
+    if (!/^[a-zA-Z0-9_\.]{2,9}$/.test(username)) { 
+        showToast('nama pengguna 2-9 aksara (huruf, nombor, _, .).', true); 
+        return; 
+    }
+    
     try {
-        await FB.updateDoc(FB.doc(db, 'users', currentUser.id), { username, usernameLower: username.toLowerCase(), bio, email, photoUrl });
+        // Semak kewujudan nama pengguna — hanya jika ditukar
+        if (username.toLowerCase() !== (currentUser.usernameLower || currentUser.username).toLowerCase()) {
+            const usersRef = FB.collection(db, 'users');
+            const q = FB.query(usersRef, FB.where('usernameLower', '==', username.toLowerCase()), FB.limit(1));
+            const snap = await FB.getDocs(q);
+            
+            if (!snap.empty && snap.docs[0].id !== currentUser.id) {
+                showToast('nama pengguna sudah wujud.', true);
+                return;
+            }
+        }
+        
+        // Kemas kini dokumen pengguna
+        await FB.updateDoc(FB.doc(db, 'users', currentUser.id), { 
+            username, usernameLower: username.toLowerCase(), bio, email, photoUrl 
+        });
         currentUser = { ...currentUser, username, bio, email, photoUrl };
         localStorage.setItem('blob_current_user', JSON.stringify(currentUser));
         updateAllAvatars();
-        
-// Kemas kini semua luahan lama pengguna
-const postsSnap = await FB.getDocs(
-    FB.query(FB.collection(db, 'posts'), FB.where('userId', '==', currentUser.id))
-);
-if (!postsSnap.empty) {
-    const batch = FB.writeBatch(db);
-    postsSnap.docs.forEach(postDoc => {
-        batch.update(postDoc.ref, { userPhoto: photoUrl });
-    });
-    await batch.commit();
-}
-        
+
+        // Kemas kini luahan lama
+        const postsSnap = await FB.getDocs(
+            FB.query(FB.collection(db, 'posts'), FB.where('userId', '==', currentUser.id))
+        );
+        if (!postsSnap.empty) {
+            const batch = FB.writeBatch(db);
+            postsSnap.docs.forEach(postDoc => {
+                batch.update(postDoc.ref, { 
+                    username: username,
+                    userPhoto: photoUrl 
+                });
+            });
+            await batch.commit();
+        }
+
         showToast('profil disimpan.');
-    } catch (err) { showToast('ralat menyimpan profil.', true); }
+    } catch (err) { 
+        console.error(err);
+        showToast('ralat menyimpan profil.', true); 
+    }
 }
 
 async function changePassword() {
