@@ -1337,7 +1337,7 @@ function renderRegister() {
         const confirm = document.getElementById('regConfirmPassword')?.value || '';
 
         if (!username || !email || !password || !confirm) { showToast('sila lengkapkan semua ruangan.', true); return; }
-        if (!/^[a-zA-Z0-9_\.]{3,20}$/.test(username)) { showToast('nama pengguna 3-20 aksara (huruf, nombor, _, .).', true); return; }
+        if (!/^[a-zA-Z0-9_\.]{2,9}$/.test(username)) { showToast('nama pengguna 2-9 aksara (huruf, nombor, _, .).', true); return; }
         if (!/^[^\s@]+@([^\s@.,]+\.)+[^\s@]{2,}$/.test(email)) { showToast('e-mel tidak sah.', true); return; }
         if (password.length < 4) { showToast('kata laluan sekurang-kurangnya 4 aksara.', true); return; }
         if (password !== confirm) { showToast('kata laluan tidak sepadan.', true); return; }
