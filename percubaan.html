@@ -1994,17 +1994,41 @@ async function renderMyLuahan() {
 function renderRekodPanel() {
     const c = document.getElementById('rekodPanel');
     if (!c) return;
-    c.innerHTML = `<div class="streak-history" style="margin:0 0 1rem;"><div class="streak-title">hari lalu</div><div class="mini-calendar"><div class="calendar-header" id="rekodCalHeader"></div><div class="calendar-grid" id="rekodCalGrid"></div></div></div>`;
+    c.innerHTML = `<div class="streak-history" style="margin:0 0 1rem;">
+        <div class="streak-title">hari lalu</div>
+        <div class="mini-calendar">
+            <div class="calendar-header" id="rekodCalHeader"></div>
+            <div class="calendar-grid" id="rekodCalGrid"></div>
+        </div>
+    </div>`;
 
-    const dots = document.getElementById('rekodDots');
-    for (let i = 0; i < 15; i++) {
-        const d = new Date(); d.setDate(d.getDate() - i);
-        const s = d.toISOString().split('T')[0];
-        const dot = document.createElement('div');
-        dot.className = 'sdot' + (survivalData[s] ? ' active' : '');
-        dot.textContent = survivalData[s] ? '✓' : '○';
-        dots.appendChild(dot);
+    // ❌ BUANG bahagian rekodDots sepenuhnya
+
+    const now = new Date();
+    const year = now.getFullYear(), month = now.getMonth();
+    const monthNames = ['jan','feb','mac','apr','mei','jun','jul','ogos','sep','okt','nov','dis'];
+    const calH = document.getElementById('rekodCalHeader'); 
+    if (calH) calH.textContent = `${monthNames[month]} ${year}.`;
+    
+    const grid = document.getElementById('rekodCalGrid');
+    if (grid) {
+        grid.innerHTML = '';
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        for (let i = 0; i < firstDay; i++) { 
+            const e = document.createElement('div'); 
+            e.className = 'cal-day empty'; 
+            grid.appendChild(e); 
+        }
+        for (let day = 1; day <= daysInMonth; day++) {
+            const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            const el = document.createElement('div');
+            el.className = 'cal-day' + (survivalData[ds] ? ' checked' : '');
+            el.textContent = day; 
+            grid.appendChild(el);
+        }
     }
+}
 
     const now = new Date();
     const year = now.getFullYear(), month = now.getMonth();
