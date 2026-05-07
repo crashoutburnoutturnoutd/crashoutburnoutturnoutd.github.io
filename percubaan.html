@@ -1679,13 +1679,27 @@ function refreshUtamaStats() {
 function viewAvatar() {
     const src = document.getElementById('profilAvatarImg')?.src;
     if (!src) return;
-    document.getElementById('avatarViewImg').src = src;
+    const avatarImg = document.getElementById('avatarViewImg');
+    avatarImg.src = src;
+    // Guna square untuk akaun sistem
+    if (isSystemAccount(currentUser.username)) {
+        avatarImg.classList.add('blob-square');
+    } else {
+        avatarImg.classList.remove('blob-square');
+    }
     document.getElementById('avatarViewModal').classList.add('show');
 }
 function viewAvatarSettings() {
     const src = document.getElementById('settingPreviewImg')?.src;
     if (!src) return;
-    document.getElementById('avatarViewImg').src = src;
+    const avatarImg = document.getElementById('avatarViewImg');
+    avatarImg.src = src;
+    // Guna square untuk akaun sistem
+    if (isSystemAccount(currentUser.username)) {
+        avatarImg.classList.add('blob-square');
+    } else {
+        avatarImg.classList.remove('blob-square');
+    }
     document.getElementById('avatarViewModal').classList.add('show');
 }
 function closeAvatarView() {
