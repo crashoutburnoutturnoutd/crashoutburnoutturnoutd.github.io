@@ -1989,7 +1989,9 @@ async function renderBintangPanel() {
     container.innerHTML = '<div style="color:#444; font-size:0.78rem; text-align:center; padding:1rem; font-family:\'Open Sans\',sans-serif;">sedang memuatkan.</div>';
     try {
         const posts = [];
-        for (const pid of starredPostIds.slice(0, 10)) {
+        // Terbalikkan susunan — paling baharu dibintangi dulu
+        const reversed = [...starredPostIds].reverse();
+        for (const pid of reversed) {   // ← BUANG .slice(0,10), PAPAR SEMUA
             const snap = await FB.getDoc(FB.doc(db, 'posts', pid));
             if (snap.exists()) posts.push({ id: snap.id, ...snap.data() });
         }
