@@ -2114,11 +2114,19 @@ function createNotifCard(notif) {
 }
 
 function openNotifDetail(notif, category) {
-    const cat = document.getElementById('notifDetailCategory'); if (cat) cat.textContent = category || 'sistem';
+    const cat = document.getElementById('notifDetailCategory'); 
+    if (cat) cat.textContent = category || 'sistem';
+    
     const body = document.getElementById('notifDetailBody');
     if (body) body.innerHTML = `<strong>${esc(notif.title)}</strong><br><br>${esc(notif.message)}`;
-    const ts = notif.createdAt?.toMillis ? new Date(notif.createdAt.toMillis()) : new Date(notif.createdAt || Date.now());
-    const meta = document.getElementById('notifDetailMeta'); if (meta) meta.textContent = ts.toLocaleString('ms-MY') + ' · daripada admin.';
+    
+    const ts = notif.createdAt?.toMillis 
+        ? new Date(notif.createdAt.toMillis()) 
+        : new Date(notif.createdAt || Date.now());
+    
+    const meta = document.getElementById('notifDetailMeta'); 
+    const senderText = notif.sender || 'sistem';        // ← TAMBAH
+    if (meta) meta.textContent = ts.toLocaleString('ms-MY') + ' · daripada ' + senderText + '.';  // ← TUKAR
     openModal('notifDetailModal');
 }
 
@@ -2205,7 +2213,11 @@ async function adminSendNotif() {
     const message = (document.getElementById('notifMsgInput')?.value || '').trim();
     if (!title || !message) { showToast('sila isi tajuk dan mesej.', true); return; }
     try {
-        await FB.addDoc(FB.collection(db, 'notifications'), { type, title, message, createdAt: FB.serverTimestamp() });
+        await FB.addDoc(FB.collection(db, 'notifications'), { 
+            type, title, message, 
+            sender: currentUser.username,   // ← TAMBAH BARIS INI
+            createdAt: FB.serverTimestamp() 
+        });
         if (document.getElementById('notifTypeInput')) document.getElementById('notifTypeInput').value = '';
         if (document.getElementById('notifTitleInput')) document.getElementById('notifTitleInput').value = '';
         if (document.getElementById('notifMsgInput')) document.getElementById('notifMsgInput').value = '';
