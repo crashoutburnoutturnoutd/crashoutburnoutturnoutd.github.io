@@ -332,6 +332,23 @@
         }
         .activity-btn::after { content: "."; }
 
+        /* Mobile: butang jatuh ke bawah */
+        @media (max-width: 550px) {
+            .stats-row {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .stats-item {
+                flex: 1 1 auto;
+                min-width: auto;
+            }
+            .checkin-btn {
+                flex: 1 0 100%;
+                order: 3;
+            }
+        } 
+       
+
         /* ===== PROFIL PAGE ===== */
         .profile-card {
             margin: 0.8rem 1.2rem 1rem; background: var(--surface);
