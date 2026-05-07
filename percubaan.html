@@ -2030,7 +2030,22 @@ function loadSettingsForm() {
     const sb = document.getElementById('settingBio'); if (sb) sb.value = currentUser.bio || '';
     const se = document.getElementById('settingEmail'); if (se) se.value = currentUser.email || '';
     const sp = document.getElementById('settingPhotoUrl'); if (sp) sp.value = currentUser.photoUrl || '';
-    const spi = document.getElementById('settingPreviewImg'); if (spi) spi.src = currentUser.photoUrl || 'https://placehold.co/48x48/222/fff?text=U';
+    
+    const spi = document.getElementById('settingPreviewImg'); 
+    if (spi) {
+        spi.src = currentUser.photoUrl || 'https://placehold.co/48x48/222/fff?text=U';
+        // Avatar petak untuk akaun sistem di pratonton tetapan
+        const previewBlob = spi.closest('.photo-preview-blob');
+        if (previewBlob) {
+            if (isSystemAccount(currentUser.username)) {
+                previewBlob.setAttribute('data-system-avatar', 'true');
+                previewBlob.classList.add('blob-square');
+            } else {
+                previewBlob.removeAttribute('data-system-avatar');
+                previewBlob.classList.remove('blob-square');
+            }
+        }
+    }
 }
 
 async function saveProfileSettings() {
