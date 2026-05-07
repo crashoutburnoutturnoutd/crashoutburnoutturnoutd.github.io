@@ -705,7 +705,7 @@
         </div>
         <div class="streak-history">
             <div class="streak-title">hari lalu</div>
-            <div class="streak-dots" id="streakDots"></div>
+            
             <div class="mini-calendar">
                 <div class="calendar-header" id="calendarMonthTitle">mei 2026.</div>
                 <div class="calendar-grid" id="calendarGrid"></div>
@@ -1994,7 +1994,7 @@ async function renderMyLuahan() {
 function renderRekodPanel() {
     const c = document.getElementById('rekodPanel');
     if (!c) return;
-    c.innerHTML = `<div class="streak-history" style="margin:0 0 1rem;"><div class="streak-title">hari lalu</div><div class="streak-dots" id="rekodDots"></div><div class="mini-calendar"><div class="calendar-header" id="rekodCalHeader"></div><div class="calendar-grid" id="rekodCalGrid"></div></div></div>`;
+    c.innerHTML = `<div class="streak-history" style="margin:0 0 1rem;"><div class="streak-title">hari lalu</div><div class="mini-calendar"><div class="calendar-header" id="rekodCalHeader"></div><div class="calendar-grid" id="rekodCalGrid"></div></div></div>`;
 
     const dots = document.getElementById('rekodDots');
     for (let i = 0; i < 15; i++) {
