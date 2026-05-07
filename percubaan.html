@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>BlobSpace</title>
+    <title>crash out, burn out, turn out d</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -81,8 +81,7 @@
         .welcome-text { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.9rem; letter-spacing: -0.3px; }
         .splash-message {
             font-size: 0.82rem; line-height: 1.55; color: #ccc;
-            background: rgba(17,17,17,0.5); padding: 0.8rem 1rem;
-            border-radius: 14px; margin-top: 0.5rem;
+
         }
         .three-dots {
             position: absolute; bottom: 32px; left: 0; right: 0;
@@ -805,7 +804,7 @@
 <!-- ========== ADMIN ========== -->
 <div id="admin-page" class="page">
     <div class="admin-header">
-        <span style="font-weight:700; font-size:0.97rem; font-family:'Open Sans',sans-serif;">panel admin.</span>
+        <span style="font-weight:700; font-size:0.97rem; font-family:'Open Sans',sans-serif;">panel pentadbir.</span>
         <button onclick="showPage('tetapan')" style="background:#1e1e1e; border:1px solid #333; color:#aaa; padding:4px 12px; border-radius:6px; cursor:pointer; font-size:0.73rem; font-family:'Open Sans',sans-serif;">kembali.</button>
     </div>
     <div style="padding:0 1.2rem; margin-top:1rem;">
@@ -1877,7 +1876,7 @@ async function renderMyLuahan() {
         );
         const snap = await FB.getDocs(q);
         if (snap.empty) {
-            container.innerHTML = '<div class="empty-message">tiada luahan. tekan ✎ untuk luahkan.</div>';
+            container.innerHTML = '<div class="empty-message">tiada luahan. tekan luah. untuk luahkan.</div>';
             return;
         }
         const posts = snap.docs
