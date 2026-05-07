@@ -14,7 +14,7 @@
         import {
             getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
             onSnapshot, updateDoc, deleteDoc, query, orderBy, serverTimestamp,
-            increment, arrayUnion, arrayRemove, where, limit
+            increment, arrayUnion, arrayRemove, where, limit, writeBatch
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -30,7 +30,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         window.db = db;
-        window.FB = { collection, doc, addDoc, setDoc, getDoc, getDocs, onSnapshot, updateDoc, deleteDoc, query, orderBy, serverTimestamp, increment, arrayUnion, arrayRemove, where, limit };
+        window.FB = { collection, doc, addDoc, setDoc, getDoc, getDocs, onSnapshot, updateDoc, deleteDoc, query, orderBy, serverTimestamp, increment, arrayUnion, arrayRemove, where, limit, writeBatch };
         window.currentUser = null;
         window.dispatchEvent(new Event('firebaseReady'));
     </script>
@@ -58,6 +58,7 @@
         }
 
         /* ===== PAGES ===== */
+        /* FIX 2: App pages hidden by default, shown via JS */
         .page { display: none; min-height: 100vh; }
         .page.active { display: block; }
 
@@ -90,11 +91,21 @@
         .dot { width: 7px; height: 7px; background: #333; border-radius: 50%; }
         .dot.active { background: #777; }
 
-        /* ===== AUTH — completely separate from app ===== */
+        /* ===== FIX 2: AUTH — fully isolated as overlay, never in scroll flow ===== */
         #auth-page {
-            display: flex; align-items: center; justify-content: center;
-            padding: 2.5rem 1.5rem; min-height: 100vh;
+            /* Fixed overlay so it never sits in the document scroll flow */
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            display: none; /* hidden by default */
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1.5rem;
             background: var(--bg);
+            overflow-y: auto;
+        }
+        #auth-page.active {
+            display: flex;
         }
         .auth-wrapper { width: 100%; max-width: 400px; }
         .auth-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; letter-spacing: -0.5px; text-align: center; }
@@ -423,7 +434,7 @@
         .admin-access-btn.show { display: block; }
 
         /* ===== NOTIF PAGE ===== */
-        .notif-header-info { margin: 0.8rem 1.2rem 0.5rem; font-size: 0.73rem; color: #666; font-family: 'Open Sans', sans-serif; }
+        /* FIX 3: removed .notif-header-info style (element removed from HTML) */
         .notif-list { margin: 0.5rem 1.2rem 2rem; }
         .notif-card {
             background: var(--surface); border: 1px solid var(--border);
@@ -574,8 +585,8 @@
     </div>
 </div>
 
-<!-- ========== AUTH (berasingan, tiada nav) ========== -->
-<div id="auth-page" class="page">
+<!-- ========== AUTH (FIX 2: position:fixed overlay, fully separate from app scroll) ========== -->
+<div id="auth-page">
     <div class="auth-wrapper">
         <div id="authView"></div>
     </div>
@@ -681,16 +692,13 @@
         <div class="page-title">profil</div>
         <div class="profile-card">
             <div class="profile-top">
-                <!-- Gambar profil boleh diklik -->
                 <div class="profile-avatar" id="profilAvatarClickable" onclick="viewAvatar()">
                     <img id="profilAvatarImg" src="https://placehold.co/56x56/222/fff?text=U" alt="avatar">
                 </div>
                 <div class="profile-name-section">
-                    <!-- Nama pengguna sahaja, tiada nama penuh -->
                     <div class="profile-username-display" id="profilUsername">@—</div>
                     <div class="profile-bio" id="profileBioText">—</div>
                 </div>
-                <!-- Butang sunting paling kanan -->
                 <button class="edit-bio-btn" id="editBioBtn">sunting.</button>
             </div>
             <div class="profile-stats-row">
@@ -732,7 +740,6 @@
         </div>
         <div class="page-title">tetapan</div>
 
-        <!-- Maklumat profil -->
         <div class="settings-group">
             <div class="group-title">maklumat profil</div>
             <div class="setting-row">
@@ -750,7 +757,6 @@
             </div>
         </div>
 
-        <!-- Tukar kata laluan -->
         <div class="settings-group">
             <div class="group-title">tukar kata laluan</div>
             <div class="setting-row">
@@ -760,14 +766,12 @@
             </div>
         </div>
 
-        <!-- Akaun -->
         <div class="settings-group">
             <div class="group-title">akaun</div>
             <div class="setting-row">
                 <div class="setting-field">
                     <button class="danger-btn" id="deleteAccountBtn">padam akaun.</button>
                     <button class="logout-btn" id="logoutBtn">log keluar.</button>
-                    <!-- Panel admin — hanya kelihatan untuk admin -->
                     <button class="admin-access-btn" id="adminAccessBtn" onclick="showPage('admin'); loadAdminData();">panel admin. ⚙</button>
                 </div>
             </div>
@@ -792,8 +796,8 @@
                 <div class="profile-blob"><img id="headerAvatarNotif" src="https://placehold.co/42x42/222/fff?text=U" alt="profil"></div>
             </div>
         </div>
+        <!-- FIX 3: removed "daripada sistem — maklumat & pengumuman." line -->
         <div class="page-title">pemberitahuan</div>
-        <div class="notif-header-info">daripada sistem — maklumat &amp; pengumuman.</div>
         <div class="notif-list" id="notifContainer"></div>
     </div>
 </div>
@@ -816,7 +820,6 @@
         <div id="adminTabNotif" class="admin-sub show">
             <div class="admin-card">
                 <h3>hantar pemberitahuan baharu.</h3>
-                <!-- Admin masukkan sendiri jenis notifikasi -->
                 <input type="text" class="admin-input" id="notifTypeInput" placeholder="jenis pemberitahuan (contoh: info, berita, peringatan).">
                 <input type="text" class="admin-input" id="notifTitleInput" placeholder="tajuk pemberitahuan.">
                 <textarea class="admin-textarea" id="notifMsgInput" rows="3" placeholder="mesej pemberitahuan."></textarea>
@@ -1109,6 +1112,19 @@ function todayStr() { return new Date().toISOString().split('T')[0]; }
 // NAVIGASI HALAMAN
 // ============================================================
 function showPage(name) {
+    // FIX 2: handle auth page separately (it's position:fixed, not .page)
+    const authPage = document.getElementById('auth-page');
+
+    if (name === 'auth') {
+        // Hide all .page elements, show auth overlay
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        authPage.classList.add('active');
+        window.scrollTo(0, 0);
+        return;
+    }
+
+    // Hide auth overlay, show the requested .page
+    authPage.classList.remove('active');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById(`${name}-page`);
     if (page) page.classList.add('active');
@@ -1405,7 +1421,6 @@ function onLoginSuccess() {
     subscribeToRealtime();
     checkAndShowPopup();
 
-    // Semak admin
     const uname = (currentUser.usernameLower || currentUser.username || '').toLowerCase();
     if (ADMIN_USERS.includes(uname)) {
         const adminBtn = document.getElementById('adminAccessBtn');
@@ -1435,7 +1450,6 @@ function subscribeToRealtime() {
         refreshUtamaStats();
     }, err => { console.error('Ralat snapshot luahan:', err); });
 
-    // Penanda notifikasi
     const notifsQ = FB.query(FB.collection(db, 'notifications'), FB.orderBy('createdAt', 'desc'), FB.limit(1));
     FB.onSnapshot(notifsQ, snap => {
         snap.docs.forEach(d => {
@@ -1444,7 +1458,6 @@ function subscribeToRealtime() {
         });
     });
 
-    // Tetingkap timbul
     if (unsubPopup) unsubPopup();
     const popupRef = FB.doc(db, 'config', 'popup');
     unsubPopup = FB.onSnapshot(popupRef, snap => {
@@ -1508,7 +1521,6 @@ function createPostCard(post, showEditDelete) {
         </div>
     `;
 
-    // Bintang — boleh tambah DAN buang
     card.querySelector('.star-btn')?.addEventListener('click', () => toggleStar(post.id, card));
     card.querySelector('.edit-post')?.addEventListener('click', () => openEditPost(post.id, post.content));
     card.querySelector('.delete-post')?.addEventListener('click', () => { currentDeletePostId = post.id; openModal('deletePostModal'); });
@@ -1573,20 +1585,18 @@ async function confirmDeletePost() {
 }
 
 // ============================================================
-// BINTANG — boleh tambah DAN buang (toggle)
+// BINTANG — toggle tambah/buang
 // ============================================================
 async function toggleStar(postId, cardEl) {
     const alreadyStarred = starredPostIds.includes(postId);
 
     if (alreadyStarred) {
-        // Buang bintang
         starredPostIds = starredPostIds.filter(id => id !== postId);
         localStorage.setItem('blob_starred', JSON.stringify(starredPostIds));
         try {
             await FB.updateDoc(FB.doc(db, 'posts', postId), { stars: FB.increment(-1) });
         } catch (err) { console.error(err); }
     } else {
-        // Tambah bintang
         starredPostIds.push(postId);
         localStorage.setItem('blob_starred', JSON.stringify(starredPostIds));
         try {
@@ -1594,7 +1604,6 @@ async function toggleStar(postId, cardEl) {
         } catch (err) { console.error(err); }
     }
 
-    // Kemas kini UI kad tanpa reload penuh
     if (cardEl) {
         const nowStarred = starredPostIds.includes(postId);
         const starImg = cardEl.querySelector('.star-img');
@@ -1823,7 +1832,6 @@ async function renderProfil() {
     const photo = currentUser.photoUrl || `https://placehold.co/56x56/222/fff?text=${initial}`;
     const pImg = document.getElementById('profilAvatarImg'); if (pImg) pImg.src = photo;
 
-    // Hanya nama pengguna, tiada nama penuh
     const pUser = document.getElementById('profilUsername');
     if (pUser) {
         const verifiedHtml = currentUser.isVerified ? ' <img src="verifiedbadge.png" style="width:13px;vertical-align:middle;" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7641/7641709.png\';this.onerror=null;">' : '';
@@ -1863,7 +1871,6 @@ async function renderMyLuahan() {
             container.innerHTML = '<div class="empty-message">sila log masuk dahulu.</div>';
             return;
         }
-        // Guna getDocs tanpa orderBy untuk elak keperluan indeks gabungan
         const q = FB.query(
             FB.collection(db, 'posts'),
             FB.where('userId', '==', currentUser.id)
@@ -1873,7 +1880,6 @@ async function renderMyLuahan() {
             container.innerHTML = '<div class="empty-message">tiada luahan. tekan ✎ untuk luahkan.</div>';
             return;
         }
-        // Susun mengikut masa di bahagian klien
         const posts = snap.docs
             .map(d => ({ id: d.id, ...d.data() }))
             .sort((a, b) => {
@@ -2155,7 +2161,6 @@ async function loadAdminNotifs() {
 }
 
 async function adminSendNotif() {
-    // Admin masukkan sendiri jenis notifikasi
     const type = (document.getElementById('notifTypeInput')?.value || '').trim() || 'sistem';
     const title = (document.getElementById('notifTitleInput')?.value || '').trim();
     const message = (document.getElementById('notifMsgInput')?.value || '').trim();
@@ -2236,14 +2241,44 @@ async function loadAdminUsers() {
     } catch (err) { el.textContent = 'ralat.'; }
 }
 
+// ============================================================
+// FIX 1: adminSetVerified — update user doc + ALL their posts
+// ============================================================
 async function adminSetVerified(userId, state) {
     try {
+        // 1. Update user document
         await FB.updateDoc(FB.doc(db, 'users', userId), { isVerified: state });
+
+        // 2. Update all posts by this user so badge reflects immediately everywhere
+        const postsSnap = await FB.getDocs(
+            FB.query(FB.collection(db, 'posts'), FB.where('userId', '==', userId))
+        );
+        // Use batched writes for efficiency (max 500 per batch, enough for normal usage)
+        if (!postsSnap.empty) {
+            const batch = FB.writeBatch(db);
+            postsSnap.docs.forEach(postDoc => {
+                batch.update(postDoc.ref, { isVerified: state });
+            });
+            await batch.commit();
+        }
+
+        // 3. If the currently logged-in user is the one affected, update local state too
+        if (currentUser && currentUser.id === userId) {
+            currentUser.isVerified = state;
+            localStorage.setItem('blob_current_user', JSON.stringify(currentUser));
+        }
+
         showToast(state ? 'lencana disahkan diberikan.' : 'lencana disahkan ditanggalkan.');
         loadAdminUsers();
-    } catch (err) { showToast('ralat mengemas kini.', true); }
+    } catch (err) {
+        console.error('Ralat mengemas kini verified:', err);
+        showToast('ralat mengemas kini.', true);
+    }
 }
 
+// ============================================================
+// FIX 1: adminToggleVerified (by username) — same batch update
+// ============================================================
 async function adminToggleVerified(state) {
     const uname = (document.getElementById('verifyUsernameInput')?.value || '').trim().replace(/^@/, '').toLowerCase();
     if (!uname) { showToast('sila masukkan nama pengguna.', true); return; }
@@ -2251,11 +2286,16 @@ async function adminToggleVerified(state) {
         const q = FB.query(FB.collection(db, 'users'), FB.where('usernameLower', '==', uname), FB.limit(1));
         const snap = await FB.getDocs(q);
         if (snap.empty) { showToast('pengguna tidak dijumpai.', true); return; }
-        await FB.updateDoc(snap.docs[0].ref, { isVerified: state });
-        showToast(state ? `@${uname} diberikan lencana disahkan.` : `@${uname} lencana disahkan ditanggalkan.`);
+
+        const userId = snap.docs[0].id;
+        // Reuse adminSetVerified which handles everything
+        await adminSetVerified(userId, state);
+
         const vi = document.getElementById('verifyUsernameInput'); if (vi) vi.value = '';
-        loadAdminUsers();
-    } catch (err) { showToast('ralat.', true); }
+    } catch (err) {
+        console.error(err);
+        showToast('ralat.', true);
+    }
 }
 
 async function loadAdminPosts() {
