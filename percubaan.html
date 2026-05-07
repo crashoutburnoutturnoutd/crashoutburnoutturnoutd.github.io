@@ -577,6 +577,11 @@
         .modal-close { background: #2e2e2e; color: white; border: none; padding: 10px; margin-top: 16px; width: 100%; border-radius: 40px; cursor: pointer; font-weight: 600; font-family: 'Open Sans', sans-serif; font-size: 0.83rem; }
         .modal-box.tall { max-height: 85vh; overflow-y: auto; }
 
+        /* ===== AVATAR PETAK UNTUK AKAUN SISTEM ===== */
+.blob-square {
+    border-radius: 10px !important;
+}
+
         @media (max-width: 550px) {
             .header-left-placeholder { width: 50px; }
             .logo-img { height: 27px; }
@@ -1446,13 +1451,31 @@ function onLoginSuccess() {
     }
 }
 
+function isSystemAccount(username) {
+    const SYSTEM_ACCOUNTS = ['cobotod'];
+    return SYSTEM_ACCOUNTS.includes((username || '').toLowerCase());
+}
+    
 function updateAllAvatars() {
     if (!currentUser) return;
     const initial = (currentUser.username || 'U').charAt(0).toUpperCase();
     const photo = currentUser.photoUrl || `https://placehold.co/42x42/222/fff?text=${initial}`;
     ['headerAvatarUtama','headerAvatarBertahan','headerAvatarProfil','headerAvatarTetapan','headerAvatarNotif'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.src = photo;
+        if (el) {
+            el.src = photo;
+            // Tanda avatar sistem
+            const parentBlob = el.closest('.profile-blob');
+            if (parentBlob) {
+                if (isSystemAccount(currentUser.username)) {
+                    parentBlob.setAttribute('data-system-avatar', 'true');
+                    parentBlob.classList.add('blob-square');
+                } else {
+                    parentBlob.removeAttribute('data-system-avatar');
+                    parentBlob.classList.remove('blob-square');
+                }
+            }
+        }
     });
 }
 
@@ -1512,10 +1535,10 @@ function createPostCard(post, showEditDelete) {
     const card = document.createElement('div');
     card.className = 'post-card';
 
-    const avatarHtml = isAnon
-        ? '<div class="post-avatar anonymous-avatar"></div>'
-        : `<div class="post-avatar"><img src="${esc(post.userPhoto || 'https://placehold.co/36x36/222/fff?text=U')}" alt="avatar" onerror="this.src='https://placehold.co/36x36/222/fff?text=U';this.onerror=null;"></div>`;
-
+    const isSystemUser = post.username && isSystemAccount(post.username);
+const avatarHtml = isAnon
+    ? '<div class="post-avatar anonymous-avatar"></div>'
+    : `<div class="post-avatar${isSystemUser ? ' blob-square' : ''}"${isSystemUser ? ' data-system-avatar="true"' : ''}><img src="${esc(post.userPhoto || 'https://placehold.co/36x36/222/fff?text=U')}" alt="avatar" onerror="this.src='https://placehold.co/36x36/222/fff?text=U';this.onerror=null;"></div>`;
     const verifiedHtml = post.isVerified ? `<img src="verifiedbadge.png" class="verified-badge" onerror="this.src='https://cdn-icons-png.flaticon.com/512/7641/7641709.png';this.onerror=null;">` : '';
     const userHtml = isAnon
         ? '<span class="post-user anonymous-user">tanpa nama.</span>'
@@ -1849,7 +1872,17 @@ async function renderProfil() {
     const initial = (currentUser.username || 'U').charAt(0).toUpperCase();
     const photo = currentUser.photoUrl || `https://placehold.co/56x56/222/fff?text=${initial}`;
     const pImg = document.getElementById('profilAvatarImg'); if (pImg) pImg.src = photo;
-
+// Avatar petak untuk akaun sistem
+const avatarBlob = document.getElementById('profilAvatarClickable');
+if (avatarBlob) {
+    if (isSystemAccount(currentUser.username)) {
+        avatarBlob.setAttribute('data-system-avatar', 'true');
+        avatarBlob.classList.add('blob-square');
+    } else {
+        avatarBlob.removeAttribute('data-system-avatar');
+        avatarBlob.classList.remove('blob-square');
+    }
+}
     const pUser = document.getElementById('profilUsername');
     if (pUser) {
         const verifiedHtml = currentUser.isVerified ? ' <img src="verifiedbadge.png" style="width:13px;vertical-align:middle;" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7641/7641709.png\';this.onerror=null;">' : '';
