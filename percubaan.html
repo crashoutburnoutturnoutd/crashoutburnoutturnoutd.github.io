@@ -347,14 +347,32 @@
         }
         .profile-avatar:hover { opacity: 0.85; }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-name-section { flex: 1; }
-        .profile-username-display { font-size: 0.97rem; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-family: 'Open Sans', sans-serif; }
-        .profile-bio { font-size: 0.73rem; color: #ccc; margin: 6px 0 10px; font-family: 'Open Sans', sans-serif; }
-        .edit-bio-btn {
-            background: #222; border: 1px solid #333; padding: 3px 11px;
-            border-radius: 40px; font-size: 0.63rem; font-weight: 600; color: white;
-            cursor: pointer; font-family: 'Open Sans', sans-serif; margin-left: auto;
-        }
+        .profile-name-section { 
+    flex: 1; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+}
+.profile-username-display { 
+    font-size: 0.97rem; font-weight: 700; 
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap; 
+    font-family: 'Open Sans', sans-serif; 
+}
+.profile-bio { 
+    font-size: 0.83rem; 
+    color: #ccc; 
+    margin: 10px 0 0; 
+    padding: 0 2px;
+    line-height: 1.5;
+    font-family: 'Open Sans', sans-serif; 
+    word-break: break-word;
+}
+.edit-bio-btn {
+    background: #222; border: 1px solid #333; padding: 3px 11px;
+    border-radius: 40px; font-size: 0.63rem; font-weight: 600; color: white;
+    cursor: pointer; font-family: 'Open Sans', sans-serif; 
+    flex-shrink: 0;
+}
         .profile-stats-row { display: flex; justify-content: space-around; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
         .profile-stat-item { text-align: center; flex: 1; }
         .profile-stat-number { font-size: 1.35rem; font-weight: 700; font-family: 'Open Sans', sans-serif; }
@@ -690,16 +708,17 @@
         </div>
         <div class="page-title">profil</div>
         <div class="profile-card">
-            <div class="profile-top">
-                <div class="profile-avatar" id="profilAvatarClickable" onclick="viewAvatar()">
-                    <img id="profilAvatarImg" src="https://placehold.co/56x56/222/fff?text=U" alt="avatar">
-                </div>
-                <div class="profile-name-section">
-                    <div class="profile-username-display" id="profilUsername">@—</div>
-                    <div class="profile-bio" id="profileBioText">—</div>
-                </div>
-                <button class="edit-bio-btn" id="editBioBtn">sunting.</button>
-            </div>
+    <div class="profile-top">
+        <div class="profile-avatar" id="profilAvatarClickable" onclick="viewAvatar()">
+            <img id="profilAvatarImg" src="https://placehold.co/56x56/222/fff?text=U" alt="avatar">
+        </div>
+        <div class="profile-name-section">
+            <div class="profile-username-display" id="profilUsername">@—</div>
+        </div>
+        <button class="edit-bio-btn" id="editBioBtn">sunting.</button>
+    </div>
+    <!-- Bio dipindahkan ke bawah -->
+    <div class="profile-bio" id="profileBioText">—</div>
             <div class="profile-stats-row">
                 <div class="profile-stat-item"><div class="profile-stat-number" id="profilStreak">0</div><div class="profile-stat-label">berturut</div></div>
                 <div class="profile-stat-item"><div class="profile-stat-number" id="profilTotalSurvive">0</div><div class="profile-stat-label">bertahan</div></div>
